@@ -157,7 +157,7 @@ class TransitionDetector:
         ).fetchall()
         moisture_channel = SignalChannel("soil_moisture", [(r[0], r[1]) for r in rows])
 
-        # Species diversity (weekly count of unique species)
+        # Species diversity (daily count of unique species)
         rows = conn.execute(
             """SELECT observed_on as date, COUNT(DISTINCT taxon_name) as diversity
                FROM species_observations
@@ -167,8 +167,49 @@ class TransitionDetector:
         ).fetchall()
         diversity_channel = SignalChannel("species_diversity", [(r[0], r[1]) for r in rows])
 
+        # Bird activity (daily unique bird species — migration/breeding signal)
+        rows = conn.execute(
+            """SELECT observed_on as date, COUNT(DISTINCT taxon_name) as count
+               FROM species_observations
+               WHERE observed_on BETWEEN ? AND ? AND iconic_taxon = 'Aves'
+               GROUP BY observed_on ORDER BY observed_on""",
+            (start, end),
+        ).fetchall()
+        bird_channel = SignalChannel("bird_activity", [(r[0], r[1]) for r in rows])
+
+        # Insect activity (daily unique insect species — emergence signal)
+        rows = conn.execute(
+            """SELECT observed_on as date, COUNT(DISTINCT taxon_name) as count
+               FROM species_observations
+               WHERE observed_on BETWEEN ? AND ? AND iconic_taxon = 'Insecta'
+               GROUP BY observed_on ORDER BY observed_on""",
+            (start, end),
+        ).fetchall()
+        insect_channel = SignalChannel("insect_activity", [(r[0], r[1]) for r in rows])
+
+        # Plant/flowering activity (daily unique plant species)
+        rows = conn.execute(
+            """SELECT observed_on as date, COUNT(DISTINCT taxon_name) as count
+               FROM species_observations
+               WHERE observed_on BETWEEN ? AND ? AND iconic_taxon IN ('Plantae', 'Magnoliopsida')
+               GROUP BY observed_on ORDER BY observed_on""",
+            (start, end),
+        ).fetchall()
+        plant_channel = SignalChannel("plant_activity", [(r[0], r[1]) for r in rows])
+
+        # Fungi activity (autumn/winter indicator)
+        rows = conn.execute(
+            """SELECT observed_on as date, COUNT(DISTINCT taxon_name) as count
+               FROM species_observations
+               WHERE observed_on BETWEEN ? AND ? AND iconic_taxon = 'Fungi'
+               GROUP BY observed_on ORDER BY observed_on""",
+            (start, end),
+        ).fetchall()
+        fungi_channel = SignalChannel("fungi_activity", [(r[0], r[1]) for r in rows])
+
         return [temp_channel, day_channel, rain_channel, uv_channel,
-                soil_channel, moisture_channel, diversity_channel]
+                soil_channel, moisture_channel, diversity_channel,
+                bird_channel, insect_channel, plant_channel, fungi_channel]
 
     def detect(self, lookback_days: int = 60) -> list[dict]:
         """Run detection across all channels. Returns list of transitions."""
@@ -245,26 +286,51 @@ class TransitionDetector:
 
     def _classify_phase(self, channels: list[str], direction: str) -> tuple[str, str]:
         """Classify the transition into a phase based on active channels."""
-        if "temp" in channels and direction == "falling":
-            if "soil_temp" in channels:
-                return "dormancy", "Deep cooling — soil and air temperatures dropping"
+        has = set(channels)
+
+        # Biological signals take priority — they're the most phenologically meaningful
+        if "fungi_activity" in has and direction == "rising":
+            return "rain", "Fungi flush — autumn rains triggering fruiting"
+        if "insect_activity" in has and direction == "rising":
+            if "temp" in has and direction == "rising":
+                return "growth", "Insect emergence — warming triggers activity"
+            return "awakening", "Insects emerging — seasonal shift"
+        if "insect_activity" in has and direction == "falling":
+            return "cooling", "Insect activity declining — cooling"
+        if "bird_activity" in has and direction == "rising":
+            if "plant_activity" in has:
+                return "growth", "Spring surge — birds and plants active"
+            return "awakening", "Bird activity increasing"
+        if "plant_activity" in has and direction == "rising":
+            if "uv" in has:
+                return "flowering", "Flowering surge — plants responding to light"
+            return "growth", "Plant activity increasing"
+
+        # Weather-driven signals
+        if "temp" in has and direction == "falling":
+            if "soil_temp" in has:
+                return "dormancy", "Deep cooling — soil and air dropping"
+            if "fungi_activity" in has:
+                return "rain", "Cool and wet — fungi conditions"
             return "cooling", "Cool change — temperatures dropping"
-        if "temp" in channels and direction == "rising":
-            if "day_length" in channels:
+        if "temp" in has and direction == "rising":
+            if "day_length" in has:
                 return "awakening", "Spring warming — temperatures and days lengthening"
-            if "soil_temp" in channels:
-                return "growth", "Ground warming — soil and air temperatures rising"
+            if "soil_temp" in has:
+                return "growth", "Ground warming — soil and air rising"
             return "growth", "Warming trend underway"
-        if "rain" in channels and direction == "rising":
+        if "rain" in has and direction == "rising":
             return "rain", "Wet period — rainfall increasing"
-        if "rain" in channels and direction == "falling":
+        if "rain" in has and direction == "falling":
             return "drying", "Drying out — rainfall decreasing"
-        if "uv" in channels and direction == "rising":
-            return "flowering", "UV intensity increasing — peak sun"
-        if "uv" in channels and direction == "falling":
+        if "uv" in has and direction == "rising":
+            return "drying", "UV climbing — approaching peak sun"
+        if "uv" in has and direction == "falling":
             return "cooling", "UV declining — sun weakening"
-        if "species_diversity" in channels and direction == "rising":
+        if "species_diversity" in has and direction == "rising":
             return "growth", "Biodiversity surge — species activity increasing"
+        if "species_diversity" in has and direction == "falling":
+            return "dormancy", "Biodiversity dropping — seasonal quiet"
         return "transition", f"Multi-signal shift ({direction})"
 
     def run_and_store(self, lookback_days: int = 60) -> list[dict]:

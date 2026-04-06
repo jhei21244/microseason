@@ -7,6 +7,8 @@ from .nature import NatureCollector
 from .climatewatch import ClimateWatchCollector
 from .melbourne_water import MelbourneWaterCollector
 from .city_of_melbourne import CityOfMelbourneCollector
+from .silo import SILOCollector
+from .epa_victoria import EPAVictoriaCollector
 
 __all__ = [
     "WeatherCollector",
@@ -16,4 +18,6 @@ __all__ = [
     "ClimateWatchCollector",
     "MelbourneWaterCollector",
     "CityOfMelbourneCollector",
+    "SILOCollector",
+    "EPAVictoriaCollector",
 ]
