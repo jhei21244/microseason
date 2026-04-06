@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microseason Core Sample</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, sans-serif; padding: 2rem; background: #fff; color: #1a1a1a; }
+  @media (prefers-color-scheme: dark) { body { background: #1a1a1a; color: #e8e8e8; } }
+  #app { max-width: 900px; margin: 0 auto; }
+  .layout { display: flex; gap: 2rem; flex-wrap: wrap; align-items: flex-start; }
+  .core-wrap { flex: 1; min-width: 340px; position: relative; }
+  #core { width: 100%; height: auto; cursor: crosshair; }
+  #tooltip { position: absolute; display: none; background: #fff; border: 1px solid rgba(0,0,0,0.15); border-radius: 8px; padding: 8px 12px; font-size: 13px; pointer-events: none; max-width: 220px; z-index: 10; }
+  @media (prefers-color-scheme: dark) { #tooltip { background: #2a2a2a; border-color: rgba(255,255,255,0.15); } }
+  .sidebar { flex: 0 0 220px; min-width: 200px; }
+  .sidebar-section { margin-bottom: 1.5rem; }
+  .sidebar-section + .sidebar-section { border-top: 1px solid rgba(0,0,0,0.08); padding-top: 1rem; }
+  @media (prefers-color-scheme: dark) { .sidebar-section + .sidebar-section { border-color: rgba(255,255,255,0.08); } }
+  .label { font-size: 12px; opacity: 0.5; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  #now-name { font-size: 18px; font-weight: 500; margin-bottom: 6px; }
+  #now-desc { font-size: 13px; opacity: 0.7; line-height: 1.5; margin-bottom: 12px; }
+  #now-shift { font-size: 13px; line-height: 1.5; }
+  #legend, #year-labels { font-size: 12px; line-height: 2; opacity: 0.7; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="layout">
+    <div class="core-wrap">
+      <canvas id="core" width="680" height="680"></canvas>
+      <div id="tooltip"></div>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <p class="label">Right now</p>
+        <p id="now-name"></p>
+        <p id="now-desc"></p>
+        <p id="now-shift"></p>
+      </div>
+      <div class="sidebar-section">
+        <p class="label">Reading the rings</p>
+        <div id="legend"></div>
+      </div>
+      <div class="sidebar-section">
+        <p class="label">Year rings</p>
+        <div id="year-labels"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const today = new Date();
+const doy = Math.floor((today - new Date(today.getFullYear(),0,0)) / 86400000);
+
+const palette = {
+  dormancy:    { l: '#FAEEDA', d: '#854F0B', m: '#EF9F27' },
+  awakening:   { l: '#EAF3DE', d: '#3B6D11', m: '#97C459' },
+  flowering:   { l: '#FBEAF0', d: '#993556', m: '#ED93B1' },
+  growth:      { l: '#E1F5EE', d: '#0F6E56', m: '#5DCAA5' },
+  fruiting:    { l: '#FAECE7', d: '#993C1D', m: '#F0997B' },
+  drying:      { l: '#FAEEDA', d: '#633806', m: '#FAC775' },
+  cooling:     { l: '#E6F1FB', d: '#185FA5', m: '#85B7EB' },
+  rain:        { l: '#EEEDFE', d: '#534AB7', m: '#AFA9EC' },
+};
+
+const microseasons = [
+  { name: 'Deep summer stillness',   phase: 'dormancy',  start: 1,   end: 35,  desc: 'Heat-stressed canopy. Cicada drone. Soil cracked.', signals: ['UV peak','soil moisture <15%','bird song drops'] },
+  { name: 'First cool exhale',       phase: 'cooling',   start: 36,  end: 55,  desc: 'First sub-20° morning. Light shifts gold.', signals: ['morning temp <18°','golden hour +4min','fog return'] },
+  { name: 'Autumn fungi flush',      phase: 'rain',      start: 56,  end: 80,  desc: 'First decent rain. Fungi appear overnight.', signals: ['rainfall >15mm/wk','iNat fungi spike','soil rehydrating'] },
+  { name: 'Leaf turn begins',        phase: 'fruiting',  start: 81,  end: 105, desc: 'Liquidambars colour. Deciduous canopy thinning.', signals: ['NDVI dropping','leaf litter increase','robins arrive'] },
+  { name: 'Cold ground, green grass',phase: 'growth',    start: 106, end: 140, desc: 'Grass greening while air cools. Winter growth starts.', signals: ['soil temp <14°','NDVI rising','grass height +'] },
+  { name: 'Frost window',            phase: 'dormancy',  start: 141, end: 180, desc: 'Coldest mornings. Bare branches. Wattlebirds vocal.', signals: ['min temp <4°','frost days','earliest sunrise'] },
+  { name: 'Wattle ignition',         phase: 'flowering', start: 181, end: 210, desc: 'Acacia blooms sweep across the hills. Pollen surge.', signals: ['wattle flowering','pollen high','day length +2min/wk'] },
+  { name: 'Magpie nesting',          phase: 'awakening', start: 211, end: 240, desc: 'Magpies swoop. Daphne scent. First warm afternoon.', signals: ['magpie aggression','soil warming','UV climbing'] },
+  { name: 'Spring surge',            phase: 'growth',    start: 241, end: 275, desc: 'Everything flowering at once. Canopy filling fast.', signals: ['NDVI peak rise','insect counts up','max species diversity'] },
+  { name: 'Jacaranda signal',        phase: 'flowering', start: 276, end: 305, desc: 'Jacarandas and silky oaks. Heat building.', signals: ['jacaranda bloom','UV >8','soil drying begins'] },
+  { name: 'Dry heat onset',          phase: 'drying',    start: 306, end: 340, desc: 'Fire weather awareness. Grass curing. Cicadas begin.', signals: ['grass cure >60%','fire danger days','evaporation spike'] },
+  { name: 'Solstice glare',          phase: 'dormancy',  start: 341, end: 366, desc: 'Longest days. Harsh light. Gardens retreat.', signals: ['max day length','UV peak','bird bath visits up'] },
+];
+
+const years = [
+  { year: 2023, offset: () => Math.floor(Math.random()*13)-6 },
+  { year: 2024, offset: () => Math.floor(Math.random()*11)-5 },
+  { year: 2025, offset: () => Math.floor(Math.random()*9)-4 },
+  { year: 2026, offset: () => 0 },
+];
+
+const observations = [
+  { doy: 42, year: 2025, text: 'First morning I could see my breath' },
+  { doy: 58, year: 2024, text: 'Mushrooms appeared on the elm stump overnight' },
+  { doy: 88, year: 2025, text: 'Liquidambars on our street turning' },
+  { doy: 185, year: 2024, text: 'Wattle exploding along the creek path' },
+  { doy: 215, year: 2025, text: 'Swooped twice on the school run' },
+  { doy: doy, year: 2026, text: 'Recording now...' },
+];
+
+const yearOffsets = years.map(y => {
+  const seed = y.year;
+  return microseasons.map((ms,i) => {
+    const x = Math.sin(seed * 13 + i * 7) * 10;
+    return Math.round(x);
+  });
+});
+
+const canvas = document.getElementById('core');
+const ctx = canvas.getContext('2d');
+const W = 680, CX = W/2, CY = W/2;
+const innerR = 80, outerR = 300;
+const ringGap = 3;
+const ringW = (outerR - innerR - ringGap * (years.length - 1)) / years.length;
+
+function isDark() {
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+function getColor(phase, mode) {
+  const p = palette[phase];
+  if (mode === 'fill') return isDark() ? p.d : p.l;
+  if (mode === 'stroke') return p.m;
+  if (mode === 'text') return isDark() ? p.l : p.d;
+  return p.m;
+}
+
+function doyToAngle(d) {
+  return ((d - 1) / 365) * Math.PI * 2 - Math.PI / 2;
+}
+
+function drawArc(cx, cy, r, w, startDoy, endDoy, phase, alpha) {
+  const a1 = doyToAngle(startDoy);
+  const a2 = doyToAngle(endDoy);
+  ctx.beginPath();
+  ctx.arc(cx, cy, r + w, a1, a2);
+  ctx.arc(cx, cy, r, a2, a1, true);
+  ctx.closePath();
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = getColor(phase, 'fill');
+  ctx.fill();
+  ctx.strokeStyle = getColor(phase, 'stroke');
+  ctx.lineWidth = 0.5;
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+}
+
+function drawObservation(cx, cy, r, w, d) {
+  const a = doyToAngle(d);
+  const ri = r + w * 0.2;
+  const ro = r + w * 0.8;
+  ctx.beginPath();
+  ctx.moveTo(cx + Math.cos(a) * ri, cy + Math.sin(a) * ri);
+  ctx.lineTo(cx + Math.cos(a) * ro, cy + Math.sin(a) * ro);
+  ctx.strokeStyle = isDark() ? '#F5C4B3' : '#993C1D';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+function getCurrentMicroseason() {
+  return microseasons.find(ms => doy >= ms.start && doy <= ms.end);
+}
+
+function wrapText(text, maxChars) {
+  const words = text.split(' ');
+  const lines = [];
+  let line = '';
+  words.forEach(w => {
+    if ((line + ' ' + w).trim().length > maxChars) {
+      lines.push(line.trim());
+      line = w;
+    } else {
+      line = (line + ' ' + w).trim();
+    }
+  });
+  if (line) lines.push(line);
+  return lines;
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, W);
+
+  for (let m = 0; m < 12; m++) {
+    const mDoy = Math.floor((m / 12) * 365) + 1;
+    const a = doyToAngle(mDoy);
+    const r1 = outerR + 8;
+    const r2 = outerR + 14;
+    ctx.beginPath();
+    ctx.moveTo(CX + Math.cos(a) * r1, CY + Math.sin(a) * r1);
+    ctx.lineTo(CX + Math.cos(a) * r2, CY + Math.sin(a) * r2);
+    ctx.strokeStyle = isDark() ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)';
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+    const tx = CX + Math.cos(a) * (outerR + 24);
+    const ty = CY + Math.sin(a) * (outerR + 24);
+    ctx.fillStyle = isDark() ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)';
+    ctx.font = '11px system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(MONTHS[m], tx, ty);
+  }
+
+  for (let yi = 0; yi < years.length; yi++) {
+    const ringIdx = years.length - 1 - yi;
+    const r = innerR + ringIdx * (ringW + ringGap);
+    const alpha = 0.5 + (yi / (years.length - 1)) * 0.5;
+
+    for (let si = 0; si < microseasons.length; si++) {
+      const ms = microseasons[si];
+      const off = yearOffsets[yi][si];
+      drawArc(CX, CY, r, ringW, ms.start + off, ms.end + off, ms.phase, alpha);
+    }
+
+    observations.filter(o => o.year === years[yi].year).forEach(o => {
+      drawObservation(CX, CY, r, ringW, o.doy);
+    });
+  }
+
+  const nowAngle = doyToAngle(doy);
+  ctx.beginPath();
+  ctx.moveTo(CX + Math.cos(nowAngle) * (innerR - 10), CY + Math.sin(nowAngle) * (innerR - 10));
+  ctx.lineTo(CX + Math.cos(nowAngle) * (outerR + 4), CY + Math.sin(nowAngle) * (outerR + 4));
+  ctx.strokeStyle = isDark() ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 3]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.beginPath();
+  ctx.arc(CX + Math.cos(nowAngle) * (outerR + 4), CY + Math.sin(nowAngle) * (outerR + 4), 3, 0, Math.PI * 2);
+  ctx.fillStyle = isDark() ? '#F5C4B3' : '#993C1D';
+  ctx.fill();
+
+  const cur = getCurrentMicroseason();
+  if (cur) {
+    ctx.fillStyle = isDark() ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.75)';
+    ctx.font = '500 13px system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const lines = wrapText(cur.name, 12);
+    lines.forEach((line, i) => {
+      ctx.fillText(line, CX, CY - 8 + i * 16);
+    });
+    ctx.fillStyle = isDark() ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)';
+    ctx.font = '11px system-ui, sans-serif';
+    ctx.fillText('day ' + doy + ' of 365', CX, CY + lines.length * 16 - 4);
+  }
+}
+
+function updateSidebar() {
+  const cur = getCurrentMicroseason();
+  if (!cur) return;
+  document.getElementById('now-name').textContent = cur.name;
+  document.getElementById('now-desc').textContent = cur.desc;
+
+  const si = microseasons.indexOf(cur);
+  const shift = yearOffsets[yearOffsets.length - 1][si];
+  const prevShift = yearOffsets[yearOffsets.length - 2][si];
+  const diff = shift - prevShift;
+  const shiftEl = document.getElementById('now-shift');
+  if (diff > 0) {
+    shiftEl.innerHTML = '<span style="color:#BA7517;">' + Math.abs(diff) + ' days later than 2025</span>';
+  } else if (diff < 0) {
+    shiftEl.innerHTML = '<span style="color:#378ADD;">' + Math.abs(diff) + ' days earlier than 2025</span>';
+  } else {
+    shiftEl.innerHTML = '<span style="opacity:0.6;">On schedule with 2025</span>';
+  }
+
+  const phases = [...new Set(microseasons.map(m => m.phase))];
+  document.getElementById('legend').innerHTML = phases.map(p =>
+    '<div style="display:flex;align-items:center;gap:6px;">' +
+    '<div style="width:10px;height:10px;border-radius:2px;background:' + getColor(p, 'stroke') + ';"></div>' +
+    '<span>' + p + '</span></div>'
+  ).join('');
+
+  document.getElementById('year-labels').innerHTML = years.map((y, i) => {
+    const opacity = 0.5 + (i / (years.length - 1)) * 0.5;
+    return '<span style="opacity:' + opacity + ';">' + y.year + (i === years.length - 1 ? ' (innermost)' : i === 0 ? ' (outermost)' : '') + '</span>';
+  }).join('<br>');
+}
+
+canvas.addEventListener('mousemove', function(e) {
+  const rect = canvas.getBoundingClientRect();
+  const scale = W / rect.width;
+  const mx = (e.clientX - rect.left) * scale;
+  const my = (e.clientY - rect.top) * scale;
+  const dx = mx - CX, dy = my - CY;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  let hovDoy = Math.round(((Math.atan2(dy, dx) + Math.PI/2) / (Math.PI*2)) * 365);
+  if (hovDoy <= 0) hovDoy += 365;
+
+  const tip = document.getElementById('tooltip');
+
+  if (dist >= innerR && dist <= outerR) {
+    const ringIdx = Math.floor((dist - innerR) / (ringW + ringGap));
+    const yearIdx = years.length - 1 - ringIdx;
+    if (yearIdx >= 0 && yearIdx < years.length) {
+      const yr = years[yearIdx];
+      const ms = microseasons.find(m => {
+        const off = yearOffsets[yearIdx][microseasons.indexOf(m)];
+        return hovDoy >= m.start + off && hovDoy <= m.end + off;
+      });
+      if (ms) {
+        const obs = observations.filter(o => o.year === yr.year && o.doy >= ms.start - 10 && o.doy <= ms.end + 10);
+        let html = '<div style="font-weight:500;margin-bottom:4px;">' + ms.name + '</div>';
+        html += '<div style="opacity:0.6;margin-bottom:4px;">' + yr.year + ' &middot; day ' + hovDoy + '</div>';
+        html += '<div style="opacity:0.6;font-size:12px;">' + ms.signals.join(' &middot; ') + '</div>';
+        if (obs.length) {
+          html += '<div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(128,128,128,0.2);font-size:12px;color:#378ADD;">';
+          obs.forEach(o => { html += '&ldquo;' + o.text + '&rdquo;<br>'; });
+          html += '</div>';
+        }
+        tip.innerHTML = html;
+        tip.style.display = 'block';
+        tip.style.left = Math.min(e.clientX - rect.left + 12, rect.width - 240) + 'px';
+        tip.style.top = (e.clientY - rect.top - 20) + 'px';
+        return;
+      }
+    }
+  }
+  tip.style.display = 'none';
+});
+
+canvas.addEventListener('mouseleave', () => {
+  document.getElementById('tooltip').style.display = 'none';
+});
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { draw(); updateSidebar(); });
+
+draw();
+updateSidebar();
+</script>
+</body>
+</html>
