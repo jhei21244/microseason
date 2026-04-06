@@ -714,7 +714,7 @@ const defaultSeasons = [
   { name: 'Solstice glare', phase: 'dormancy', start: 341, end: 366 },
 ];
 
-function drawCoreSample() {
+async function drawCoreSample() {
   const canvas = document.getElementById('core-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
@@ -724,6 +724,12 @@ function drawCoreSample() {
 
   const today = new Date();
   const doy = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
+
+  // Fetch real data
+  let coreData = null;
+  try {
+    coreData = await fetch('/api/core-sample').then(r => r.json());
+  } catch (e) { console.error('Failed to load core sample data:', e); }
 
   ctx.clearRect(0, 0, W, W);
 
@@ -740,22 +746,97 @@ function drawCoreSample() {
     ctx.fillText(MONTHS[m], tx, ty);
   }
 
-  // Draw single ring with microseasons
+  // Outer ring: template microseasons (ecological phases)
   const ringW = outerR - innerR;
+  const templateR = outerR - ringW * 0.4; // outer 40% = template seasons
   for (const ms of defaultSeasons) {
     const a1 = ((ms.start - 1) / 365) * Math.PI * 2 - Math.PI / 2;
     const a2 = ((ms.end) / 365) * Math.PI * 2 - Math.PI / 2;
     const p = palette[ms.phase] || palette.transition;
-
     ctx.beginPath();
     ctx.arc(CX, CY, outerR, a1, a2);
-    ctx.arc(CX, CY, innerR, a2, a1, true);
+    ctx.arc(CX, CY, templateR, a2, a1, true);
     ctx.closePath();
     ctx.fillStyle = p.l;
     ctx.fill();
     ctx.strokeStyle = p.m;
     ctx.lineWidth = 0.5;
     ctx.stroke();
+  }
+
+  // Inner ring: real temperature data as colour gradient
+  if (coreData && coreData.weather && coreData.weather.length > 0) {
+    const temps = coreData.weather.filter(w => w.mean_temp != null);
+    const minT = Math.min(...temps.map(w => w.mean_temp));
+    const maxT = Math.max(...temps.map(w => w.mean_temp));
+    const range = maxT - minT || 1;
+
+    for (const w of temps) {
+      const d = new Date(w.date);
+      const wDoy = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
+      const a1 = ((wDoy - 1) / 365) * Math.PI * 2 - Math.PI / 2;
+      const a2 = ((wDoy) / 365) * Math.PI * 2 - Math.PI / 2;
+
+      // Temperature to colour: cold=blue, mild=green, hot=orange
+      const t = (w.mean_temp - minT) / range;
+      let r, g, b;
+      if (t < 0.33) {
+        r = 100; g = 140 + t * 200; b = 220 - t * 100;
+      } else if (t < 0.66) {
+        r = 100 + (t - 0.33) * 400; g = 200; b = 150 - (t - 0.33) * 200;
+      } else {
+        r = 230; g = 200 - (t - 0.66) * 300; b = 80;
+      }
+
+      ctx.beginPath();
+      ctx.arc(CX, CY, templateR - 2, a1, a2);
+      ctx.arc(CX, CY, innerR, a2, a1, true);
+      ctx.closePath();
+      ctx.fillStyle = `rgba(${Math.round(r)},${Math.round(g)},${Math.round(b)},0.6)`;
+      ctx.fill();
+    }
+  }
+
+  // Mark detected transitions as radial lines
+  if (coreData && coreData.microseasons) {
+    for (const ms of coreData.microseasons) {
+      if (!ms.start_date) continue;
+      const d = new Date(ms.start_date);
+      const msDoy = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
+      const a = ((msDoy - 1) / 365) * Math.PI * 2 - Math.PI / 2;
+
+      ctx.beginPath();
+      ctx.moveTo(CX + Math.cos(a) * innerR, CY + Math.sin(a) * innerR);
+      ctx.lineTo(CX + Math.cos(a) * outerR, CY + Math.sin(a) * outerR);
+      ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Small label
+      const lx = CX + Math.cos(a) * (outerR + 8);
+      const ly = CY + Math.sin(a) * (outerR + 8);
+      ctx.fillStyle = 'rgba(0,0,0,0.4)';
+      ctx.font = '9px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('▸', lx, ly);
+    }
+  }
+
+  // Personal observation ticks
+  if (coreData && coreData.observations) {
+    for (const obs of coreData.observations) {
+      const d = new Date(obs.date);
+      const oDoy = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
+      const a = ((oDoy - 1) / 365) * Math.PI * 2 - Math.PI / 2;
+      const ri = innerR + ringW * 0.15;
+      const ro = innerR + ringW * 0.45;
+      ctx.beginPath();
+      ctx.moveTo(CX + Math.cos(a) * ri, CY + Math.sin(a) * ri);
+      ctx.lineTo(CX + Math.cos(a) * ro, CY + Math.sin(a) * ro);
+      ctx.strokeStyle = '#993C1D';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
   }
 
   // Now needle

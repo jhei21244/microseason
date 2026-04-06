@@ -112,8 +112,11 @@ class NatureCollector:
 
                 if len(results) < 200:
                     break
+                if params["page"] >= 40:
+                    print(f"    → capping at page 40 to avoid rate limit")
+                    break
                 params["page"] += 1
-                _time.sleep(INAT_RATE_LIMIT)
+                _time.sleep(INAT_RATE_LIMIT * 2)  # 2s between pages for backfill
 
             print(f"    → {chunk_total} observations")
             current_start = current_end + timedelta(days=1)
