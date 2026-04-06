@@ -171,6 +171,37 @@ def create_app(db_path: str | None = None) -> FastAPI:
         transitions = detector.run_and_store(lookback)
         return transitions
 
+    # ── ClimateWatch phenology ──────────────────────────────
+
+    @app.get("/api/phenology/recent")
+    async def phenology_recent(months: int = 3):
+        """Recent ClimateWatch phenological observations near Melbourne."""
+        conn = db.connect()
+        rows = conn.execute(
+            """SELECT common_name, taxon_name, iconic_taxon, observed_on, observer
+               FROM species_observations
+               WHERE source = 'gbif' AND observed_on IS NOT NULL
+               ORDER BY observed_on DESC LIMIT 50"""
+        ).fetchall()
+        return [dict(r) for r in rows]
+
+    @app.get("/api/phenology/calendar")
+    async def phenology_calendar():
+        """Species first-observation dates by month — the phenological calendar."""
+        conn = db.connect()
+        rows = conn.execute(
+            """SELECT common_name, taxon_name, iconic_taxon,
+                      MIN(observed_on) as first_seen,
+                      MAX(observed_on) as last_seen,
+                      COUNT(*) as total_obs
+               FROM species_observations
+               WHERE common_name IS NOT NULL AND observed_on IS NOT NULL
+               GROUP BY taxon_name
+               HAVING total_obs >= 3
+               ORDER BY first_seen"""
+        ).fetchall()
+        return [dict(r) for r in rows]
+
     # ── Signal field ───────────────────────────────────────
 
     @app.get("/api/signals")

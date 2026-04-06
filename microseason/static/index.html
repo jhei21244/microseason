@@ -464,6 +464,40 @@ body {
         </div>
       </div>
 
+      <div class="section-title">Environmental Conditions</div>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-label">Soil Temperature</div>
+          <div class="card-value" id="soil-temp-value">--<span class="card-unit">°C</span></div>
+          <div class="card-detail" id="soil-temp-detail">surface (0cm)</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Soil Moisture</div>
+          <div class="card-value" id="soil-moisture-value">--<span class="card-unit">m³/m³</span></div>
+          <div class="card-detail" id="soil-moisture-detail">top 1cm</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Cloud Cover</div>
+          <div class="card-value" id="cloud-value">--<span class="card-unit">%</span></div>
+          <div class="card-detail" id="cloud-detail"></div>
+        </div>
+        <div class="card">
+          <div class="card-label">Pressure</div>
+          <div class="card-value" id="pressure-value">--<span class="card-unit">hPa</span></div>
+          <div class="card-detail" id="pressure-detail"></div>
+        </div>
+        <div class="card">
+          <div class="card-label">Wind</div>
+          <div class="card-value" id="wind-value">--<span class="card-unit">km/h</span></div>
+          <div class="card-detail" id="wind-detail"></div>
+        </div>
+        <div class="card">
+          <div class="card-label">Humidity</div>
+          <div class="card-value" id="humidity-value">--<span class="card-unit">%</span></div>
+          <div class="card-detail" id="humidity-detail"></div>
+        </div>
+      </div>
+
       <div class="section-title">Biotic Activity — Last 7 Days</div>
       <div class="species-grid" id="species-grid"></div>
 
@@ -589,6 +623,11 @@ body {
 
       <div class="section-title">Monthly Breakdown</div>
       <div class="card-grid" id="monthly-cards"></div>
+
+      <div class="section-title">Phenological Calendar — First Observation Dates</div>
+      <div class="core-section" style="padding:16px;max-height:400px;overflow-y:auto;">
+        <div id="phenology-calendar" style="font-size:12px;"></div>
+      </div>
     </div>
   </main>
 
@@ -717,6 +756,32 @@ function renderDashboard(d) {
   document.getElementById('rain-value').innerHTML =
     `${d.signals?.rain_7d_total ?? '--'}<span class="card-unit">mm</span>`;
   document.getElementById('rain-detail').textContent = '7-day total';
+
+  // Environmental conditions
+  if (w.soil_temp_0cm != null) {
+    document.getElementById('soil-temp-value').innerHTML = `${w.soil_temp_0cm.toFixed(1)}<span class="card-unit">°C</span>`;
+  }
+  if (w.soil_moisture_0_1cm != null) {
+    document.getElementById('soil-moisture-value').innerHTML = `${w.soil_moisture_0_1cm.toFixed(3)}<span class="card-unit">m³/m³</span>`;
+  }
+  if (w.cloud_cover != null) {
+    document.getElementById('cloud-value').innerHTML = `${Math.round(w.cloud_cover)}<span class="card-unit">%</span>`;
+    document.getElementById('cloud-detail').textContent = w.cloud_cover > 70 ? 'Overcast' : w.cloud_cover > 30 ? 'Partly cloudy' : 'Clear';
+  }
+  if (w.pressure != null) {
+    document.getElementById('pressure-value').innerHTML = `${Math.round(w.pressure)}<span class="card-unit">hPa</span>`;
+    document.getElementById('pressure-detail').textContent = w.pressure > 1020 ? 'High pressure' : w.pressure < 1010 ? 'Low pressure' : 'Normal';
+  }
+  if (w.wind_speed != null) {
+    document.getElementById('wind-value').innerHTML = `${w.wind_speed.toFixed(0)}<span class="card-unit">km/h</span>`;
+    const dirs = ['N','NE','E','SE','S','SW','W','NW'];
+    if (w.wind_direction != null) {
+      document.getElementById('wind-detail').textContent = dirs[Math.round(w.wind_direction / 45) % 8];
+    }
+  }
+  if (w.humidity != null) {
+    document.getElementById('humidity-value').innerHTML = `${Math.round(w.humidity)}<span class="card-unit">%</span>`;
+  }
 
   // Species pulse
   const grid = document.getElementById('species-grid');
@@ -1053,17 +1118,19 @@ async function drawCoreSample() {
 
 async function loadComparison() {
   try {
-    const [temps, species, transitions, daylen] = await Promise.all([
+    const [temps, species, transitions, daylen, phenology] = await Promise.all([
       fetch('/api/yoy/temperature').then(r => r.json()),
       fetch('/api/yoy/species').then(r => r.json()),
       fetch('/api/yoy/transitions').then(r => r.json()),
       fetch('/api/yoy/day-length').then(r => r.json()),
+      fetch('/api/phenology/calendar').then(r => r.json()),
     ]);
     drawTempChart(temps);
     drawDayLenChart(daylen);
     drawSpeciesChart(species);
     renderTransitions(transitions);
     renderMonthlyCards(temps);
+    renderPhenologyCalendar(phenology);
   } catch (err) { console.error('Comparison load failed:', err); }
 }
 
@@ -1307,6 +1374,50 @@ function renderMonthlyCards(temps) {
       <div class="card-detail">${d.coldest?.toFixed(0) ?? '--'}° – ${d.hottest?.toFixed(0) ?? '--'}° | ${d.total_rain?.toFixed(0) ?? 0}mm rain</div>
     </div>
   `).join('');
+}
+
+function renderPhenologyCalendar(data) {
+  const el = document.getElementById('phenology-calendar');
+  if (!data || !data.length) {
+    el.innerHTML = '<div style="color:var(--on-surface-faint);">No phenological records yet.</div>';
+    return;
+  }
+
+  // Group by month of first observation
+  const months = {};
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  for (const sp of data.slice(0, 200)) {
+    if (!sp.first_seen) continue;
+    const m = parseInt(sp.first_seen.slice(5, 7)) - 1;
+    if (!months[m]) months[m] = [];
+    months[m].push(sp);
+  }
+
+  const taxonIcons = {
+    'Aves': '🐦', 'Plantae': '🌿', 'Insecta': '🦋', 'Fungi': '🍄',
+    'Mammalia': '🦘', 'Reptilia': '🦎', 'Amphibia': '🐸',
+    'Magnoliopsida': '🌸', 'Arachnida': '🕷',
+  };
+
+  let html = '';
+  for (let m = 0; m < 12; m++) {
+    const species = months[m];
+    if (!species || !species.length) continue;
+    html += `<div style="margin-bottom:16px;">`;
+    html += `<div style="font-weight:600;font-size:13px;margin-bottom:6px;color:var(--primary);">${monthNames[m]}</div>`;
+    html += `<div style="display:flex;flex-wrap:wrap;gap:4px;">`;
+    for (const sp of species.slice(0, 15)) {
+      const icon = taxonIcons[sp.iconic_taxon] || '•';
+      const name = sp.common_name || sp.taxon_name || '?';
+      html += `<span style="padding:3px 8px;background:var(--surface-low);border-radius:4px;font-size:11px;" title="${sp.taxon_name} — first seen ${sp.first_seen}, ${sp.total_obs} observations">${icon} ${name}</span>`;
+    }
+    if (species.length > 15) {
+      html += `<span style="padding:3px 8px;font-size:11px;color:var(--on-surface-faint);">+${species.length - 15} more</span>`;
+    }
+    html += `</div></div>`;
+  }
+
+  el.innerHTML = html || '<div style="color:var(--on-surface-faint);">No phenological records.</div>';
 }
 
 // ── Init ──
