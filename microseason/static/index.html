@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microseason</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #17341c;
+  --primary-container: #2D4B31;
+  --surface: #faf9f5;
+  --surface-low: #f4f4ef;
+  --surface-container: #eeeeea;
+  --surface-high: #e3e3de;
+  --on-surface: #1a1c1a;
+  --on-surface-dim: #5a615c;
+  --on-surface-faint: #8a918c;
+  --primary-fixed: #c8ecc8;
+  --outline-variant: #c2c8bf;
+  --error: #9e422c;
+  --green-accent: #47664a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: var(--surface);
+  color: var(--on-surface);
+  line-height: 1.6;
+}
+
+/* ── Layout ── */
+.app {
+  display: grid;
+  grid-template-columns: 220px 1fr 280px;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  background: var(--surface-low);
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.logo {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.logo-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--on-surface-faint);
+  margin-bottom: 24px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--on-surface-dim);
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+
+.nav-item:hover { background: var(--surface-container); }
+.nav-item.active {
+  background: var(--primary-fixed);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.nav-icon { font-size: 16px; opacity: 0.7; }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+.sync-btn {
+  width: 100%;
+  padding: 10px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.sync-btn:hover { opacity: 0.85; }
+
+.db-stats {
+  margin-top: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  color: var(--on-surface-faint);
+  line-height: 1.8;
+}
+
+/* ── Main content ── */
+.main {
+  padding: 32px 40px;
+  overflow-y: auto;
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: var(--on-surface-dim);
+  margin-bottom: 32px;
+  max-width: 600px;
+}
+
+.page-date {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--on-surface-faint);
+  margin-bottom: 8px;
+}
+
+/* ── Cards ── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.card {
+  background: var(--surface-low);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.card-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--on-surface-faint);
+  margin-bottom: 6px;
+}
+
+.card-value {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.card-unit {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--on-surface-dim);
+}
+
+.card-detail {
+  font-size: 12px;
+  color: var(--on-surface-dim);
+  margin-top: 4px;
+}
+
+.trend-up { color: #b45309; }
+.trend-down { color: #1d71b8; }
+.trend-neutral { color: var(--on-surface-faint); }
+
+/* ── Species pulse ── */
+.section-title {
+  font-size: 11px;
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--on-surface-faint);
+  margin-bottom: 12px;
+  margin-top: 24px;
+}
+
+.species-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px;
+}
+
+.species-card {
+  background: var(--surface-low);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.species-taxon {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.species-count {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.species-detail {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  color: var(--on-surface-faint);
+}
+
+/* ── Core sample ── */
+.core-section {
+  margin-top: 32px;
+  background: var(--surface-low);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.core-wrap {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+#core-canvas {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  cursor: crosshair;
+}
+
+#core-tooltip {
+  position: absolute;
+  display: none;
+  background: white;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  pointer-events: none;
+  max-width: 240px;
+  z-index: 10;
+  box-shadow: 0 4px 24px rgba(26, 28, 26, 0.08);
+}
+
+/* ── Right panel ── */
+.right-panel {
+  background: var(--surface-low);
+  padding: 24px 16px;
+  overflow-y: auto;
+}
+
+.season-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+
+.phase-cooling { background: #dbeafe; color: #1e40af; }
+.phase-dormancy { background: #fef3c7; color: #92400e; }
+.phase-awakening { background: #d1fae5; color: #065f46; }
+.phase-flowering { background: #fce7f3; color: #9d174d; }
+.phase-growth { background: #d1fae5; color: #065f46; }
+.phase-fruiting { background: #fed7aa; color: #9a3412; }
+.phase-drying { background: #fef3c7; color: #78350f; }
+.phase-rain { background: #e0e7ff; color: #3730a3; }
+.phase-transition { background: var(--surface-container); color: var(--on-surface-dim); }
+
+.right-section {
+  margin-bottom: 20px;
+}
+
+.right-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--on-surface-faint);
+  margin-bottom: 8px;
+}
+
+.right-value {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.right-detail {
+  font-size: 12px;
+  color: var(--on-surface-dim);
+  line-height: 1.5;
+}
+
+.observation-form {
+  margin-top: 16px;
+}
+
+.obs-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--surface-container);
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--on-surface);
+  resize: vertical;
+  min-height: 60px;
+  outline: none;
+}
+
+.obs-input:focus {
+  outline: 2px solid var(--primary);
+}
+
+.obs-submit {
+  margin-top: 8px;
+  padding: 8px 16px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.obs-list {
+  margin-top: 12px;
+}
+
+.obs-item {
+  padding: 8px 0;
+  font-size: 12px;
+  color: var(--on-surface-dim);
+  line-height: 1.5;
+}
+
+.obs-item-date {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  color: var(--on-surface-faint);
+}
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar, .right-panel { display: none; }
+}
+
+/* ── Page visibility ── */
+.page { display: none; }
+.page.active { display: block; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="logo">Microseason</div>
+    <div class="logo-sub">Melbourne, Australia</div>
+
+    <button class="nav-item active" data-page="dashboard"><span class="nav-icon">◉</span> Dashboard</button>
+    <button class="nav-item" data-page="observations"><span class="nav-icon">◎</span> Observations</button>
+    <button class="nav-item" data-page="core-sample"><span class="nav-icon">◍</span> Core Sample</button>
+
+    <div class="sidebar-footer">
+      <button class="sync-btn" onclick="syncData()">Sync Field Data</button>
+      <div class="db-stats" id="db-stats"></div>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <main class="main">
+    <!-- Dashboard page -->
+    <div class="page active" id="page-dashboard">
+      <p class="page-date" id="current-date"></p>
+      <h1 class="page-title" id="season-name">Loading...</h1>
+      <p class="page-subtitle" id="season-desc"></p>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-label">Air Temperature</div>
+          <div class="card-value" id="temp-value">--<span class="card-unit">°C</span></div>
+          <div class="card-detail" id="temp-detail"></div>
+        </div>
+        <div class="card">
+          <div class="card-label">Day Length</div>
+          <div class="card-value" id="daylen-value">--<span class="card-unit">h</span></div>
+          <div class="card-detail" id="daylen-detail"></div>
+        </div>
+        <div class="card">
+          <div class="card-label">UV Index</div>
+          <div class="card-value" id="uv-value">--</div>
+          <div class="card-detail" id="uv-detail"></div>
+        </div>
+        <div class="card">
+          <div class="card-label">Rain (7 day)</div>
+          <div class="card-value" id="rain-value">--<span class="card-unit">mm</span></div>
+          <div class="card-detail" id="rain-detail"></div>
+        </div>
+      </div>
+
+      <div class="section-title">Biotic Activity — Last 7 Days</div>
+      <div class="species-grid" id="species-grid"></div>
+
+      <div class="section-title">Signal Field</div>
+      <div class="card-grid" id="signal-cards"></div>
+    </div>
+
+    <!-- Observations page -->
+    <div class="page" id="page-observations">
+      <p class="page-date">Observation Log</p>
+      <h1 class="page-title">Field Notes</h1>
+      <p class="page-subtitle">Personal phenological observations. What you notice that no sensor can capture.</p>
+      <div id="obs-log-list"></div>
+    </div>
+
+    <!-- Core Sample page -->
+    <div class="page" id="page-core-sample">
+      <p class="page-date">Ecological Time</p>
+      <h1 class="page-title">Core Sample</h1>
+      <p class="page-subtitle">A cross-section of the year. Each ring is a year of observation. Colour maps to ecological phase.</p>
+      <div class="core-section">
+        <div class="core-wrap" style="position:relative;">
+          <canvas id="core-canvas" width="600" height="600"></canvas>
+          <div id="core-tooltip"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Right panel -->
+  <aside class="right-panel">
+    <div class="right-section">
+      <div class="right-label">Current Phase</div>
+      <div id="phase-badge"></div>
+      <div class="right-value" id="right-season-name">--</div>
+      <div class="right-detail" id="right-season-desc"></div>
+    </div>
+
+    <div class="right-section">
+      <div class="right-label">Temperature Trend</div>
+      <div class="right-value" id="right-temp-trend">--</div>
+    </div>
+
+    <div class="right-section">
+      <div class="right-label">Species This Week</div>
+      <div class="right-value" id="right-species-count">--</div>
+      <div class="right-detail" id="right-species-detail"></div>
+    </div>
+
+    <div class="right-section">
+      <div class="right-label">Record an Observation</div>
+      <div class="observation-form">
+        <textarea class="obs-input" id="obs-note" placeholder="The liquidambars on our street are turning..."></textarea>
+        <button class="obs-submit" onclick="submitObservation()">Record Observation</button>
+      </div>
+    </div>
+
+    <div class="right-section">
+      <div class="right-label">Recent Observations</div>
+      <div class="obs-list" id="obs-list"></div>
+    </div>
+  </aside>
+</div>
+
+<script>
+// ── State ──
+let state = {};
+
+// ── Navigation ──
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + btn.dataset.page).classList.add('active');
+    if (btn.dataset.page === 'core-sample') drawCoreSample();
+    if (btn.dataset.page === 'observations') loadObservations();
+  });
+});
+
+// ── Load data ──
+async function loadDashboard() {
+  try {
+    const [now, stats, observations] = await Promise.all([
+      fetch('/api/now').then(r => r.json()),
+      fetch('/api/stats').then(r => r.json()),
+      fetch('/api/observations').then(r => r.json()),
+    ]);
+
+    state = { now, stats, observations };
+    renderDashboard(now);
+    renderStats(stats);
+    renderObservationsList(observations);
+  } catch (err) {
+    console.error('Failed to load:', err);
+  }
+}
+
+function renderDashboard(d) {
+  const today = new Date().toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  document.getElementById('current-date').textContent = today;
+
+  // Season
+  const season = d.active_microseasons?.[0];
+  if (season) {
+    document.getElementById('season-name').textContent = season.name;
+    document.getElementById('season-desc').textContent = season.description || '';
+    document.getElementById('right-season-name').textContent = season.name;
+    document.getElementById('right-season-desc').textContent = season.description || '';
+    const phase = season.phase || 'transition';
+    document.getElementById('phase-badge').innerHTML =
+      `<span class="season-badge phase-${phase}">${phase}</span>`;
+  } else {
+    document.getElementById('season-name').textContent = 'Observing...';
+    document.getElementById('season-desc').textContent = 'Collecting signals. Transitions will appear as patterns emerge.';
+    document.getElementById('phase-badge').innerHTML =
+      '<span class="season-badge phase-transition">sensing</span>';
+  }
+
+  // Weather cards
+  const w = d.weather || {};
+  document.getElementById('temp-value').innerHTML =
+    `${w.min_temp ?? '--'}° / ${w.max_temp ?? '--'}°<span class="card-unit">C</span>`;
+  const trend = d.signals?.temp_7d_trend;
+  if (trend != null) {
+    const cls = trend > 0 ? 'trend-up' : trend < 0 ? 'trend-down' : 'trend-neutral';
+    const arrow = trend > 0 ? '↑' : trend < 0 ? '↓' : '→';
+    document.getElementById('temp-detail').innerHTML =
+      `<span class="${cls}">${arrow} ${Math.abs(trend).toFixed(1)}° vs last week</span>`;
+    document.getElementById('right-temp-trend').innerHTML =
+      `<span class="${cls}">${arrow} ${Math.abs(trend).toFixed(1)}° per week</span>`;
+  }
+
+  const a = d.astronomy || {};
+  if (a.day_length_seconds) {
+    const h = Math.floor(a.day_length_seconds / 3600);
+    const m = Math.floor((a.day_length_seconds % 3600) / 60);
+    document.getElementById('daylen-value').innerHTML =
+      `${h}<span class="card-unit">h</span> ${m}<span class="card-unit">m</span>`;
+    const dlChange = d.signals?.day_length_change;
+    if (dlChange != null) {
+      const minChange = Math.round(dlChange / 60);
+      document.getElementById('daylen-detail').textContent =
+        `${minChange > 0 ? '+' : ''}${minChange}min vs last week`;
+    }
+  }
+
+  document.getElementById('uv-value').textContent = d.signals?.uv_7d_avg ?? '--';
+  document.getElementById('uv-detail').textContent = '7-day average';
+
+  document.getElementById('rain-value').innerHTML =
+    `${d.signals?.rain_7d_total ?? '--'}<span class="card-unit">mm</span>`;
+  document.getElementById('rain-detail').textContent = '7-day total';
+
+  // Species pulse
+  const grid = document.getElementById('species-grid');
+  const taxonLabels = {
+    'Aves': 'Birds', 'Plantae': 'Plants', 'Insecta': 'Insects',
+    'Mammalia': 'Mammals', 'Fungi': 'Fungi', 'Reptilia': 'Reptiles',
+    'Amphibia': 'Frogs', 'Magnoliopsida': 'Flowering Plants',
+  };
+  grid.innerHTML = (d.species_pulse || []).slice(0, 6).map(sp => `
+    <div class="species-card">
+      <div class="species-taxon">${taxonLabels[sp.taxon] || sp.taxon || 'Other'}</div>
+      <div class="species-count">${sp.observations.toLocaleString()}</div>
+      <div class="species-detail">${sp.species} species observed</div>
+    </div>
+  `).join('');
+
+  // Signal field
+  const signals = d.signals || {};
+  const signalCards = document.getElementById('signal-cards');
+  const signalDefs = [
+    { key: 'temp_7d_avg', label: 'Temp (7d avg)', unit: '°C' },
+    { key: 'temp_7d_trend', label: 'Temp trend', unit: '°C/wk' },
+    { key: 'rain_7d_total', label: 'Rain (7d)', unit: 'mm' },
+    { key: 'uv_7d_avg', label: 'UV (7d avg)', unit: '' },
+    { key: 'species_diversity_7d', label: 'Species diversity', unit: 'species' },
+    { key: 'soil_temp_trend', label: 'Soil temp trend', unit: '°C' },
+  ];
+  signalCards.innerHTML = signalDefs.map(s => `
+    <div class="card">
+      <div class="card-label">${s.label}</div>
+      <div class="card-value">${signals[s.key] != null ? signals[s.key] : '--'}<span class="card-unit">${s.unit}</span></div>
+    </div>
+  `).join('');
+
+  // Right panel species
+  const totalObs = (d.species_pulse || []).reduce((s, p) => s + p.observations, 0);
+  const totalSp = (d.species_pulse || []).reduce((s, p) => s + p.species, 0);
+  document.getElementById('right-species-count').textContent = totalSp + ' species';
+  document.getElementById('right-species-detail').textContent = totalObs + ' observations this week';
+}
+
+function renderStats(stats) {
+  const el = document.getElementById('db-stats');
+  const c = stats.row_counts || {};
+  el.innerHTML = [
+    `${c.daily_weather || 0} days weather`,
+    `${c.astronomy || 0} days astronomy`,
+    `${(c.species_observations || 0).toLocaleString()} species obs`,
+    `${c.microseasons || 0} transitions`,
+  ].join('<br>');
+}
+
+function renderObservationsList(obs) {
+  const el = document.getElementById('obs-list');
+  el.innerHTML = (obs || []).slice(0, 10).map(o => `
+    <div class="obs-item">
+      <div class="obs-item-date">${o.date}</div>
+      ${o.note}
+    </div>
+  `).join('') || '<div class="obs-item" style="opacity:0.5;">No observations yet.</div>';
+}
+
+async function loadObservations() {
+  const obs = await fetch('/api/observations').then(r => r.json());
+  const el = document.getElementById('obs-log-list');
+  el.innerHTML = (obs || []).map(o => `
+    <div style="padding:12px 0;border-bottom:1px solid var(--surface-container);">
+      <div style="font-family:Inter,sans-serif;font-size:11px;color:var(--on-surface-faint);">${o.date}${o.tags ? ' — ' + o.tags : ''}</div>
+      <div style="font-size:14px;margin-top:4px;">${o.note}</div>
+    </div>
+  `).join('') || '<p style="color:var(--on-surface-faint);">No observations recorded yet. Use the panel on the right to add your first.</p>';
+}
+
+async function submitObservation() {
+  const note = document.getElementById('obs-note').value.trim();
+  if (!note) return;
+  const today = new Date().toISOString().slice(0, 10);
+  await fetch('/api/observations', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ date: today, note }),
+  });
+  document.getElementById('obs-note').value = '';
+  const obs = await fetch('/api/observations').then(r => r.json());
+  renderObservationsList(obs);
+}
+
+async function syncData() {
+  const btn = document.querySelector('.sync-btn');
+  btn.textContent = 'Syncing...';
+  btn.disabled = true;
+  try {
+    await fetch('/api/microseasons/detect?lookback=90');
+    await loadDashboard();
+  } finally {
+    btn.textContent = 'Sync Field Data';
+    btn.disabled = false;
+  }
+}
+
+// ── Core Sample ──
+const palette = {
+  dormancy:  { l: '#FAEEDA', m: '#EF9F27' },
+  awakening: { l: '#EAF3DE', m: '#97C459' },
+  flowering: { l: '#FBEAF0', m: '#ED93B1' },
+  growth:    { l: '#E1F5EE', m: '#5DCAA5' },
+  fruiting:  { l: '#FAECE7', m: '#F0997B' },
+  drying:    { l: '#FAEEDA', m: '#FAC775' },
+  cooling:   { l: '#E6F1FB', m: '#85B7EB' },
+  rain:      { l: '#EEEDFE', m: '#AFA9EC' },
+  transition:{ l: '#f0f0ec', m: '#aaa' },
+};
+
+// Default microseasons from the design template
+const defaultSeasons = [
+  { name: 'Deep summer stillness', phase: 'dormancy', start: 1, end: 35 },
+  { name: 'First cool exhale', phase: 'cooling', start: 36, end: 55 },
+  { name: 'Autumn fungi flush', phase: 'rain', start: 56, end: 80 },
+  { name: 'Leaf turn begins', phase: 'fruiting', start: 81, end: 105 },
+  { name: 'Cold ground, green grass', phase: 'growth', start: 106, end: 140 },
+  { name: 'Frost window', phase: 'dormancy', start: 141, end: 180 },
+  { name: 'Wattle ignition', phase: 'flowering', start: 181, end: 210 },
+  { name: 'Magpie nesting', phase: 'awakening', start: 211, end: 240 },
+  { name: 'Spring surge', phase: 'growth', start: 241, end: 275 },
+  { name: 'Jacaranda signal', phase: 'flowering', start: 276, end: 305 },
+  { name: 'Dry heat onset', phase: 'drying', start: 306, end: 340 },
+  { name: 'Solstice glare', phase: 'dormancy', start: 341, end: 366 },
+];
+
+function drawCoreSample() {
+  const canvas = document.getElementById('core-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = 600, CX = W/2, CY = W/2;
+  const innerR = 70, outerR = 260;
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  const today = new Date();
+  const doy = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
+
+  ctx.clearRect(0, 0, W, W);
+
+  // Month labels
+  for (let m = 0; m < 12; m++) {
+    const mDoy = Math.floor((m / 12) * 365) + 1;
+    const a = ((mDoy - 1) / 365) * Math.PI * 2 - Math.PI / 2;
+    const tx = CX + Math.cos(a) * (outerR + 22);
+    const ty = CY + Math.sin(a) * (outerR + 22);
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.font = '11px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(MONTHS[m], tx, ty);
+  }
+
+  // Draw single ring with microseasons
+  const ringW = outerR - innerR;
+  for (const ms of defaultSeasons) {
+    const a1 = ((ms.start - 1) / 365) * Math.PI * 2 - Math.PI / 2;
+    const a2 = ((ms.end) / 365) * Math.PI * 2 - Math.PI / 2;
+    const p = palette[ms.phase] || palette.transition;
+
+    ctx.beginPath();
+    ctx.arc(CX, CY, outerR, a1, a2);
+    ctx.arc(CX, CY, innerR, a2, a1, true);
+    ctx.closePath();
+    ctx.fillStyle = p.l;
+    ctx.fill();
+    ctx.strokeStyle = p.m;
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+  }
+
+  // Now needle
+  const nowAngle = ((doy - 1) / 365) * Math.PI * 2 - Math.PI / 2;
+  ctx.beginPath();
+  ctx.moveTo(CX + Math.cos(nowAngle) * (innerR - 8), CY + Math.sin(nowAngle) * (innerR - 8));
+  ctx.lineTo(CX + Math.cos(nowAngle) * (outerR + 4), CY + Math.sin(nowAngle) * (outerR + 4));
+  ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 3]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.beginPath();
+  ctx.arc(CX + Math.cos(nowAngle) * (outerR + 4), CY + Math.sin(nowAngle) * (outerR + 4), 3, 0, Math.PI * 2);
+  ctx.fillStyle = '#993C1D';
+  ctx.fill();
+
+  // Center label
+  const cur = defaultSeasons.find(ms => doy >= ms.start && doy <= ms.end);
+  if (cur) {
+    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+    ctx.font = '500 14px Plus Jakarta Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(cur.name, CX, CY - 4);
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.font = '11px Inter, sans-serif';
+    ctx.fillText('day ' + doy + ' of 365', CX, CY + 14);
+  }
+}
+
+// ── Init ──
+loadDashboard();
+</script>
+</body>
+</html>
