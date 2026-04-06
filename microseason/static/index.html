@@ -1,1426 +1,349 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="light" lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Microseason</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Microseason — Phenological Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        "primary": "#2D4B31",
+        "on-primary": "#ffffff",
+        "primary-container": "#d0f2d4",
+        "on-primary-container": "#002107",
+        "secondary": "#52634f",
+        "secondary-container": "#d5e8cf",
+        "tertiary": "#38656a",
+        "tertiary-container": "#bbebee",
+        "surface": "#fcfdf6",
+        "on-surface": "#1a1c19",
+        "surface-variant": "#dee5d8",
+        "on-surface-variant": "#42493f",
+        "outline": "#72796e",
+        "background": "#fcfdf6",
+        "surface-container-low": "#f1f4ec",
+        "surface-container": "#ebefe6",
+        "surface-container-high": "#e5e9e0",
+        "surface-container-highest": "#dfe3db",
+        "surface-container-lowest": "#ffffff",
+      },
+      fontFamily: { sans: ["'Plus Jakarta Sans'", "sans-serif"] },
+    },
+  },
+}
+</script>
 <style>
-:root {
-  --primary: #17341c;
-  --primary-container: #2D4B31;
-  --surface: #faf9f5;
-  --surface-low: #f4f4ef;
-  --surface-container: #eeeeea;
-  --surface-high: #e3e3de;
-  --on-surface: #1a1c1a;
-  --on-surface-dim: #5a615c;
-  --on-surface-faint: #8a918c;
-  --primary-fixed: #c8ecc8;
-  --outline-variant: #c2c8bf;
-  --error: #9e422c;
-  --green-accent: #47664a;
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  background: var(--surface);
-  color: var(--on-surface);
-  line-height: 1.6;
-}
-
-/* ── Layout ── */
-.app {
-  display: grid;
-  grid-template-columns: 220px 1fr 280px;
-  min-height: 100vh;
-}
-
-/* ── Sidebar ── */
-.sidebar {
-  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-container) 100%);
-  padding: 24px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.logo {
-  font-size: 18px;
-  font-weight: 700;
-  color: #c8ecc8;
-  margin-bottom: 4px;
-  letter-spacing: -0.02em;
-}
-
-.logo-sub {
-  font-family: 'Inter', sans-serif;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: rgba(200, 236, 200, 0.5);
-  margin-bottom: 24px;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  color: rgba(200, 236, 200, 0.7);
-  cursor: pointer;
-  transition: all 0.15s;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-}
-
-.nav-item:hover { background: rgba(255,255,255,0.08); }
-.nav-item.active {
-  background: rgba(255,255,255,0.12);
-  color: #c8ecc8;
-  font-weight: 600;
-}
-
-.nav-icon { font-size: 16px; opacity: 0.7; }
-
-.sidebar-footer {
-  margin-top: auto;
-  padding-top: 16px;
-}
-
-.sync-btn {
-  width: 100%;
-  padding: 10px;
-  background: rgba(255,255,255,0.12);
-  color: #c8ecc8;
-  border: 1px solid rgba(200,236,200,0.2);
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.sync-btn:hover { background: rgba(255,255,255,0.18); }
-
-.db-stats {
-  margin-top: 12px;
-  font-family: 'Inter', sans-serif;
-  font-size: 10px;
-  color: rgba(200, 236, 200, 0.4);
-  line-height: 1.8;
-}
-
-/* ── Main content ── */
-.main {
-  padding: 32px 48px;
-  overflow-y: auto;
-  background: var(--surface);
-}
-
-.page-title {
-  font-size: 32px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-  margin-bottom: 6px;
-}
-
-.page-subtitle {
-  font-size: 14px;
-  color: var(--on-surface-dim);
-  margin-bottom: 32px;
-  max-width: 600px;
-}
-
-.page-date {
-  font-family: 'Inter', sans-serif;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--on-surface-faint);
-  margin-bottom: 8px;
-}
-
-/* ── Cards ── */
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.card {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 16px;
-}
-
-.card-label {
-  font-family: 'Inter', sans-serif;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--on-surface-faint);
-  margin-bottom: 6px;
-}
-
-.card-value {
-  font-size: 28px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-.card-unit {
-  font-size: 14px;
-  font-weight: 400;
-  color: var(--on-surface-dim);
-}
-
-.card-detail {
-  font-size: 12px;
-  color: var(--on-surface-dim);
-  margin-top: 4px;
-}
-
-.trend-up { color: #b45309; }
-.trend-down { color: #1d71b8; }
-.trend-neutral { color: var(--on-surface-faint); }
-
-/* ── Species pulse ── */
-.section-title {
-  font-size: 11px;
-  font-family: 'Inter', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--on-surface-faint);
-  margin-bottom: 12px;
-  margin-top: 24px;
-}
-
-.species-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 8px;
-}
-
-.species-card {
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 12px;
-}
-
-.species-taxon {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--primary);
-  margin-bottom: 4px;
-}
-
-.species-count {
-  font-size: 22px;
-  font-weight: 600;
-}
-
-.species-detail {
-  font-family: 'Inter', sans-serif;
-  font-size: 10px;
-  color: var(--on-surface-faint);
-}
-
-/* ── Core sample ── */
-.core-section {
-  margin-top: 16px;
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 24px;
-}
-
-.core-wrap {
-  display: flex;
-  gap: 24px;
-  align-items: flex-start;
-}
-
-#core-canvas {
-  width: 100%;
-  max-width: 500px;
-  height: auto;
-  cursor: crosshair;
-}
-
-#core-tooltip {
-  position: absolute;
-  display: none;
-  background: white;
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 12px;
-  pointer-events: none;
-  max-width: 240px;
-  z-index: 10;
-  box-shadow: 0 4px 24px rgba(26, 28, 26, 0.08);
-}
-
-/* ── Right panel ── */
-.right-panel {
-  background: var(--surface-low);
-  padding: 24px 16px;
-  overflow-y: auto;
-}
-
-.season-badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 8px;
-}
-
-.phase-cooling { background: #dbeafe; color: #1e40af; }
-.phase-dormancy { background: #fef3c7; color: #92400e; }
-.phase-awakening { background: #d1fae5; color: #065f46; }
-.phase-flowering { background: #fce7f3; color: #9d174d; }
-.phase-growth { background: #d1fae5; color: #065f46; }
-.phase-fruiting { background: #fed7aa; color: #9a3412; }
-.phase-drying { background: #fef3c7; color: #78350f; }
-.phase-rain { background: #e0e7ff; color: #3730a3; }
-.phase-transition { background: var(--surface-container); color: var(--on-surface-dim); }
-
-.right-section {
-  margin-bottom: 20px;
-}
-
-.right-label {
-  font-family: 'Inter', sans-serif;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--on-surface-faint);
-  margin-bottom: 8px;
-}
-
-.right-value {
-  font-size: 15px;
-  font-weight: 500;
-  margin-bottom: 4px;
-}
-
-.right-detail {
-  font-size: 12px;
-  color: var(--on-surface-dim);
-  line-height: 1.5;
-}
-
-.observation-form {
-  margin-top: 16px;
-}
-
-.obs-input {
-  width: 100%;
-  padding: 10px 12px;
-  background: var(--surface-container);
-  border: none;
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 13px;
-  color: var(--on-surface);
-  resize: vertical;
-  min-height: 60px;
-  outline: none;
-}
-
-.obs-input:focus {
-  outline: 2px solid var(--primary);
-}
-
-.obs-submit {
-  margin-top: 8px;
-  padding: 8px 16px;
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.obs-list {
-  margin-top: 12px;
-}
-
-.obs-item {
-  padding: 8px 0;
-  font-size: 12px;
-  color: var(--on-surface-dim);
-  line-height: 1.5;
-}
-
-.obs-item-date {
-  font-family: 'Inter', sans-serif;
-  font-size: 10px;
-  color: var(--on-surface-faint);
-}
-
-/* ── Responsive ── */
-@media (max-width: 1100px) {
-  .app { grid-template-columns: 1fr; }
-  .sidebar, .right-panel { display: none; }
-}
-
-/* ── Tags & Filters ── */
-.tag-btn {
-  padding: 4px 10px;
-  background: var(--surface-container);
-  border: none;
-  border-radius: 6px;
-  font-family: 'Inter', sans-serif;
-  font-size: 11px;
-  color: var(--on-surface-dim);
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.tag-btn:hover { background: var(--primary-fixed); color: var(--primary); }
-.tag-btn.selected { background: var(--primary-fixed); color: var(--primary); font-weight: 600; }
-
-.filter-btn {
-  padding: 6px 14px;
-  background: var(--surface-low);
-  border: none;
-  border-radius: 20px;
-  font-family: 'Inter', sans-serif;
-  font-size: 11px;
-  color: var(--on-surface-dim);
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.filter-btn:hover { background: var(--surface-container); }
-.filter-btn.active { background: var(--primary); color: white; }
-
-/* ── Page visibility ── */
-.page { display: none; }
-.page.active { display: block; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; }
+  .nav-active { background-color: #2D4B31; color: white; }
+  .nav-hover:hover { background-color: #ebefe6; }
+  .page { display: none; }
+  .page.active { display: block; }
 </style>
 </head>
-<body>
-<div class="app">
-  <!-- Sidebar -->
-  <nav class="sidebar">
-    <div class="logo">Microseason</div>
-    <div class="logo-sub">Melbourne, Australia</div>
+<body class="bg-background text-on-surface antialiased">
 
-    <button class="nav-item active" data-page="dashboard"><span class="nav-icon">◉</span> Dashboard</button>
-    <button class="nav-item" data-page="observations"><span class="nav-icon">◎</span> Observations</button>
-    <button class="nav-item" data-page="core-sample"><span class="nav-icon">◍</span> Core Sample</button>
-    <button class="nav-item" data-page="comparison"><span class="nav-icon">◫</span> Year Comparison</button>
-
-    <div class="sidebar-footer">
-      <button class="sync-btn" onclick="syncData()">Sync Field Data</button>
-      <div class="db-stats" id="db-stats"></div>
-    </div>
+<!-- Sidebar -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-container-low p-6 z-50">
+  <div class="mb-10 px-2">
+    <h1 class="text-primary text-xl font-extrabold tracking-tight">Microseason</h1>
+    <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mt-1">Melbourne, Australia</p>
+  </div>
+  <nav class="flex-grow space-y-1">
+    <button data-page="dashboard" class="flex items-center gap-3 px-4 py-3 nav-active rounded-lg transition-all w-full text-left"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="text-sm font-semibold">Dashboard</span></button>
+    <button data-page="observations" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant nav-hover rounded-lg transition-all w-full text-left"><span class="material-symbols-outlined text-[20px]">event_note</span><span class="text-sm font-semibold">Observations</span></button>
+    <button data-page="new-entry" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant nav-hover rounded-lg transition-all w-full text-left"><span class="material-symbols-outlined text-[20px]">add_circle</span><span class="text-sm font-semibold">New Entry</span></button>
+    <button data-page="comparisons" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant nav-hover rounded-lg transition-all w-full text-left"><span class="material-symbols-outlined text-[20px]">analytics</span><span class="text-sm font-semibold">Comparisons</span></button>
+    <button data-page="core-sample" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant nav-hover rounded-lg transition-all w-full text-left"><span class="material-symbols-outlined text-[20px]">target</span><span class="text-sm font-semibold">Core Sample</span></button>
   </nav>
+  <div class="mt-auto space-y-4">
+    <button onclick="syncData()" class="w-full py-3 px-4 rounded-lg bg-primary text-white text-sm font-bold shadow-sm hover:shadow-md transition-all active:scale-[0.98]">Sync Field Data</button>
+    <div class="text-[10px] font-medium text-on-surface-variant/40 leading-relaxed px-2" id="db-stats"></div>
+  </div>
+</aside>
 
-  <!-- Main content -->
-  <main class="main">
-    <!-- Dashboard page -->
-    <div class="page active" id="page-dashboard">
-      <p class="page-date" id="current-date"></p>
-      <h1 class="page-title" id="season-name">Loading...</h1>
-      <p class="page-subtitle" id="season-desc"></p>
+<!-- Main -->
+<main class="md:ml-64 min-h-screen">
+<header class="flex justify-between items-center w-full px-8 py-4 sticky top-0 bg-background/80 backdrop-blur-md z-40">
+  <div class="flex items-center gap-8">
+    <span class="text-xl font-extrabold text-primary tracking-tight">Phenological Intelligence</span>
+    <nav class="hidden lg:flex gap-6">
+      <a class="text-primary border-b-2 border-primary pb-1 font-bold text-sm" href="#">Field Guide</a>
+      <a class="text-on-surface-variant/70 hover:text-primary transition-colors font-bold text-sm" href="#">Data Exports</a>
+    </nav>
+  </div>
+  <div class="flex items-center gap-4">
+    <span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary text-[22px]">notifications</span>
+    <span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary text-[22px]">settings</span>
+  </div>
+</header>
 
-      <div class="card-grid">
-        <div class="card">
-          <div class="card-label">Air Temperature</div>
-          <div class="card-value" id="temp-value">--<span class="card-unit">°C</span></div>
-          <div class="card-detail" id="temp-detail"></div>
-        </div>
-        <div class="card">
-          <div class="card-label">Day Length</div>
-          <div class="card-value" id="daylen-value">--<span class="card-unit">h</span></div>
-          <div class="card-detail" id="daylen-detail"></div>
-        </div>
-        <div class="card">
-          <div class="card-label">UV Index</div>
-          <div class="card-value" id="uv-value">--</div>
-          <div class="card-detail" id="uv-detail"></div>
-        </div>
-        <div class="card">
-          <div class="card-label">Rain (7 day)</div>
-          <div class="card-value" id="rain-value">--<span class="card-unit">mm</span></div>
-          <div class="card-detail" id="rain-detail"></div>
-        </div>
-      </div>
+<div class="p-8 max-w-7xl mx-auto">
 
-      <div class="section-title">Environmental Conditions</div>
-      <div class="card-grid">
-        <div class="card">
-          <div class="card-label">Soil Temperature</div>
-          <div class="card-value" id="soil-temp-value">--<span class="card-unit">°C</span></div>
-          <div class="card-detail" id="soil-temp-detail">surface (0cm)</div>
-        </div>
-        <div class="card">
-          <div class="card-label">Soil Moisture</div>
-          <div class="card-value" id="soil-moisture-value">--<span class="card-unit">m³/m³</span></div>
-          <div class="card-detail" id="soil-moisture-detail">top 1cm</div>
-        </div>
-        <div class="card">
-          <div class="card-label">Cloud Cover</div>
-          <div class="card-value" id="cloud-value">--<span class="card-unit">%</span></div>
-          <div class="card-detail" id="cloud-detail"></div>
-        </div>
-        <div class="card">
-          <div class="card-label">Pressure</div>
-          <div class="card-value" id="pressure-value">--<span class="card-unit">hPa</span></div>
-          <div class="card-detail" id="pressure-detail"></div>
-        </div>
-        <div class="card">
-          <div class="card-label">Wind</div>
-          <div class="card-value" id="wind-value">--<span class="card-unit">km/h</span></div>
-          <div class="card-detail" id="wind-detail"></div>
-        </div>
-        <div class="card">
-          <div class="card-label">Humidity</div>
-          <div class="card-value" id="humidity-value">--<span class="card-unit">%</span></div>
-          <div class="card-detail" id="humidity-detail"></div>
-        </div>
-      </div>
-
-      <div class="section-title">Biotic Activity — Last 7 Days</div>
-      <div class="species-grid" id="species-grid"></div>
-
-      <div class="section-title">Signal Field</div>
-      <div class="card-grid" id="signal-cards"></div>
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <section class="mb-10 flex flex-col md:flex-row gap-8 items-start md:items-end">
+    <div class="flex-grow">
+      <h2 class="text-4xl md:text-5xl font-extrabold text-on-surface tracking-tight leading-none" id="season-name">Loading...</h2>
+      <p class="text-on-surface-variant/80 max-w-xl mt-4 text-base font-medium leading-relaxed" id="season-desc"></p>
     </div>
-
-    <!-- Observations page -->
-    <div class="page" id="page-observations">
-      <p class="page-date">Observation Log</p>
-      <h1 class="page-title">Field Notes</h1>
-      <p class="page-subtitle">Capture the subtle rhythms of the landscape. Your data contributes to the long-term phenological record.</p>
-
-      <div style="display:grid;grid-template-columns:1fr 320px;gap:24px;margin-top:24px;">
-        <!-- Observation form -->
-        <div class="card" style="padding:24px;">
-          <div class="section-title" style="margin-top:0;">New Observation</div>
-
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-            <div>
-              <label class="card-label" style="display:block;margin-bottom:4px;">Bio-Category</label>
-              <select id="obs-category" style="width:100%;padding:10px 12px;background:var(--surface-container);border:none;border-radius:8px;font-family:inherit;font-size:13px;color:var(--on-surface);outline:none;">
-                <option value="">General</option>
-                <option value="canopy">Canopy & Foliage</option>
-                <option value="bird">Bird Activity</option>
-                <option value="insect">Insect Activity</option>
-                <option value="flowering">Flowering & Fruiting</option>
-                <option value="fungi">Fungi</option>
-                <option value="atmosphere">Atmosphere & Light</option>
-                <option value="water">Water & Moisture</option>
-                <option value="sound">Sound & Acoustic</option>
-                <option value="scent">Scent</option>
-              </select>
-            </div>
-            <div>
-              <label class="card-label" style="display:block;margin-bottom:4px;">Date</label>
-              <input type="date" id="obs-date" style="width:100%;padding:10px 12px;background:var(--surface-container);border:none;border-radius:8px;font-family:inherit;font-size:13px;color:var(--on-surface);outline:none;" />
-            </div>
-          </div>
-
-          <label class="card-label" style="display:block;margin-bottom:4px;">Field Notes</label>
-          <textarea id="obs-note-form" class="obs-input" style="min-height:100px;margin-bottom:16px;" placeholder="Describe the specific state, texture, or environmental context..."></textarea>
-
-          <div style="display:flex;gap:12px;justify-content:flex-end;">
-            <button onclick="document.getElementById('obs-note-form').value=''" style="padding:10px 20px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--on-surface-dim);cursor:pointer;">Discard</button>
-            <button onclick="submitObservationForm()" style="padding:10px 24px;background:var(--primary);color:white;border:none;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">Record Observation</button>
-          </div>
-        </div>
-
-        <!-- Station Insight sidebar -->
-        <div>
-          <div class="card" style="padding:16px;margin-bottom:12px;">
-            <div class="card-label">Station Insight</div>
-            <div style="font-size:13px;color:var(--on-surface-dim);margin-top:6px;line-height:1.6;" id="obs-insight">
-              Your observations build a personal phenological record. Over time, the system will show you how this year's timing compares to previous years.
-            </div>
-          </div>
-          <div class="card" style="padding:16px;">
-            <div class="card-label">Quick Tags</div>
-            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;" id="quick-tags">
-              <button class="tag-btn" onclick="addTag('first sighting')">first sighting</button>
-              <button class="tag-btn" onclick="addTag('flowering')">flowering</button>
-              <button class="tag-btn" onclick="addTag('calling')">calling</button>
-              <button class="tag-btn" onclick="addTag('scent')">scent</button>
-              <button class="tag-btn" onclick="addTag('light change')">light change</button>
-              <button class="tag-btn" onclick="addTag('temperature shift')">temperature shift</button>
-              <button class="tag-btn" onclick="addTag('frost')">frost</button>
-              <button class="tag-btn" onclick="addTag('fungi')">fungi</button>
-            </div>
-          </div>
-        </div>
+    <div class="bg-surface-container px-6 py-4 rounded-2xl flex items-center gap-4">
+      <div class="text-right">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60">Observation Date</p>
+        <p class="text-lg font-extrabold text-on-surface" id="current-date"></p>
       </div>
-
-      <!-- Observation log -->
-      <div class="section-title" style="margin-top:32px;">Recorded Observations</div>
-      <div style="display:flex;gap:8px;margin-bottom:16px;">
-        <button class="filter-btn active" onclick="filterObs(this,'all')">All</button>
-        <button class="filter-btn" onclick="filterObs(this,'canopy')">Canopy</button>
-        <button class="filter-btn" onclick="filterObs(this,'bird')">Birds</button>
-        <button class="filter-btn" onclick="filterObs(this,'flowering')">Flowering</button>
-        <button class="filter-btn" onclick="filterObs(this,'atmosphere')">Atmosphere</button>
-        <button class="filter-btn" onclick="filterObs(this,'scent')">Scent</button>
-      </div>
-      <div id="obs-log-list"></div>
+      <span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings:'FILL' 1;">eco</span>
     </div>
-
-    <!-- Core Sample page -->
-    <div class="page" id="page-core-sample">
-      <p class="page-date">Ecological Time</p>
-      <h1 class="page-title">Core Sample</h1>
-      <p class="page-subtitle">A cross-section of the year. Each ring is a year of observation. Colour maps to ecological phase.</p>
-      <div class="core-section">
-        <div class="core-wrap" style="position:relative;">
-          <canvas id="core-canvas" width="600" height="600"></canvas>
-          <div id="core-tooltip"></div>
-        </div>
+  </section>
+  <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-5">
+    <div class="md:col-span-4 lg:col-span-4 bg-surface-container-lowest rounded-2xl p-8 shadow-sm">
+      <div class="flex justify-between items-start mb-6">
+        <h3 class="text-xl font-extrabold tracking-tight">Phenological Comparison</h3>
+        <span class="px-3 py-1 rounded-full bg-primary-container text-on-primary-container text-[10px] font-bold uppercase tracking-wider" id="anomaly-badge"></span>
+      </div>
+      <div class="flex items-center gap-6 mb-6">
+        <div class="text-6xl font-extrabold text-primary tracking-tighter" id="pheno-metric">--</div>
+        <div><span class="text-primary font-bold text-lg flex items-center gap-1" id="pheno-direction"></span><span class="text-on-surface-variant/60 text-xs font-medium" id="pheno-context"></span></div>
+      </div>
+      <div class="relative h-2.5 bg-surface-container rounded-full overflow-hidden"><div class="absolute left-0 top-0 h-full bg-outline/20" style="width:65%"></div><div class="absolute top-0 h-full w-2.5 bg-primary rounded-full z-10" style="right:20%"></div></div>
+      <p class="text-[11px] font-medium text-on-surface-variant/70 italic mt-3" id="pheno-note"></p>
+    </div>
+    <div class="md:col-span-2 lg:col-span-2 bg-secondary-container/30 rounded-2xl p-6 relative overflow-hidden">
+      <span class="material-symbols-outlined absolute -right-4 -bottom-4 text-8xl opacity-10 text-primary">device_thermostat</span>
+      <div class="relative z-10">
+        <h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary mb-1">Air Temperature</h4>
+        <div class="text-4xl font-extrabold tracking-tight" id="temp-value">--°C</div>
+        <p class="text-xs font-medium text-on-surface-variant/70 mt-2" id="temp-detail"></p>
       </div>
     </div>
-
-    <!-- Year Comparison page -->
-    <div class="page" id="page-comparison">
-      <p class="page-date">Historical Shifts & Yearly Rhythms</p>
-      <h1 class="page-title">Year Comparison</h1>
-      <p class="page-subtitle">How this year's ecological signals compare to the long-term pattern. Where transitions arrived early or late.</p>
-
-      <div class="section-title">Temperature Curve</div>
-      <div class="core-section" style="padding:20px;">
-        <canvas id="temp-chart" width="800" height="280"></canvas>
+    <div class="md:col-span-3 lg:col-span-2 bg-surface-container-low rounded-2xl p-6">
+      <h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-6">Sub-Surface Conditions</h4>
+      <div class="space-y-5">
+        <div class="flex justify-between items-center"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-tertiary-container flex items-center justify-center"><span class="material-symbols-outlined text-[20px]" style="color:#38656a">water_drop</span></div><span class="font-bold text-sm">Moisture</span></div><span class="text-xl font-extrabold" id="soil-moisture">--%</span></div>
+        <div class="flex justify-between items-center"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center"><span class="material-symbols-outlined text-on-primary-container text-[20px]">thermometer_gain</span></div><span class="font-bold text-sm">Temperature</span></div><span class="text-xl font-extrabold" id="soil-temp">--°C</span></div>
       </div>
-
-      <div class="section-title">Day Length Curve</div>
-      <div class="core-section" style="padding:20px;">
-        <canvas id="daylen-chart" width="800" height="200"></canvas>
-      </div>
-
-      <div class="section-title">Detected Transitions</div>
-      <div id="transitions-list"></div>
-
-      <div class="section-title">Monthly Species Diversity</div>
-      <div class="core-section" style="padding:20px;">
-        <canvas id="species-chart" width="800" height="280"></canvas>
-      </div>
-
-      <div class="section-title">Monthly Breakdown</div>
-      <div class="card-grid" id="monthly-cards"></div>
-
-      <div class="section-title">Phenological Calendar — First Observation Dates</div>
-      <div class="core-section" style="padding:16px;max-height:400px;overflow-y:auto;">
-        <div id="phenology-calendar" style="font-size:12px;"></div>
+      <div class="mt-6 pt-4"><p class="text-[11px] text-primary font-bold italic" id="soil-insight"></p></div>
+    </div>
+    <div class="md:col-span-2 lg:col-span-2 bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
+      <h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-4">Conditions</h4>
+      <div class="space-y-3 text-sm">
+        <div class="flex justify-between"><span class="text-on-surface-variant">UV Index</span><span class="font-extrabold" id="uv-value">--</span></div>
+        <div class="flex justify-between"><span class="text-on-surface-variant">Cloud</span><span class="font-extrabold" id="cloud-value">--%</span></div>
+        <div class="flex justify-between"><span class="text-on-surface-variant">Humidity</span><span class="font-extrabold" id="humidity-value">--%</span></div>
+        <div class="flex justify-between"><span class="text-on-surface-variant">Pressure</span><span class="font-extrabold" id="pressure-value">--</span></div>
+        <div class="flex justify-between"><span class="text-on-surface-variant">Wind</span><span class="font-extrabold" id="wind-value">--</span></div>
       </div>
     </div>
-  </main>
-
-  <!-- Right panel -->
-  <aside class="right-panel">
-    <div class="right-section">
-      <div class="right-label">Current Phase</div>
-      <div id="phase-badge"></div>
-      <div class="right-value" id="right-season-name">--</div>
-      <div class="right-detail" id="right-season-desc"></div>
+    <div class="md:col-span-2 lg:col-span-2 bg-surface-container rounded-2xl p-6">
+      <h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-1">Day Length</h4>
+      <div class="text-2xl font-extrabold" id="daylen-value">--</div>
+      <p class="text-xs font-medium text-on-surface-variant/70 mt-1" id="daylen-detail"></p>
     </div>
-
-    <div class="right-section">
-      <div class="right-label">Temperature Trend</div>
-      <div class="right-value" id="right-temp-trend">--</div>
-    </div>
-
-    <div class="right-section">
-      <div class="right-label">Species This Week</div>
-      <div class="right-value" id="right-species-count">--</div>
-      <div class="right-detail" id="right-species-detail"></div>
-    </div>
-
-    <div class="right-section">
-      <div class="right-label">Record an Observation</div>
-      <div class="observation-form">
-        <textarea class="obs-input" id="obs-note" placeholder="The liquidambars on our street are turning..."></textarea>
-        <button class="obs-submit" onclick="submitObservation()">Record Observation</button>
+    <div class="md:col-span-6 lg:col-span-6 mt-4">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-extrabold tracking-tight">Biotic Activity Log</h3>
+        <a class="text-xs font-bold text-primary uppercase tracking-widest hover:underline cursor-pointer" onclick="document.querySelector('[data-page=observations]').click()">View Full Archive</a>
       </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="species-grid"></div>
     </div>
-
-    <div class="right-section">
-      <div class="right-label">Recent Observations</div>
-      <div class="obs-list" id="obs-list"></div>
+    <div class="md:col-span-6 lg:col-span-6 mt-2">
+      <h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-4">Signal Field</h3>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3" id="signal-cards"></div>
     </div>
-  </aside>
+  </div>
 </div>
 
-<script>
-// ── State ──
-let state = {};
+<!-- OBSERVATIONS -->
+<div class="page" id="page-observations">
+  <section class="mb-8 flex justify-between items-start">
+    <div><h2 class="text-4xl font-extrabold tracking-tight">Observation Log</h2><p class="text-on-surface-variant/80 max-w-xl mt-3 text-base font-medium leading-relaxed">Detailed biological event tracking, synchronized with the current phenological cycle.</p></div>
+    <div class="bg-primary rounded-xl px-4 py-2 text-white"><p class="text-[9px] font-bold uppercase tracking-widest opacity-70">Current Phase</p><p class="text-sm font-extrabold" id="obs-phase-label">--</p></div>
+  </section>
+  <div class="flex gap-2 mb-6 flex-wrap">
+    <button class="px-4 py-2 rounded-full bg-primary text-white text-[11px] font-bold" onclick="filterObs(this,'all')">All</button>
+    <button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold hover:bg-surface-container-high" onclick="filterObs(this,'canopy')">Canopy</button>
+    <button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold hover:bg-surface-container-high" onclick="filterObs(this,'bird')">Birds</button>
+    <button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold hover:bg-surface-container-high" onclick="filterObs(this,'flowering')">Flowering</button>
+    <button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold hover:bg-surface-container-high" onclick="filterObs(this,'atmosphere')">Atmosphere</button>
+    <button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold hover:bg-surface-container-high" onclick="filterObs(this,'fungi')">Fungi</button>
+  </div>
+  <div id="obs-log-list" class="space-y-1"></div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-10">
+    <div class="bg-surface-container-low rounded-2xl p-8"><p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60 mb-3">Season Summary</p><h3 class="text-2xl font-extrabold leading-tight" id="season-summary-text">Loading...</h3><p class="text-sm text-on-surface-variant/70 mt-4 leading-relaxed" id="season-summary-detail"></p></div>
+    <div class="bg-surface-container-low rounded-2xl p-8"><p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60 mb-3">Species Diversity</p><div class="text-5xl font-extrabold text-primary tracking-tighter" id="diversity-count">--</div><p class="text-sm text-on-surface-variant/70 mt-2">unique species this week</p></div>
+  </div>
+</div>
 
-// ── Navigation ──
-document.querySelectorAll('.nav-item').forEach(btn => {
+<!-- NEW ENTRY -->
+<div class="page" id="page-new-entry">
+  <h2 class="text-4xl font-extrabold tracking-tight mb-2">New Observation</h2>
+  <p class="text-on-surface-variant/80 max-w-xl text-base font-medium leading-relaxed mb-8">Capture the subtle rhythms of the landscape.</p>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-2 space-y-6">
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-[10px] font-bold uppercase tracking-[0.15em] text-on-surface-variant/60 block mb-2">Bio-Category</label><select id="obs-category" class="w-full px-4 py-3 bg-surface-container-high rounded-xl text-sm font-medium border-none focus:ring-2 focus:ring-primary/30"><option value="">General</option><option value="canopy">Canopy & Foliage</option><option value="bird">Bird Activity</option><option value="insect">Insect Activity</option><option value="flowering">Flowering & Fruiting</option><option value="fungi">Fungi</option><option value="atmosphere">Atmosphere & Light</option><option value="water">Water & Moisture</option><option value="sound">Sound & Acoustic</option><option value="scent">Scent</option></select></div>
+        <div><label class="text-[10px] font-bold uppercase tracking-[0.15em] text-on-surface-variant/60 block mb-2">Date</label><div class="flex gap-2 items-center"><input type="date" id="obs-date" class="flex-1 px-4 py-3 bg-surface-container-high rounded-xl text-sm font-medium border-none focus:ring-2 focus:ring-primary/30"/><span class="px-3 py-3 bg-surface-container rounded-xl text-[11px] font-bold text-on-surface-variant/60" id="obs-doy">DOY --</span></div></div>
+      </div>
+      <div><label class="text-[10px] font-bold uppercase tracking-[0.15em] text-on-surface-variant/60 block mb-2">Field Notes</label><textarea id="obs-note-form" class="w-full px-4 py-3 bg-surface-container-high rounded-xl text-sm font-medium border-none focus:ring-2 focus:ring-primary/30 min-h-[120px] resize-y" placeholder="Describe the specific state, texture, or environmental context..."></textarea></div>
+      <div class="flex justify-end gap-4"><button onclick="document.getElementById('obs-note-form').value=''" class="px-6 py-3 text-sm font-bold text-on-surface-variant">Discard</button><button onclick="submitObservationForm()" class="px-8 py-3 bg-primary text-white rounded-xl text-sm font-bold shadow-sm hover:shadow-md active:scale-[0.98]">Record Observation</button></div>
+    </div>
+    <div class="space-y-6">
+      <div class="bg-surface-container-low rounded-2xl p-6"><h4 class="text-[10px] font-bold uppercase tracking-[0.15em] text-on-surface-variant/60 mb-3">Station Insight</h4><p class="text-sm text-on-surface-variant/80 leading-relaxed" id="station-insight">Your observations build a personal phenological record over time.</p></div>
+      <div class="bg-surface-container-low rounded-2xl p-6"><h4 class="text-[10px] font-bold uppercase tracking-[0.15em] text-on-surface-variant/60 mb-3">Quick Tags</h4><div class="flex flex-wrap gap-2">
+        <button onclick="addTag('first sighting')" class="px-3 py-1.5 bg-surface-container rounded-lg text-[11px] font-medium text-on-surface-variant hover:bg-primary-container hover:text-primary transition-colors">first sighting</button>
+        <button onclick="addTag('flowering')" class="px-3 py-1.5 bg-surface-container rounded-lg text-[11px] font-medium text-on-surface-variant hover:bg-primary-container hover:text-primary transition-colors">flowering</button>
+        <button onclick="addTag('calling')" class="px-3 py-1.5 bg-surface-container rounded-lg text-[11px] font-medium text-on-surface-variant hover:bg-primary-container hover:text-primary transition-colors">calling</button>
+        <button onclick="addTag('scent')" class="px-3 py-1.5 bg-surface-container rounded-lg text-[11px] font-medium text-on-surface-variant hover:bg-primary-container hover:text-primary transition-colors">scent</button>
+        <button onclick="addTag('light change')" class="px-3 py-1.5 bg-surface-container rounded-lg text-[11px] font-medium text-on-surface-variant hover:bg-primary-container hover:text-primary transition-colors">light change</button>
+        <button onclick="addTag('frost')" class="px-3 py-1.5 bg-surface-container rounded-lg text-[11px] font-medium text-on-surface-variant hover:bg-primary-container hover:text-primary transition-colors">frost</button>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPARISONS -->
+<div class="page" id="page-comparisons">
+  <h2 class="text-4xl font-extrabold tracking-tight mb-2">Historical Shifts & Yearly Rhythms</h2>
+  <p class="text-on-surface-variant/80 max-w-xl text-base font-medium leading-relaxed mb-8">How ecological timing shifts across seasons and years.</p>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 space-y-6">
+      <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm"><h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-4">Temperature Curve</h4><canvas id="temp-chart" width="700" height="250"></canvas></div>
+      <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm"><h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-4">Day Length</h4><canvas id="daylen-chart" width="700" height="180"></canvas></div>
+      <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm"><h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-4">Species Diversity</h4><canvas id="species-chart" width="700" height="250"></canvas></div>
+    </div>
+    <div class="space-y-6">
+      <div class="bg-primary rounded-2xl p-6 text-white"><p class="text-[10px] font-bold uppercase tracking-widest opacity-70 mb-3">Trend Analysis</p><h3 class="text-xl font-extrabold leading-tight mb-3" id="trend-headline">Analyzing...</h3><p class="text-sm opacity-80 leading-relaxed" id="trend-detail"></p></div>
+      <div><h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-4">Transitions</h4><div id="transitions-list" class="space-y-2"></div></div>
+    </div>
+  </div>
+  <div class="mt-8"><h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-4">Phenological Calendar</h3><div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm max-h-[400px] overflow-y-auto" id="phenology-calendar"></div></div>
+  <div class="mt-8"><h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-4">Monthly</h3><div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3" id="monthly-cards"></div></div>
+</div>
+
+<!-- CORE SAMPLE -->
+<div class="page" id="page-core-sample">
+  <h2 class="text-4xl font-extrabold tracking-tight mb-2">Core Sample</h2>
+  <p class="text-on-surface-variant/80 max-w-xl text-base font-medium leading-relaxed mb-8">A cross-section of the year. Colour maps to ecological phase.</p>
+  <div class="bg-surface-container-lowest rounded-2xl p-8 shadow-sm inline-block relative"><canvas id="core-canvas" width="600" height="600"></canvas><div id="core-tooltip" class="absolute hidden bg-white/90 backdrop-blur-md rounded-lg px-3 py-2 text-xs pointer-events-none max-w-[220px] z-10 shadow-lg"></div></div>
+</div>
+
+</div>
+</main>
+
+<script>
+document.querySelectorAll('[data-page]').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    document.querySelectorAll('[data-page]').forEach(b => { b.classList.remove('nav-active'); b.classList.add('text-on-surface-variant','nav-hover'); });
+    btn.classList.add('nav-active'); btn.classList.remove('text-on-surface-variant','nav-hover');
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('page-' + btn.dataset.page).classList.add('active');
-    if (btn.dataset.page === 'core-sample') drawCoreSample();
-    if (btn.dataset.page === 'observations') loadObservations();
-    if (btn.dataset.page === 'comparison') loadComparison();
+    document.getElementById('page-'+btn.dataset.page).classList.add('active');
+    if(btn.dataset.page==='core-sample')drawCoreSample();
+    if(btn.dataset.page==='comparisons')loadComparison();
+    if(btn.dataset.page==='observations')loadObservations();
+    if(btn.dataset.page==='new-entry')initNewEntry();
   });
 });
 
-// ── Load data ──
-async function loadDashboard() {
-  try {
-    const [now, stats, observations] = await Promise.all([
-      fetch('/api/now').then(r => r.json()),
-      fetch('/api/stats').then(r => r.json()),
-      fetch('/api/observations').then(r => r.json()),
-    ]);
-
-    state = { now, stats, observations };
-    renderDashboard(now);
-    renderStats(stats);
-    renderObservationsList(observations);
-  } catch (err) {
-    console.error('Failed to load:', err);
-  }
+async function loadDashboard(){
+  try{
+    const[now,stats]=await Promise.all([fetch('/api/now').then(r=>r.json()),fetch('/api/stats').then(r=>r.json())]);
+    renderDashboard(now);renderStats(stats);
+  }catch(e){console.error(e);}
 }
 
-function renderDashboard(d) {
-  const today = new Date().toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  document.getElementById('current-date').textContent = today;
-
-  // Season
-  const season = d.active_microseasons?.[0];
-  if (season) {
-    document.getElementById('season-name').textContent = season.name;
-    document.getElementById('season-desc').textContent = season.description || '';
-    document.getElementById('right-season-name').textContent = season.name;
-    document.getElementById('right-season-desc').textContent = season.description || '';
-    const phase = season.phase || 'transition';
-    document.getElementById('phase-badge').innerHTML =
-      `<span class="season-badge phase-${phase}">${phase}</span>`;
-  } else {
-    document.getElementById('season-name').textContent = 'Observing...';
-    document.getElementById('season-desc').textContent = 'Collecting signals. Transitions will appear as patterns emerge.';
-    document.getElementById('phase-badge').innerHTML =
-      '<span class="season-badge phase-transition">sensing</span>';
+function renderDashboard(d){
+  document.getElementById('current-date').textContent=new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const s=d.active_microseasons?.[0];
+  document.getElementById('season-name').textContent=s?s.name:'Observing...';
+  document.getElementById('season-desc').textContent=s?.description||'Collecting signals. Transitions will appear as patterns emerge.';
+  const sig=d.signals||{};const tr=sig.temp_7d_trend;
+  if(tr!=null){
+    document.getElementById('pheno-metric').innerHTML=`${Math.abs(tr).toFixed(1)}<span class="text-2xl ml-1 font-bold">°C</span>`;
+    document.getElementById('pheno-direction').innerHTML=`<span class="material-symbols-outlined text-[20px]">${tr>0?'arrow_upward':'arrow_downward'}</span>${tr>0?'Warmer':'Cooler'} this week`;
+    document.getElementById('pheno-context').textContent='vs previous 7-day period';
+    document.getElementById('anomaly-badge').textContent=Math.abs(tr)>2?'Significant Shift':'Normal Range';
+    document.getElementById('pheno-note').textContent=tr>0?'Warming trend across multiple signals.':'Cooling pattern — monitoring for transition.';
   }
+  const w=d.weather||{};
+  document.getElementById('temp-value').textContent=`${w.mean_temp?.toFixed(1)??'--'}°C`;
+  document.getElementById('temp-detail').textContent=`Range: ${w.min_temp?.toFixed(1)??'--'}° — ${w.max_temp?.toFixed(1)??'--'}°`;
+  if(w.soil_moisture_0_1cm!=null)document.getElementById('soil-moisture').textContent=`${(w.soil_moisture_0_1cm*100).toFixed(0)}%`;
+  if(w.soil_temp_0cm!=null)document.getElementById('soil-temp').textContent=`${w.soil_temp_0cm.toFixed(1)}°C`;
+  const st=w.soil_temp_0cm;document.getElementById('soil-insight').textContent=st>18?'Warm soil — active microbial activity.':st>12?'Moderate — good root growth conditions.':st>6?'Cool soil — reduced activity.':'Cold — dormant conditions.';
+  if(w.uv_index_max!=null)document.getElementById('uv-value').textContent=w.uv_index_max.toFixed(1);
+  if(w.cloud_cover!=null)document.getElementById('cloud-value').textContent=Math.round(w.cloud_cover)+'%';
+  if(w.humidity!=null)document.getElementById('humidity-value').textContent=Math.round(w.humidity)+'%';
+  if(w.pressure!=null)document.getElementById('pressure-value').textContent=Math.round(w.pressure)+' hPa';
+  if(w.wind_speed!=null)document.getElementById('wind-value').textContent=w.wind_speed.toFixed(0)+' km/h';
+  const a=d.astronomy||{};
+  if(a.day_length_seconds){const h=Math.floor(a.day_length_seconds/3600),m=Math.floor((a.day_length_seconds%3600)/60);document.getElementById('daylen-value').textContent=`${h}h ${m}m`;const dlc=sig.day_length_change;if(dlc!=null)document.getElementById('daylen-detail').textContent=`${dlc>0?'+':''}${Math.round(dlc/60)}min vs last week`;}
+  const tl={Aves:'Birds',Plantae:'Plants',Insecta:'Insects',Fungi:'Fungi',Mammalia:'Mammals',Magnoliopsida:'Flowering Plants'};
+  const ic={Aves:'🐦',Plantae:'🌿',Insecta:'🦋',Fungi:'🍄',Mammalia:'🦘'};
+  document.getElementById('species-grid').innerHTML=(d.species_pulse||[]).slice(0,3).map(sp=>`
+    <div class="bg-surface-container-low rounded-xl p-4 flex gap-4 items-center hover:bg-surface-container transition-colors cursor-pointer">
+      <div class="w-12 h-12 rounded-xl bg-primary-container flex items-center justify-center flex-shrink-0"><span class="text-lg">${ic[sp.taxon]||'🔬'}</span></div>
+      <div><p class="text-[9px] text-on-surface-variant/60 uppercase tracking-[0.15em] font-extrabold">${sp.observations.toLocaleString()} obs</p><p class="font-extrabold text-primary text-sm tracking-tight">${tl[sp.taxon]||sp.taxon||'Other'}</p><p class="text-[11px] font-medium text-on-surface-variant/80">${sp.species} species</p></div>
+    </div>`).join('')+`<div class="border-2 border-dashed border-outline/20 rounded-xl p-4 flex items-center justify-center cursor-pointer hover:border-primary hover:bg-primary/5 transition-all" onclick="document.querySelector('[data-page=new-entry]').click()"><div class="flex items-center gap-2 text-on-surface-variant"><span class="material-symbols-outlined text-[20px]">add_a_photo</span><span class="text-[11px] font-extrabold uppercase tracking-widest">Log New</span></div></div>`;
+  const sd=[{key:'temp_7d_avg',l:'Temp',u:'°C'},{key:'temp_7d_trend',l:'Trend',u:'°C/wk'},{key:'rain_7d_total',l:'Rain',u:'mm'},{key:'uv_7d_avg',l:'UV',u:''},{key:'species_diversity_7d',l:'Species',u:''},{key:'soil_temp_trend',l:'Soil',u:'°C'}];
+  document.getElementById('signal-cards').innerHTML=sd.map(s=>`<div class="bg-surface-container-low rounded-xl p-4"><p class="text-[9px] font-bold uppercase tracking-[0.15em] text-on-surface-variant/60 mb-1">${s.l}</p><p class="text-xl font-extrabold">${sig[s.key]!=null?sig[s.key]:'--'}<span class="text-xs font-medium text-on-surface-variant/60 ml-1">${s.u}</span></p></div>`).join('');
+}
+function renderStats(s){const c=s.row_counts||{};document.getElementById('db-stats').innerHTML=[`${c.daily_weather||0} days weather`,`${(c.species_observations||0).toLocaleString()} species obs`,`${c.microseasons||0} transitions`].join('<br>');}
 
-  // Weather cards
-  const w = d.weather || {};
-  document.getElementById('temp-value').innerHTML =
-    `${w.min_temp ?? '--'}° / ${w.max_temp ?? '--'}°<span class="card-unit">C</span>`;
-  const trend = d.signals?.temp_7d_trend;
-  if (trend != null) {
-    const cls = trend > 0 ? 'trend-up' : trend < 0 ? 'trend-down' : 'trend-neutral';
-    const arrow = trend > 0 ? '↑' : trend < 0 ? '↓' : '→';
-    document.getElementById('temp-detail').innerHTML =
-      `<span class="${cls}">${arrow} ${Math.abs(trend).toFixed(1)}° vs last week</span>`;
-    document.getElementById('right-temp-trend').innerHTML =
-      `<span class="${cls}">${arrow} ${Math.abs(trend).toFixed(1)}° per week</span>`;
-  }
+async function loadObservations(){
+  const[obs,now]=await Promise.all([fetch('/api/observations').then(r=>r.json()),fetch('/api/now').then(r=>r.json())]);
+  const sig=now.signals||{};document.getElementById('obs-phase-label').textContent=now.active_microseasons?.[0]?.phase||'Sensing';
+  document.getElementById('obs-log-list').innerHTML=(obs||[]).map(o=>`<div class="obs-log-item flex items-center gap-4 px-4 py-3 bg-surface-container-lowest rounded-xl hover:bg-surface-container-low transition-colors" data-tags="${o.tags||''}"><div class="w-2 h-2 rounded-full bg-primary flex-shrink-0"></div><div class="flex-grow"><p class="text-sm font-semibold">${o.note}</p></div>${o.tags?`<span class="px-2 py-1 rounded-md bg-primary-container text-on-primary-container text-[9px] font-bold uppercase">${o.tags}</span>`:''}<span class="text-[11px] text-on-surface-variant/60">${o.date}</span></div>`).join('')||'<p class="text-on-surface-variant/60 text-sm italic">No observations yet.</p>';
+  document.getElementById('season-summary-text').textContent=sig.temp_7d_trend>0?`${sig.temp_7d_trend.toFixed(1)}° warmer than last week`:sig.temp_7d_trend<0?`${Math.abs(sig.temp_7d_trend).toFixed(1)}° cooler than last week`:'Stable temperature';
+  document.getElementById('season-summary-detail').textContent=`Rain: ${sig.rain_7d_total??'--'}mm | UV: ${sig.uv_7d_avg??'--'} | Species: ${sig.species_diversity_7d??'--'}`;
+  document.getElementById('diversity-count').textContent=sig.species_diversity_7d??'--';
+}
+function filterObs(btn,cat){btn.parentElement.querySelectorAll('button').forEach(b=>{b.classList.remove('bg-primary','text-white');b.classList.add('bg-surface-container','text-on-surface-variant');});btn.classList.remove('bg-surface-container','text-on-surface-variant');btn.classList.add('bg-primary','text-white');document.querySelectorAll('.obs-log-item').forEach(i=>{i.style.display=(cat==='all'||i.dataset.tags===cat)?'':'none';});}
 
-  const a = d.astronomy || {};
-  if (a.day_length_seconds) {
-    const h = Math.floor(a.day_length_seconds / 3600);
-    const m = Math.floor((a.day_length_seconds % 3600) / 60);
-    document.getElementById('daylen-value').innerHTML =
-      `${h}<span class="card-unit">h</span> ${m}<span class="card-unit">m</span>`;
-    const dlChange = d.signals?.day_length_change;
-    if (dlChange != null) {
-      const minChange = Math.round(dlChange / 60);
-      document.getElementById('daylen-detail').textContent =
-        `${minChange > 0 ? '+' : ''}${minChange}min vs last week`;
-    }
-  }
+function initNewEntry(){document.getElementById('obs-date').value=new Date().toISOString().slice(0,10);updateDOY();document.getElementById('obs-date').addEventListener('change',updateDOY);}
+function updateDOY(){const d=new Date(document.getElementById('obs-date').value);document.getElementById('obs-doy').textContent=`DOY ${Math.floor((d-new Date(d.getFullYear(),0,0))/86400000)}`;}
+async function submitObservationForm(){const n=document.getElementById('obs-note-form').value.trim();if(!n)return;await fetch('/api/observations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({date:document.getElementById('obs-date').value||new Date().toISOString().slice(0,10),note:n,tags:document.getElementById('obs-category').value||null})});document.getElementById('obs-note-form').value='';document.querySelector('[data-page=observations]').click();}
+function addTag(t){const a=document.getElementById('obs-note-form');if(!a.value.includes('#'+t))a.value+=((a.value?' ':'')+('#'+t));}
+async function syncData(){try{await fetch('/api/microseasons/detect?lookback=90');await loadDashboard();}catch(e){}}
 
-  document.getElementById('uv-value').textContent = d.signals?.uv_7d_avg ?? '--';
-  document.getElementById('uv-detail').textContent = '7-day average';
+// Core Sample
+const palette={dormancy:{l:'#FAEEDA',m:'#EF9F27'},awakening:{l:'#EAF3DE',m:'#97C459'},flowering:{l:'#FBEAF0',m:'#ED93B1'},growth:{l:'#E1F5EE',m:'#5DCAA5'},fruiting:{l:'#FAECE7',m:'#F0997B'},drying:{l:'#FAEEDA',m:'#FAC775'},cooling:{l:'#E6F1FB',m:'#85B7EB'},rain:{l:'#EEEDFE',m:'#AFA9EC'},transition:{l:'#f0f0ec',m:'#aaa'}};
+const defaultSeasons=[{name:'Deep summer stillness',phase:'dormancy',start:1,end:35},{name:'First cool exhale',phase:'cooling',start:36,end:55},{name:'Autumn fungi flush',phase:'rain',start:56,end:80},{name:'Leaf turn begins',phase:'fruiting',start:81,end:105},{name:'Cold ground, green grass',phase:'growth',start:106,end:140},{name:'Frost window',phase:'dormancy',start:141,end:180},{name:'Wattle ignition',phase:'flowering',start:181,end:210},{name:'Magpie nesting',phase:'awakening',start:211,end:240},{name:'Spring surge',phase:'growth',start:241,end:275},{name:'Jacaranda signal',phase:'flowering',start:276,end:305},{name:'Dry heat onset',phase:'drying',start:306,end:340},{name:'Solstice glare',phase:'dormancy',start:341,end:366}];
 
-  document.getElementById('rain-value').innerHTML =
-    `${d.signals?.rain_7d_total ?? '--'}<span class="card-unit">mm</span>`;
-  document.getElementById('rain-detail').textContent = '7-day total';
-
-  // Environmental conditions
-  if (w.soil_temp_0cm != null) {
-    document.getElementById('soil-temp-value').innerHTML = `${w.soil_temp_0cm.toFixed(1)}<span class="card-unit">°C</span>`;
-  }
-  if (w.soil_moisture_0_1cm != null) {
-    document.getElementById('soil-moisture-value').innerHTML = `${w.soil_moisture_0_1cm.toFixed(3)}<span class="card-unit">m³/m³</span>`;
-  }
-  if (w.cloud_cover != null) {
-    document.getElementById('cloud-value').innerHTML = `${Math.round(w.cloud_cover)}<span class="card-unit">%</span>`;
-    document.getElementById('cloud-detail').textContent = w.cloud_cover > 70 ? 'Overcast' : w.cloud_cover > 30 ? 'Partly cloudy' : 'Clear';
-  }
-  if (w.pressure != null) {
-    document.getElementById('pressure-value').innerHTML = `${Math.round(w.pressure)}<span class="card-unit">hPa</span>`;
-    document.getElementById('pressure-detail').textContent = w.pressure > 1020 ? 'High pressure' : w.pressure < 1010 ? 'Low pressure' : 'Normal';
-  }
-  if (w.wind_speed != null) {
-    document.getElementById('wind-value').innerHTML = `${w.wind_speed.toFixed(0)}<span class="card-unit">km/h</span>`;
-    const dirs = ['N','NE','E','SE','S','SW','W','NW'];
-    if (w.wind_direction != null) {
-      document.getElementById('wind-detail').textContent = dirs[Math.round(w.wind_direction / 45) % 8];
-    }
-  }
-  if (w.humidity != null) {
-    document.getElementById('humidity-value').innerHTML = `${Math.round(w.humidity)}<span class="card-unit">%</span>`;
-  }
-
-  // Species pulse
-  const grid = document.getElementById('species-grid');
-  const taxonLabels = {
-    'Aves': 'Birds', 'Plantae': 'Plants', 'Insecta': 'Insects',
-    'Mammalia': 'Mammals', 'Fungi': 'Fungi', 'Reptilia': 'Reptiles',
-    'Amphibia': 'Frogs', 'Magnoliopsida': 'Flowering Plants',
-  };
-  grid.innerHTML = (d.species_pulse || []).slice(0, 6).map(sp => `
-    <div class="species-card">
-      <div class="species-taxon">${taxonLabels[sp.taxon] || sp.taxon || 'Other'}</div>
-      <div class="species-count">${sp.observations.toLocaleString()}</div>
-      <div class="species-detail">${sp.species} species observed</div>
-    </div>
-  `).join('');
-
-  // Signal field
-  const signals = d.signals || {};
-  const signalCards = document.getElementById('signal-cards');
-  const signalDefs = [
-    { key: 'temp_7d_avg', label: 'Temp (7d avg)', unit: '°C' },
-    { key: 'temp_7d_trend', label: 'Temp trend', unit: '°C/wk' },
-    { key: 'rain_7d_total', label: 'Rain (7d)', unit: 'mm' },
-    { key: 'uv_7d_avg', label: 'UV (7d avg)', unit: '' },
-    { key: 'species_diversity_7d', label: 'Species diversity', unit: 'species' },
-    { key: 'soil_temp_trend', label: 'Soil temp trend', unit: '°C' },
-  ];
-  signalCards.innerHTML = signalDefs.map(s => `
-    <div class="card">
-      <div class="card-label">${s.label}</div>
-      <div class="card-value">${signals[s.key] != null ? signals[s.key] : '--'}<span class="card-unit">${s.unit}</span></div>
-    </div>
-  `).join('');
-
-  // Right panel species
-  const totalObs = (d.species_pulse || []).reduce((s, p) => s + p.observations, 0);
-  const totalSp = (d.species_pulse || []).reduce((s, p) => s + p.species, 0);
-  document.getElementById('right-species-count').textContent = totalSp + ' species';
-  document.getElementById('right-species-detail').textContent = totalObs + ' observations this week';
+async function drawCoreSample(){
+  const canvas=document.getElementById('core-canvas');if(!canvas)return;
+  const ctx=canvas.getContext('2d'),W=600,CX=W/2,CY=W/2,innerR=70,outerR=260;
+  const MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const today=new Date(),doy=Math.floor((today-new Date(today.getFullYear(),0,0))/86400000);
+  let cd=null;try{cd=await fetch('/api/core-sample').then(r=>r.json());}catch(e){}
+  ctx.clearRect(0,0,W,W);
+  for(let m=0;m<12;m++){const a=((Math.floor((m/12)*365))/365)*Math.PI*2-Math.PI/2;ctx.fillStyle='rgba(0,0,0,0.3)';ctx.font="11px 'Inter',sans-serif";ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(MO[m],CX+Math.cos(a)*(outerR+22),CY+Math.sin(a)*(outerR+22));}
+  const rW=outerR-innerR,tR=outerR-rW*0.4;
+  for(const ms of defaultSeasons){const a1=((ms.start-1)/365)*Math.PI*2-Math.PI/2,a2=(ms.end/365)*Math.PI*2-Math.PI/2,p=palette[ms.phase];ctx.beginPath();ctx.arc(CX,CY,outerR,a1,a2);ctx.arc(CX,CY,tR,a2,a1,true);ctx.closePath();ctx.fillStyle=p.l;ctx.fill();ctx.strokeStyle=p.m;ctx.lineWidth=0.5;ctx.stroke();}
+  if(cd?.weather?.length){const ts=cd.weather.filter(w=>w.mean_temp!=null),mn=Math.min(...ts.map(w=>w.mean_temp)),mx=Math.max(...ts.map(w=>w.mean_temp)),rg=mx-mn||1;for(const w of ts){const d=new Date(w.date),wd=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000),a1=((wd-1)/365)*Math.PI*2-Math.PI/2,a2=(wd/365)*Math.PI*2-Math.PI/2,t=(w.mean_temp-mn)/rg;let r,g,b;if(t<.33){r=100;g=140+t*200;b=220-t*100;}else if(t<.66){r=100+(t-.33)*400;g=200;b=150-(t-.33)*200;}else{r=230;g=200-(t-.66)*300;b=80;}ctx.beginPath();ctx.arc(CX,CY,tR-2,a1,a2);ctx.arc(CX,CY,innerR,a2,a1,true);ctx.closePath();ctx.fillStyle=`rgba(${Math.round(r)},${Math.round(g)},${Math.round(b)},0.6)`;ctx.fill();}}
+  if(cd?.microseasons){for(const ms of cd.microseasons){if(!ms.start_date)continue;const d=new Date(ms.start_date),md=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000),a=((md-1)/365)*Math.PI*2-Math.PI/2;ctx.beginPath();ctx.moveTo(CX+Math.cos(a)*innerR,CY+Math.sin(a)*innerR);ctx.lineTo(CX+Math.cos(a)*outerR,CY+Math.sin(a)*outerR);ctx.strokeStyle='rgba(0,0,0,0.3)';ctx.lineWidth=1.5;ctx.stroke();}}
+  const na=((doy-1)/365)*Math.PI*2-Math.PI/2;ctx.beginPath();ctx.moveTo(CX+Math.cos(na)*(innerR-8),CY+Math.sin(na)*(innerR-8));ctx.lineTo(CX+Math.cos(na)*(outerR+4),CY+Math.sin(na)*(outerR+4));ctx.strokeStyle='rgba(0,0,0,0.5)';ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);ctx.beginPath();ctx.arc(CX+Math.cos(na)*(outerR+4),CY+Math.sin(na)*(outerR+4),3,0,Math.PI*2);ctx.fillStyle='#993C1D';ctx.fill();
+  const cur=defaultSeasons.find(ms=>doy>=ms.start&&doy<=ms.end);if(cur){ctx.fillStyle='rgba(0,0,0,0.7)';ctx.font="500 14px 'Plus Jakarta Sans',sans-serif";ctx.textAlign='center';ctx.fillText(cur.name,CX,CY-4);ctx.fillStyle='rgba(0,0,0,0.3)';ctx.font="11px 'Inter',sans-serif";ctx.fillText('day '+doy+' of 365',CX,CY+14);}
 }
 
-function renderStats(stats) {
-  const el = document.getElementById('db-stats');
-  const c = stats.row_counts || {};
-  el.innerHTML = [
-    `${c.daily_weather || 0} days weather`,
-    `${c.astronomy || 0} days astronomy`,
-    `${(c.species_observations || 0).toLocaleString()} species obs`,
-    `${c.microseasons || 0} transitions`,
-  ].join('<br>');
+// Comparisons
+async function loadComparison(){
+  try{const[t,s,tr,dl,ph]=await Promise.all([fetch('/api/yoy/temperature').then(r=>r.json()),fetch('/api/yoy/species').then(r=>r.json()),fetch('/api/yoy/transitions').then(r=>r.json()),fetch('/api/yoy/day-length').then(r=>r.json()),fetch('/api/phenology/calendar').then(r=>r.json())]);
+  drawTempChart(t);drawDLChart(dl);drawSpChart(s);renderTrans(tr);renderMonth(t);renderPheno(ph);
+  if(tr.length){const c=tr.filter(x=>x.phase==='cooling').length,w=tr.filter(x=>x.phase==='awakening'||x.phase==='growth').length;document.getElementById('trend-headline').textContent=`${tr.length} transitions detected`;document.getElementById('trend-detail').textContent=`${c} cooling, ${w} warming/growth events across 11 signal channels.`;}
+  }catch(e){console.error(e);}
 }
+function drawTempChart(data){const c=document.getElementById('temp-chart');if(!c)return;const x=c.getContext('2d'),W=c.width,H=c.height,p={l:50,r:20,t:20,b:30},cw=W-p.l-p.r,ch=H-p.t-p.b;x.clearRect(0,0,W,H);const aT=data.flatMap(d=>[d.coldest,d.hottest]).filter(v=>v!=null),mn=Math.min(...aT),mx=Math.max(...aT),rg=mx-mn||1;x.fillStyle='#72796e';x.font="10px 'Inter',sans-serif";x.textAlign='right';for(let i=0;i<=4;i++){const v=mn+(rg/4)*i,y=p.t+ch-(i/4)*ch;x.fillText(v.toFixed(0)+'°',p.l-8,y+3);x.beginPath();x.moveTo(p.l,y);x.lineTo(W-p.r,y);x.strokeStyle='rgba(0,0,0,0.05)';x.lineWidth=0.5;x.stroke();}x.beginPath();data.forEach((d,i)=>{const px=p.l+(i/(data.length-1))*cw,py=p.t+ch-((d.hottest-mn)/rg)*ch;i===0?x.moveTo(px,py):x.lineTo(px,py);});for(let i=data.length-1;i>=0;i--){const px=p.l+(i/(data.length-1))*cw,py=p.t+ch-((data[i].coldest-mn)/rg)*ch;x.lineTo(px,py);}x.closePath();x.fillStyle='rgba(45,75,49,0.08)';x.fill();x.beginPath();data.forEach((d,i)=>{const px=p.l+(i/(data.length-1))*cw,py=p.t+ch-((d.avg_temp-mn)/rg)*ch;i===0?x.moveTo(px,py):x.lineTo(px,py);});x.strokeStyle='#2D4B31';x.lineWidth=2.5;x.stroke();x.fillStyle='#72796e';x.textAlign='center';data.forEach((d,i)=>{x.fillText(d.month.slice(5),p.l+(i/(data.length-1))*cw,H-8);});}
+function drawDLChart(data){const c=document.getElementById('daylen-chart');if(!c)return;const x=c.getContext('2d'),W=c.width,H=c.height,p={l:50,r:20,t:10,b:20},cw=W-p.l-p.r,ch=H-p.t-p.b;x.clearRect(0,0,W,H);const v=data.map(d=>d.minutes).filter(v=>v!=null);if(!v.length)return;const mn=Math.min(...v),mx=Math.max(...v),rg=mx-mn||1;x.beginPath();data.forEach((d,i)=>{if(d.minutes==null)return;const px=p.l+(i/(data.length-1))*cw,py=p.t+ch-((d.minutes-mn)/rg)*ch;i===0?x.moveTo(px,py):x.lineTo(px,py);});x.strokeStyle='#85B7EB';x.lineWidth=2;x.stroke();x.lineTo(p.l+cw,p.t+ch);x.lineTo(p.l,p.t+ch);x.closePath();x.fillStyle='rgba(133,183,235,0.08)';x.fill();}
+function drawSpChart(data){const c=document.getElementById('species-chart');if(!c)return;const x=c.getContext('2d'),W=c.width,H=c.height,p={l:50,r:20,t:30,b:30},cw=W-p.l-p.r,ch=H-p.t-p.b;x.clearRect(0,0,W,H);const cl={b:'#97C459',p:'#5DCAA5',i:'#EF9F27',f:'#AFA9EC'};const ms=Math.max(...data.map(d=>d.unique_species||0))||1;const bW=Math.max(8,(cw/data.length)-4);data.forEach((d,i)=>{const bx=p.l+(i/data.length)*cw+2,sg=[{v:d.bird_species||0,c:cl.b},{v:d.plant_species||0,c:cl.p},{v:d.insect_species||0,c:cl.i},{v:d.fungi_species||0,c:cl.f}],sT=sg.reduce((s,g)=>s+g.v,0)||1,bH=((d.unique_species||0)/ms)*ch;let yO=0;sg.forEach(g=>{const sH=(g.v/sT)*bH;x.fillStyle=g.c;x.fillRect(bx,p.t+ch-yO-sH,bW,sH);yO+=sH;});x.fillStyle='#72796e';x.font="10px 'Inter',sans-serif";x.textAlign='center';x.fillText(d.month.slice(5),bx+bW/2,H-8);});let lx=p.l;[['Birds',cl.b],['Plants',cl.p],['Insects',cl.i],['Fungi',cl.f]].forEach(([l,c])=>{x.fillStyle=c;x.fillRect(lx,p.t-16,10,10);x.fillStyle='#72796e';x.font="10px 'Inter',sans-serif";x.textAlign='left';x.fillText(l,lx+14,p.t-7);lx+=70;});}
+function renderTrans(tr){const el=document.getElementById('transitions-list');const pc={cooling:'bg-blue-100 text-blue-800',dormancy:'bg-amber-100 text-amber-800',awakening:'bg-green-100 text-green-800',growth:'bg-emerald-100 text-emerald-800',flowering:'bg-pink-100 text-pink-800',drying:'bg-orange-100 text-orange-800',rain:'bg-indigo-100 text-indigo-800',transition:'bg-gray-100 text-gray-600'};el.innerHTML=tr.slice(0,10).map(t=>`<div class="bg-surface-container-lowest rounded-xl p-4 shadow-sm"><div class="flex items-center gap-2 mb-1"><span class="px-2 py-0.5 rounded-md ${pc[t.phase]||pc.transition} text-[9px] font-bold uppercase">${t.phase}</span><span class="text-[11px] text-on-surface-variant/60">${t.start_date}</span></div><p class="text-sm font-semibold">${t.name}</p></div>`).join('')||'<p class="text-sm text-on-surface-variant/60">None yet.</p>';}
+function renderMonth(t){document.getElementById('monthly-cards').innerHTML=t.map(d=>`<div class="bg-surface-container-lowest rounded-xl p-4 shadow-sm"><p class="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant/60 mb-1">${d.month}</p><p class="text-xl font-extrabold">${d.avg_temp?.toFixed(1)??'--'}°</p><p class="text-[11px] text-on-surface-variant/60">${d.coldest?.toFixed(0)??'--'}°–${d.hottest?.toFixed(0)??'--'}° | ${d.total_rain?.toFixed(0)??0}mm</p></div>`).join('');}
+function renderPheno(data){const el=document.getElementById('phenology-calendar');if(!data?.length){el.innerHTML='<p class="text-sm text-on-surface-variant/60">No records.</p>';return;}const mo={},mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];const ic={Aves:'🐦',Plantae:'🌿',Insecta:'🦋',Fungi:'🍄',Mammalia:'🦘',Reptilia:'🦎',Amphibia:'🐸',Magnoliopsida:'🌸'};for(const s of data.slice(0,200)){if(!s.first_seen)continue;const m=parseInt(s.first_seen.slice(5,7))-1;if(!mo[m])mo[m]=[];mo[m].push(s);}let h='';for(let m=0;m<12;m++){if(!mo[m]?.length)continue;h+=`<div class="mb-4"><p class="font-bold text-sm text-primary mb-2">${mn[m]}</p><div class="flex flex-wrap gap-1.5">`;for(const s of mo[m].slice(0,15))h+=`<span class="px-2 py-1 bg-surface-container rounded-md text-[11px] font-medium" title="${s.taxon_name}">${ic[s.iconic_taxon]||'•'} ${s.common_name||s.taxon_name}</span>`;if(mo[m].length>15)h+=`<span class="text-[11px] text-on-surface-variant/60">+${mo[m].length-15}</span>`;h+='</div></div>';}el.innerHTML=h;}
 
-function renderObservationsList(obs) {
-  const el = document.getElementById('obs-list');
-  el.innerHTML = (obs || []).slice(0, 10).map(o => `
-    <div class="obs-item">
-      <div class="obs-item-date">${o.date}</div>
-      ${o.note}
-    </div>
-  `).join('') || '<div class="obs-item" style="opacity:0.5;">No observations yet.</div>';
-}
-
-async function loadObservations() {
-  const obs = await fetch('/api/observations').then(r => r.json());
-  const el = document.getElementById('obs-log-list');
-  // Set default date on form
-  document.getElementById('obs-date').value = new Date().toISOString().slice(0, 10);
-
-  el.innerHTML = (obs || []).map(o => {
-    const tags = o.tags || '';
-    const categoryLabel = tags ? `<span class="season-badge phase-growth" style="font-size:9px;padding:2px 6px;">${tags}</span>` : '';
-    return `
-      <div class="obs-log-item card" style="margin-bottom:8px;padding:14px;" data-tags="${tags}">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-          ${categoryLabel}
-          <span style="font-family:Inter,sans-serif;font-size:11px;color:var(--on-surface-faint);">${o.date}</span>
-        </div>
-        <div style="font-size:13px;line-height:1.5;">${o.note}</div>
-      </div>
-    `;
-  }).join('') || '<div class="card" style="padding:20px;color:var(--on-surface-faint);">No observations recorded yet. Use the form above to add your first.</div>';
-}
-
-async function submitObservation() {
-  const note = document.getElementById('obs-note').value.trim();
-  if (!note) return;
-  const today = new Date().toISOString().slice(0, 10);
-  await fetch('/api/observations', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ date: today, note }),
-  });
-  document.getElementById('obs-note').value = '';
-  const obs = await fetch('/api/observations').then(r => r.json());
-  renderObservationsList(obs);
-}
-
-async function submitObservationForm() {
-  const note = document.getElementById('obs-note-form').value.trim();
-  const category = document.getElementById('obs-category').value;
-  const dateInput = document.getElementById('obs-date').value;
-  if (!note) return;
-  const obsDate = dateInput || new Date().toISOString().slice(0, 10);
-  const tags = category || null;
-  await fetch('/api/observations', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ date: obsDate, note, tags }),
-  });
-  document.getElementById('obs-note-form').value = '';
-  loadObservations();
-  const obs = await fetch('/api/observations').then(r => r.json());
-  renderObservationsList(obs);
-}
-
-function addTag(tag) {
-  const textarea = document.getElementById('obs-note-form');
-  const current = textarea.value;
-  if (!current.includes(`#${tag}`)) {
-    textarea.value = current + (current ? ' ' : '') + `#${tag}`;
-  }
-}
-
-function filterObs(btn, category) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const items = document.querySelectorAll('.obs-log-item');
-  items.forEach(item => {
-    if (category === 'all' || item.dataset.tags === category || !category) {
-      item.style.display = '';
-    } else {
-      item.style.display = 'none';
-    }
-  });
-}
-
-async function syncData() {
-  const btn = document.querySelector('.sync-btn');
-  btn.textContent = 'Syncing...';
-  btn.disabled = true;
-  try {
-    await fetch('/api/microseasons/detect?lookback=90');
-    await loadDashboard();
-  } finally {
-    btn.textContent = 'Sync Field Data';
-    btn.disabled = false;
-  }
-}
-
-// ── Core Sample ──
-const palette = {
-  dormancy:  { l: '#FAEEDA', m: '#EF9F27' },
-  awakening: { l: '#EAF3DE', m: '#97C459' },
-  flowering: { l: '#FBEAF0', m: '#ED93B1' },
-  growth:    { l: '#E1F5EE', m: '#5DCAA5' },
-  fruiting:  { l: '#FAECE7', m: '#F0997B' },
-  drying:    { l: '#FAEEDA', m: '#FAC775' },
-  cooling:   { l: '#E6F1FB', m: '#85B7EB' },
-  rain:      { l: '#EEEDFE', m: '#AFA9EC' },
-  transition:{ l: '#f0f0ec', m: '#aaa' },
-};
-
-// Default microseasons from the design template
-const defaultSeasons = [
-  { name: 'Deep summer stillness', phase: 'dormancy', start: 1, end: 35 },
-  { name: 'First cool exhale', phase: 'cooling', start: 36, end: 55 },
-  { name: 'Autumn fungi flush', phase: 'rain', start: 56, end: 80 },
-  { name: 'Leaf turn begins', phase: 'fruiting', start: 81, end: 105 },
-  { name: 'Cold ground, green grass', phase: 'growth', start: 106, end: 140 },
-  { name: 'Frost window', phase: 'dormancy', start: 141, end: 180 },
-  { name: 'Wattle ignition', phase: 'flowering', start: 181, end: 210 },
-  { name: 'Magpie nesting', phase: 'awakening', start: 211, end: 240 },
-  { name: 'Spring surge', phase: 'growth', start: 241, end: 275 },
-  { name: 'Jacaranda signal', phase: 'flowering', start: 276, end: 305 },
-  { name: 'Dry heat onset', phase: 'drying', start: 306, end: 340 },
-  { name: 'Solstice glare', phase: 'dormancy', start: 341, end: 366 },
-];
-
-async function drawCoreSample() {
-  const canvas = document.getElementById('core-canvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const W = 600, CX = W/2, CY = W/2;
-  const innerR = 70, outerR = 260;
-  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-  const today = new Date();
-  const doy = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
-
-  // Fetch real data
-  let coreData = null;
-  try {
-    coreData = await fetch('/api/core-sample').then(r => r.json());
-  } catch (e) { console.error('Failed to load core sample data:', e); }
-
-  ctx.clearRect(0, 0, W, W);
-
-  // Month labels
-  for (let m = 0; m < 12; m++) {
-    const mDoy = Math.floor((m / 12) * 365) + 1;
-    const a = ((mDoy - 1) / 365) * Math.PI * 2 - Math.PI / 2;
-    const tx = CX + Math.cos(a) * (outerR + 22);
-    const ty = CY + Math.sin(a) * (outerR + 22);
-    ctx.fillStyle = 'rgba(0,0,0,0.3)';
-    ctx.font = '11px Inter, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(MONTHS[m], tx, ty);
-  }
-
-  // Outer ring: template microseasons (ecological phases)
-  const ringW = outerR - innerR;
-  const templateR = outerR - ringW * 0.4; // outer 40% = template seasons
-  for (const ms of defaultSeasons) {
-    const a1 = ((ms.start - 1) / 365) * Math.PI * 2 - Math.PI / 2;
-    const a2 = ((ms.end) / 365) * Math.PI * 2 - Math.PI / 2;
-    const p = palette[ms.phase] || palette.transition;
-    ctx.beginPath();
-    ctx.arc(CX, CY, outerR, a1, a2);
-    ctx.arc(CX, CY, templateR, a2, a1, true);
-    ctx.closePath();
-    ctx.fillStyle = p.l;
-    ctx.fill();
-    ctx.strokeStyle = p.m;
-    ctx.lineWidth = 0.5;
-    ctx.stroke();
-  }
-
-  // Inner ring: real temperature data as colour gradient
-  if (coreData && coreData.weather && coreData.weather.length > 0) {
-    const temps = coreData.weather.filter(w => w.mean_temp != null);
-    const minT = Math.min(...temps.map(w => w.mean_temp));
-    const maxT = Math.max(...temps.map(w => w.mean_temp));
-    const range = maxT - minT || 1;
-
-    for (const w of temps) {
-      const d = new Date(w.date);
-      const wDoy = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
-      const a1 = ((wDoy - 1) / 365) * Math.PI * 2 - Math.PI / 2;
-      const a2 = ((wDoy) / 365) * Math.PI * 2 - Math.PI / 2;
-
-      // Temperature to colour: cold=blue, mild=green, hot=orange
-      const t = (w.mean_temp - minT) / range;
-      let r, g, b;
-      if (t < 0.33) {
-        r = 100; g = 140 + t * 200; b = 220 - t * 100;
-      } else if (t < 0.66) {
-        r = 100 + (t - 0.33) * 400; g = 200; b = 150 - (t - 0.33) * 200;
-      } else {
-        r = 230; g = 200 - (t - 0.66) * 300; b = 80;
-      }
-
-      ctx.beginPath();
-      ctx.arc(CX, CY, templateR - 2, a1, a2);
-      ctx.arc(CX, CY, innerR, a2, a1, true);
-      ctx.closePath();
-      ctx.fillStyle = `rgba(${Math.round(r)},${Math.round(g)},${Math.round(b)},0.6)`;
-      ctx.fill();
-    }
-  }
-
-  // Mark detected transitions as radial lines
-  if (coreData && coreData.microseasons) {
-    for (const ms of coreData.microseasons) {
-      if (!ms.start_date) continue;
-      const d = new Date(ms.start_date);
-      const msDoy = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
-      const a = ((msDoy - 1) / 365) * Math.PI * 2 - Math.PI / 2;
-
-      ctx.beginPath();
-      ctx.moveTo(CX + Math.cos(a) * innerR, CY + Math.sin(a) * innerR);
-      ctx.lineTo(CX + Math.cos(a) * outerR, CY + Math.sin(a) * outerR);
-      ctx.strokeStyle = 'rgba(0,0,0,0.3)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      // Small label
-      const lx = CX + Math.cos(a) * (outerR + 8);
-      const ly = CY + Math.sin(a) * (outerR + 8);
-      ctx.fillStyle = 'rgba(0,0,0,0.4)';
-      ctx.font = '9px Inter, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('▸', lx, ly);
-    }
-  }
-
-  // Personal observation ticks
-  if (coreData && coreData.observations) {
-    for (const obs of coreData.observations) {
-      const d = new Date(obs.date);
-      const oDoy = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
-      const a = ((oDoy - 1) / 365) * Math.PI * 2 - Math.PI / 2;
-      const ri = innerR + ringW * 0.15;
-      const ro = innerR + ringW * 0.45;
-      ctx.beginPath();
-      ctx.moveTo(CX + Math.cos(a) * ri, CY + Math.sin(a) * ri);
-      ctx.lineTo(CX + Math.cos(a) * ro, CY + Math.sin(a) * ro);
-      ctx.strokeStyle = '#993C1D';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    }
-  }
-
-  // Now needle
-  const nowAngle = ((doy - 1) / 365) * Math.PI * 2 - Math.PI / 2;
-  ctx.beginPath();
-  ctx.moveTo(CX + Math.cos(nowAngle) * (innerR - 8), CY + Math.sin(nowAngle) * (innerR - 8));
-  ctx.lineTo(CX + Math.cos(nowAngle) * (outerR + 4), CY + Math.sin(nowAngle) * (outerR + 4));
-  ctx.strokeStyle = 'rgba(0,0,0,0.5)';
-  ctx.lineWidth = 1;
-  ctx.setLineDash([4, 3]);
-  ctx.stroke();
-  ctx.setLineDash([]);
-
-  ctx.beginPath();
-  ctx.arc(CX + Math.cos(nowAngle) * (outerR + 4), CY + Math.sin(nowAngle) * (outerR + 4), 3, 0, Math.PI * 2);
-  ctx.fillStyle = '#993C1D';
-  ctx.fill();
-
-  // Center label
-  const cur = defaultSeasons.find(ms => doy >= ms.start && doy <= ms.end);
-  if (cur) {
-    ctx.fillStyle = 'rgba(0,0,0,0.7)';
-    ctx.font = '500 14px Plus Jakarta Sans, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(cur.name, CX, CY - 4);
-    ctx.fillStyle = 'rgba(0,0,0,0.3)';
-    ctx.font = '11px Inter, sans-serif';
-    ctx.fillText('day ' + doy + ' of 365', CX, CY + 14);
-  }
-}
-
-// ── Year Comparison ──
-
-async function loadComparison() {
-  try {
-    const [temps, species, transitions, daylen, phenology] = await Promise.all([
-      fetch('/api/yoy/temperature').then(r => r.json()),
-      fetch('/api/yoy/species').then(r => r.json()),
-      fetch('/api/yoy/transitions').then(r => r.json()),
-      fetch('/api/yoy/day-length').then(r => r.json()),
-      fetch('/api/phenology/calendar').then(r => r.json()),
-    ]);
-    drawTempChart(temps);
-    drawDayLenChart(daylen);
-    drawSpeciesChart(species);
-    renderTransitions(transitions);
-    renderMonthlyCards(temps);
-    renderPhenologyCalendar(phenology);
-  } catch (err) { console.error('Comparison load failed:', err); }
-}
-
-function drawLineChart(canvasId, data, xKey, yKey, color, yLabel, opts = {}) {
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  const pad = { l: 50, r: 20, t: 20, b: 30 };
-  const cw = W - pad.l - pad.r, ch = H - pad.t - pad.b;
-
-  ctx.clearRect(0, 0, W, H);
-
-  const vals = data.map(d => d[yKey]).filter(v => v != null);
-  if (!vals.length) return;
-  const minY = opts.minY ?? Math.min(...vals);
-  const maxY = opts.maxY ?? Math.max(...vals);
-  const rangeY = maxY - minY || 1;
-
-  // Y axis labels
-  ctx.fillStyle = 'var(--on-surface-faint)';
-  ctx.font = '10px Inter, sans-serif';
-  ctx.textAlign = 'right';
-  for (let i = 0; i <= 4; i++) {
-    const v = minY + (rangeY / 4) * i;
-    const y = pad.t + ch - (i / 4) * ch;
-    ctx.fillText(v.toFixed(1), pad.l - 8, y + 3);
-    ctx.beginPath();
-    ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y);
-    ctx.strokeStyle = 'rgba(0,0,0,0.06)'; ctx.lineWidth = 0.5; ctx.stroke();
-  }
-
-  // Y label
-  ctx.save();
-  ctx.translate(12, pad.t + ch / 2);
-  ctx.rotate(-Math.PI / 2);
-  ctx.textAlign = 'center';
-  ctx.fillStyle = 'var(--on-surface-faint)';
-  ctx.font = '10px Inter, sans-serif';
-  ctx.fillText(yLabel, 0, 0);
-  ctx.restore();
-
-  // Draw line
-  ctx.beginPath();
-  data.forEach((d, i) => {
-    if (d[yKey] == null) return;
-    const x = pad.l + (i / (data.length - 1)) * cw;
-    const y = pad.t + ch - ((d[yKey] - minY) / rangeY) * ch;
-    if (i === 0 || data[i-1][yKey] == null) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  });
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  // Fill under
-  if (opts.fill) {
-    ctx.lineTo(pad.l + cw, pad.t + ch);
-    ctx.lineTo(pad.l, pad.t + ch);
-    ctx.closePath();
-    ctx.fillStyle = opts.fill;
-    ctx.fill();
-  }
-
-  // X labels
-  ctx.fillStyle = 'var(--on-surface-faint)';
-  ctx.font = '10px Inter, sans-serif';
-  ctx.textAlign = 'center';
-  const step = Math.max(1, Math.floor(data.length / 12));
-  for (let i = 0; i < data.length; i += step) {
-    const x = pad.l + (i / (data.length - 1)) * cw;
-    const label = data[i][xKey] || '';
-    ctx.fillText(label.slice(5, 7) || label.slice(0, 7), x, H - 8);
-  }
-}
-
-function drawTempChart(data) {
-  // Draw avg temp as main line, with min/max as shaded area
-  const canvas = document.getElementById('temp-chart');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  const pad = { l: 50, r: 20, t: 20, b: 30 };
-  const cw = W - pad.l - pad.r, ch = H - pad.t - pad.b;
-
-  ctx.clearRect(0, 0, W, H);
-
-  const allTemps = data.flatMap(d => [d.coldest, d.hottest]).filter(v => v != null);
-  const minY = Math.min(...allTemps);
-  const maxY = Math.max(...allTemps);
-  const rangeY = maxY - minY || 1;
-
-  // Grid
-  ctx.fillStyle = '#8a918c';
-  ctx.font = '10px Inter, sans-serif';
-  ctx.textAlign = 'right';
-  for (let i = 0; i <= 4; i++) {
-    const v = minY + (rangeY / 4) * i;
-    const y = pad.t + ch - (i / 4) * ch;
-    ctx.fillText(v.toFixed(0) + '°', pad.l - 8, y + 3);
-    ctx.beginPath();
-    ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y);
-    ctx.strokeStyle = 'rgba(0,0,0,0.05)'; ctx.lineWidth = 0.5; ctx.stroke();
-  }
-
-  // Min-max range fill
-  ctx.beginPath();
-  data.forEach((d, i) => {
-    const x = pad.l + (i / (data.length - 1)) * cw;
-    const y = pad.t + ch - ((d.hottest - minY) / rangeY) * ch;
-    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-  });
-  for (let i = data.length - 1; i >= 0; i--) {
-    const x = pad.l + (i / (data.length - 1)) * cw;
-    const y = pad.t + ch - ((data[i].coldest - minY) / rangeY) * ch;
-    ctx.lineTo(x, y);
-  }
-  ctx.closePath();
-  ctx.fillStyle = 'rgba(45, 75, 49, 0.1)';
-  ctx.fill();
-
-  // Avg temp line
-  ctx.beginPath();
-  data.forEach((d, i) => {
-    const x = pad.l + (i / (data.length - 1)) * cw;
-    const y = pad.t + ch - ((d.avg_temp - minY) / rangeY) * ch;
-    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-  });
-  ctx.strokeStyle = '#2D4B31';
-  ctx.lineWidth = 2.5;
-  ctx.stroke();
-
-  // X labels
-  ctx.fillStyle = '#8a918c';
-  ctx.textAlign = 'center';
-  data.forEach((d, i) => {
-    const x = pad.l + (i / (data.length - 1)) * cw;
-    ctx.fillText(d.month.slice(5), x, H - 8);
-  });
-}
-
-function drawDayLenChart(data) {
-  drawLineChart('daylen-chart', data, 'date', 'minutes', '#85B7EB', 'Day length (min)', {
-    fill: 'rgba(133, 183, 235, 0.1)',
-  });
-}
-
-function drawSpeciesChart(data) {
-  const canvas = document.getElementById('species-chart');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  const pad = { l: 50, r: 20, t: 20, b: 30 };
-  const cw = W - pad.l - pad.r, ch = H - pad.t - pad.b;
-
-  ctx.clearRect(0, 0, W, H);
-
-  const maxObs = Math.max(...data.map(d => d.total_obs));
-
-  // Stacked bars: birds, plants, insects, fungi, other
-  const colors = {
-    bird: '#97C459', plant: '#5DCAA5', insect: '#EF9F27', fungi: '#AFA9EC', other: '#ddd',
-  };
-
-  const barW = Math.max(8, (cw / data.length) - 4);
-
-  data.forEach((d, i) => {
-    const x = pad.l + (i / data.length) * cw + 2;
-    const total = d.total_obs || 1;
-    const segments = [
-      { val: d.bird_species || 0, color: colors.bird },
-      { val: d.plant_species || 0, color: colors.plant },
-      { val: d.insect_species || 0, color: colors.insect },
-      { val: d.fungi_species || 0, color: colors.fungi },
-    ];
-    const segTotal = segments.reduce((s, seg) => s + seg.val, 0) || 1;
-
-    let yOff = 0;
-    const barH = (d.unique_species / (Math.max(...data.map(dd => dd.unique_species)) || 1)) * ch;
-    segments.forEach(seg => {
-      const segH = (seg.val / segTotal) * barH;
-      ctx.fillStyle = seg.color;
-      ctx.fillRect(x, pad.t + ch - yOff - segH, barW, segH);
-      yOff += segH;
-    });
-
-    // Month label
-    ctx.fillStyle = '#8a918c';
-    ctx.font = '10px Inter, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(d.month.slice(5), x + barW / 2, H - 8);
-  });
-
-  // Legend
-  const legendY = pad.t + 4;
-  let lx = pad.l;
-  [['Birds', colors.bird], ['Plants', colors.plant], ['Insects', colors.insect], ['Fungi', colors.fungi]].forEach(([label, color]) => {
-    ctx.fillStyle = color;
-    ctx.fillRect(lx, legendY, 10, 10);
-    ctx.fillStyle = '#8a918c';
-    ctx.font = '10px Inter, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText(label, lx + 14, legendY + 9);
-    lx += 70;
-  });
-}
-
-function renderTransitions(transitions) {
-  const el = document.getElementById('transitions-list');
-  if (!transitions.length) {
-    el.innerHTML = '<div class="card" style="padding:20px;color:var(--on-surface-faint);">No transitions detected yet.</div>';
-    return;
-  }
-  el.innerHTML = transitions.map(t => {
-    const phase = t.phase || 'transition';
-    const signals = Array.isArray(t.trigger_signals) ? t.trigger_signals.join(', ') : (t.trigger_signals || '');
-    const dur = t.duration_days ? Math.round(t.duration_days) + ' days' : '';
-    return `
-      <div class="card" style="margin-bottom:8px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-          <span class="season-badge phase-${phase}">${phase}</span>
-          <span style="font-weight:600;font-size:14px;">${t.name}</span>
-        </div>
-        <div style="font-size:12px;color:var(--on-surface-dim);">
-          ${t.start_date} → ${t.end_date} ${dur ? '(' + dur + ')' : ''}
-        </div>
-        <div style="font-family:Inter,sans-serif;font-size:10px;color:var(--on-surface-faint);margin-top:4px;">
-          Signals: ${signals} | Confidence: ${(t.confidence * 100).toFixed(0)}%
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function renderMonthlyCards(temps) {
-  const el = document.getElementById('monthly-cards');
-  el.innerHTML = temps.map(d => `
-    <div class="card">
-      <div class="card-label">${d.month}</div>
-      <div class="card-value">${d.avg_temp?.toFixed(1) ?? '--'}<span class="card-unit">°C</span></div>
-      <div class="card-detail">${d.coldest?.toFixed(0) ?? '--'}° – ${d.hottest?.toFixed(0) ?? '--'}° | ${d.total_rain?.toFixed(0) ?? 0}mm rain</div>
-    </div>
-  `).join('');
-}
-
-function renderPhenologyCalendar(data) {
-  const el = document.getElementById('phenology-calendar');
-  if (!data || !data.length) {
-    el.innerHTML = '<div style="color:var(--on-surface-faint);">No phenological records yet.</div>';
-    return;
-  }
-
-  // Group by month of first observation
-  const months = {};
-  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  for (const sp of data.slice(0, 200)) {
-    if (!sp.first_seen) continue;
-    const m = parseInt(sp.first_seen.slice(5, 7)) - 1;
-    if (!months[m]) months[m] = [];
-    months[m].push(sp);
-  }
-
-  const taxonIcons = {
-    'Aves': '🐦', 'Plantae': '🌿', 'Insecta': '🦋', 'Fungi': '🍄',
-    'Mammalia': '🦘', 'Reptilia': '🦎', 'Amphibia': '🐸',
-    'Magnoliopsida': '🌸', 'Arachnida': '🕷',
-  };
-
-  let html = '';
-  for (let m = 0; m < 12; m++) {
-    const species = months[m];
-    if (!species || !species.length) continue;
-    html += `<div style="margin-bottom:16px;">`;
-    html += `<div style="font-weight:600;font-size:13px;margin-bottom:6px;color:var(--primary);">${monthNames[m]}</div>`;
-    html += `<div style="display:flex;flex-wrap:wrap;gap:4px;">`;
-    for (const sp of species.slice(0, 15)) {
-      const icon = taxonIcons[sp.iconic_taxon] || '•';
-      const name = sp.common_name || sp.taxon_name || '?';
-      html += `<span style="padding:3px 8px;background:var(--surface-low);border-radius:4px;font-size:11px;" title="${sp.taxon_name} — first seen ${sp.first_seen}, ${sp.total_obs} observations">${icon} ${name}</span>`;
-    }
-    if (species.length > 15) {
-      html += `<span style="padding:3px 8px;font-size:11px;color:var(--on-surface-faint);">+${species.length - 15} more</span>`;
-    }
-    html += `</div></div>`;
-  }
-
-  el.innerHTML = html || '<div style="color:var(--on-surface-faint);">No phenological records.</div>';
-}
-
-// ── Init ──
 loadDashboard();
 </script>
 </body>
