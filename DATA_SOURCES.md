@@ -32,8 +32,9 @@ Status key: **Verified** = API tested, working | **Assessed** = reviewed, not ye
 
 | Source | Signal | API | Status |
 |--------|--------|-----|--------|
-| Melbourne Pollen (Uni Melbourne) | Grass pollen count, species-level breakdown | No API — scrape? | Gap |
-| Deakin AIRwatch | Pollen + fungal spore counts (Burwood, 3-hourly) | No API — scrape? | Gap |
+| Melbourne Pollen (Uni Melbourne) | Species-level pollen counts (grass, individual tree species), 7-day forecast | No API — scrape or partner | Assessed |
+| Deakin AIRwatch | Pollen + fungal spore counts (Burwood), 3-hourly resolution | No API — scrape or partner | Assessed |
+| Vic Dept of Health | Automated pollen counters at multiple locations during grass season | health.vic.gov.au | Assessed |
 | DEA Hotspots | Satellite fire detection (10-min updates) | WMS/WFS | Assessed |
 | Emergency Victoria | Fire incidents, danger ratings | GeoJSON feeds | Assessed |
 | BoM Tidal Predictions | Port Phillip Bay tides | FTP / download | Assessed |
@@ -81,7 +82,7 @@ Status key: **Verified** = API tested, working | **Assessed** = reviewed, not ye
 
 ## Identified Gaps
 
-1. **Pollen API** — Melbourne Pollen and Deakin AIRwatch have no public API. Requires scraping or partnership.
+1. **Pollen API** — Data is granular (species-level, 3-hourly) but no public API. Victoria invested heavily post-2016 thunderstorm asthma. Requires scraping melbournepollen.com.au / airwatch.deakin.edu.au or data partnership.
 2. **Acoustic monitoring in Melbourne** — A2O has 360 stations nationally but uncertain metro coverage. BirdWeather PUC would solve this.
 3. **Insect abundance** — Citizen science captures occurrence, not population trends. No systematic monitoring.
 4. **Real-time leaf phenology** — No phenocam or automated leaf tracking in Melbourne urban area.
