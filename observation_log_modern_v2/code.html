@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Observation Log | Phenological Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;family=Work+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-high": "#e8e8e4",
+                    "secondary": "#77574d",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed": "#b8f47a",
+                    "surface-container": "#eeeeea",
+                    "outline": "#737971",
+                    "on-secondary-container": "#795950",
+                    "on-primary-container": "#98ba99",
+                    "primary-fixed": "#c8ecc8",
+                    "secondary-fixed": "#ffdbd0",
+                    "tertiary-fixed-dim": "#9dd761",
+                    "surface": "#fcfcfb",
+                    "surface-dim": "#dadad6",
+                    "on-tertiary-container": "#89c14f",
+                    "primary-container": "#2d4b31",
+                    "primary": "#2d4b31",
+                    "tertiary": "#1b3400",
+                    "on-surface-variant": "#424841",
+                    "on-secondary-fixed": "#2c160e",
+                    "on-tertiary-fixed-variant": "#2c5000",
+                    "inverse-primary": "#adcfad",
+                    "tertiary-container": "#2a4d00",
+                    "inverse-on-surface": "#f1f1ed",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed": "#03210b",
+                    "background": "#fcfcfb",
+                    "on-surface": "#191c19",
+                    "surface-bright": "#fcfcfb",
+                    "error": "#ba1a1a",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed": "#0e2000",
+                    "surface-container-highest": "#e2e3df",
+                    "on-primary": "#ffffff",
+                    "inverse-surface": "#2e312e",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "surface-container-low": "#f4f4f1",
+                    "on-background": "#191c19",
+                    "surface-variant": "#e0e4dd",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#e7bdb1",
+                    "primary-fixed-dim": "#adcfad",
+                    "on-primary-fixed-variant": "#2f4e33",
+                    "surface-tint": "#47664a",
+                    "on-secondary-fixed-variant": "#5d4037",
+                    "secondary-container": "#fed3c7",
+                    "outline-variant": "#c4c8c0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.5rem",
+                    "lg": "0.75rem",
+                    "xl": "1rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans", "sans-serif"],
+                    "body": ["Plus Jakarta Sans", "sans-serif"],
+                    "label": ["Plus Jakarta Sans", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        h1, h2, h3, .font-headline { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-white border-r border-outline-variant/30 flex flex-col p-6 z-50">
+<div class="mb-12 px-2">
+<h2 class="font-headline text-primary text-xl tracking-tight">Station Alpha</h2>
+<p class="text-[10px] uppercase tracking-[0.15em] text-outline font-semibold mt-1.5">Temperate Forest Biozone</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="dashboard">grid_view</span>
+<span class="text-sm font-semibold">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="event_note">description</span>
+<span class="text-sm font-bold">Observations</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="add_circle">add_circle</span>
+<span class="text-sm font-semibold">New Entry</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="analytics">bar_chart</span>
+<span class="text-sm font-semibold">Comparisons</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[22px]" data-icon="map">map</span>
+<span class="text-sm font-semibold">Map View</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-outline-variant/30 space-y-6">
+<button class="w-full py-3 bg-primary text-on-primary rounded-lg text-sm font-bold shadow-sm hover:opacity-90 transition-opacity">
+            Sync Field Data
+        </button>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-outline hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="help">help</span>
+<span class="text-xs font-semibold">Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-outline hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="inventory_2">archive</span>
+<span class="text-xs font-semibold">Archive</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen">
+<!-- TopAppBar -->
+<header class="sticky top-0 bg-surface/80 backdrop-blur-md flex justify-between items-center w-full px-12 py-5 z-40 border-b border-outline-variant/20">
+<div class="flex items-center gap-10">
+<h1 class="text-xl font-headline font-extrabold tracking-tight text-primary">Phenological Intelligence</h1>
+<nav class="hidden md:flex gap-8">
+<a class="text-sm font-bold text-primary border-b-2 border-primary pb-1" href="#">Field Guide</a>
+<a class="text-sm font-semibold text-outline hover:text-primary transition-colors" href="#">Data Exports</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]" data-icon="search">search</span>
+<input class="bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20 w-72 placeholder:text-outline/60" placeholder="Search observation logs..." type="text"/>
+</div>
+<div class="flex gap-2 items-center">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors">
+<span class="material-symbols-outlined text-[22px]" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors">
+<span class="material-symbols-outlined text-[22px]" data-icon="settings">settings</span>
+</button>
+<div class="w-9 h-9 rounded-full overflow-hidden border border-outline-variant ml-2">
+<img alt="Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCB-2dV2a2_icHoptodE35oGuAnUZiqxtB9jD76fjxEMeARvdgLFwap-ZStFkX8DDWg6glR5ZSGnffs6dRrvRjfxSmn19khaEwxZFUVVVeP0RIYOP4RJj1I5SMO2Rx9qHJ7JN2mvKroX_yoQdcvrLweAeT-sKIYH9n0ABY0K-m4t6UHKCFGBMcyTB1_uBnLiM-lQxtPP37cSUGqIcuwJcl4B1H_OwKwc_TzLaiNpUH_1O3YM43dOBUE5MRIAYbCxfIkEjoyzzWqpWoH"/>
+</div>
+</div>
+</div>
+</header>
+<div class="px-12 py-10 max-w-7xl mx-auto">
+<!-- Header Section -->
+<div class="flex justify-between items-start mb-10">
+<div class="max-w-2xl">
+<h2 class="text-4xl font-headline text-on-surface tracking-tight mb-4">Observation Log</h2>
+<p class="text-on-surface-variant text-lg font-medium leading-relaxed">Detailed biological event tracking for the Station Alpha perimeter, synchronized with the current lunar cycle.</p>
+</div>
+<div class="bg-primary-container/10 border border-primary-container/20 px-6 py-4 rounded-xl flex items-center gap-4">
+<span class="material-symbols-outlined text-primary text-[28px]" data-icon="calendar_today">event</span>
+<div>
+<p class="text-[10px] uppercase tracking-widest text-outline font-bold">Current Cycle</p>
+<p class="font-bold text-primary text-base">Late Spring / DOY 142</p>
+</div>
+</div>
+</div>
+<!-- Filter Bar -->
+<div class="flex flex-wrap items-center gap-3 mb-8">
+<button class="bg-primary text-on-primary px-5 py-2.5 rounded-lg text-xs font-bold flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="filter_list">filter_list</span> All Categories
+            </button>
+<div class="flex gap-2">
+<span class="bg-surface-container px-4 py-2.5 rounded-lg text-xs font-bold text-on-surface-variant cursor-pointer hover:bg-surface-variant transition-colors border border-outline-variant/10">Soil Health</span>
+<span class="bg-surface-container px-4 py-2.5 rounded-lg text-xs font-bold text-on-surface-variant cursor-pointer hover:bg-surface-variant transition-colors border border-outline-variant/10">Canopy Development</span>
+<span class="bg-surface-container px-4 py-2.5 rounded-lg text-xs font-bold text-on-surface-variant cursor-pointer hover:bg-surface-variant transition-colors border border-outline-variant/10">Atmospheric</span>
+<span class="bg-surface-container px-4 py-2.5 rounded-lg text-xs font-bold text-on-surface-variant cursor-pointer hover:bg-surface-variant transition-colors border border-outline-variant/10">Animal Phenology</span>
+</div>
+<div class="ml-auto flex items-center gap-4">
+<span class="text-[11px] font-bold text-outline uppercase tracking-wider">Sort By</span>
+<div class="relative">
+<select class="appearance-none bg-surface-container px-4 py-2.5 pr-10 rounded-lg text-xs font-bold text-primary border border-outline-variant/10 focus:ring-2 focus:ring-primary/20 cursor-pointer outline-none">
+<option>Most Recent</option>
+<option>DOY Ascending</option>
+<option>Historical Delta</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-primary pointer-events-none text-[18px]">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Observations Table -->
+<div class="bg-white rounded-xl border border-outline-variant/20 overflow-hidden shadow-sm">
+<!-- Table Header -->
+<div class="grid grid-cols-12 px-8 py-4 bg-surface-container-low/50 text-[11px] uppercase tracking-[0.1em] text-outline font-bold border-b border-outline-variant/20">
+<div class="col-span-3">Biological Event</div>
+<div class="col-span-2">Category</div>
+<div class="col-span-2">Calendar Date</div>
+<div class="col-span-2">DOY Number</div>
+<div class="col-span-3 text-right">Historical Variance</div>
+</div>
+<!-- Log Entries -->
+<div class="divide-y divide-outline-variant/10">
+<!-- Log Entry 1 -->
+<div class="grid grid-cols-12 items-center px-8 py-6 hover:bg-surface-container-lowest transition-colors group">
+<div class="col-span-3">
+<p class="font-headline font-bold text-base text-on-surface group-hover:text-primary transition-colors">First Bud Burst</p>
+<p class="text-[11px] text-outline font-medium mt-0.5 italic">Acer saccharum (Sugar Maple)</p>
+</div>
+<div class="col-span-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-tertiary-fixed text-on-tertiary-fixed-variant text-[10px] font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-[16px]" data-icon="park">park</span> Canopy
+                        </span>
+</div>
+<div class="col-span-2 text-sm text-on-surface font-semibold">May 12, 2024</div>
+<div class="col-span-2 text-sm text-on-surface-variant font-mono">132</div>
+<div class="col-span-3 flex justify-end items-center gap-4">
+<div class="text-right">
+<p class="text-xs font-bold text-error">-4 Days Early</p>
+<p class="text-[10px] text-outline font-medium uppercase tracking-tight">vs 10yr Avg (136)</p>
+</div>
+<div class="w-2.5 h-2.5 rounded-full bg-error shadow-[0_0_8px_rgba(186,26,26,0.3)]"></div>
+</div>
+</div>
+<!-- Log Entry 2 -->
+<div class="grid grid-cols-12 items-center px-8 py-6 hover:bg-surface-container-lowest transition-colors group">
+<div class="col-span-3">
+<p class="font-headline font-bold text-base text-on-surface group-hover:text-primary transition-colors">Monarch Arrival</p>
+<p class="text-[11px] text-outline font-medium mt-0.5 italic">Danaus plexippus (Northern Migration)</p>
+</div>
+<div class="col-span-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary-fixed text-on-secondary-fixed-variant text-[10px] font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-[16px]" data-icon="flutter_dash">flutter_dash</span> Animal
+                        </span>
+</div>
+<div class="col-span-2 text-sm text-on-surface font-semibold">May 18, 2024</div>
+<div class="col-span-2 text-sm text-on-surface-variant font-mono">138</div>
+<div class="col-span-3 flex justify-end items-center gap-4">
+<div class="text-right">
+<p class="text-xs font-bold text-primary">+2 Days Late</p>
+<p class="text-[10px] text-outline font-medium uppercase tracking-tight">vs 10yr Avg (136)</p>
+</div>
+<div class="w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_8px_rgba(45,75,49,0.3)]"></div>
+</div>
+</div>
+<!-- Log Entry 3 -->
+<div class="grid grid-cols-12 items-center px-8 py-6 hover:bg-surface-container-lowest transition-colors group">
+<div class="col-span-3">
+<p class="font-headline font-bold text-base text-on-surface group-hover:text-primary transition-colors">Frost Line Depth 0cm</p>
+<p class="text-[11px] text-outline font-medium mt-0.5 italic">Ground Thaw Completion</p>
+</div>
+<div class="col-span-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-highest text-on-surface-variant text-[10px] font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-[16px]" data-icon="landscape">landscape</span> Soil
+                        </span>
+</div>
+<div class="col-span-2 text-sm text-on-surface font-semibold">April 28, 2024</div>
+<div class="col-span-2 text-sm text-on-surface-variant font-mono">118</div>
+<div class="col-span-3 flex justify-end items-center gap-4">
+<div class="text-right">
+<p class="text-xs font-bold text-on-surface-variant">On Target</p>
+<p class="text-[10px] text-outline font-medium uppercase tracking-tight">vs 10yr Avg (118)</p>
+</div>
+<div class="w-2.5 h-2.5 rounded-full bg-outline-variant"></div>
+</div>
+</div>
+<!-- Log Entry 4 -->
+<div class="grid grid-cols-12 items-center px-8 py-6 hover:bg-surface-container-lowest transition-colors group">
+<div class="col-span-3">
+<p class="font-headline font-bold text-base text-on-surface group-hover:text-primary transition-colors">First Leaf Expansion</p>
+<p class="text-[11px] text-outline font-medium mt-0.5 italic">Betula papyrifera (Paper Birch)</p>
+</div>
+<div class="col-span-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-tertiary-fixed text-on-tertiary-fixed-variant text-[10px] font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-[16px]" data-icon="park">park</span> Canopy
+                        </span>
+</div>
+<div class="col-span-2 text-sm text-on-surface font-semibold">May 21, 2024</div>
+<div class="col-span-2 text-sm text-on-surface-variant font-mono">141</div>
+<div class="col-span-3 flex justify-end items-center gap-4">
+<div class="text-right">
+<p class="text-xs font-bold text-error">-7 Days Early</p>
+<p class="text-[10px] text-outline font-medium uppercase tracking-tight">vs 10yr Avg (148)</p>
+</div>
+<div class="w-2.5 h-2.5 rounded-full bg-error shadow-[0_0_8px_rgba(186,26,26,0.3)]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Modern Data Highlight Cards -->
+<div class="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2 bg-primary text-on-primary rounded-2xl p-12 overflow-hidden relative flex flex-col justify-between">
+<div class="relative z-10">
+<span class="text-[11px] uppercase tracking-[0.2em] font-bold text-primary-fixed-dim/80">Season Summary</span>
+<h3 class="text-4xl font-headline mt-6 max-w-lg leading-[1.2]">Thermal accumulation is 12% higher than last decade.</h3>
+<p class="mt-6 text-primary-fixed-dim/90 max-w-md text-base font-medium leading-relaxed">Early thaws and sustained high light intensity are accelerating canopy development in the primary study quadrants.</p>
+</div>
+<div class="mt-10 relative z-10">
+<button class="flex items-center gap-3 text-tertiary-fixed font-bold text-sm hover:underline group">
+                        Generate Trend Report 
+                        <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<!-- Subtle Decorative Shapes -->
+<div class="absolute right-[-10%] top-[-10%] w-96 h-96 rounded-full bg-primary-container/20 blur-[80px]"></div>
+<div class="absolute left-1/2 bottom-[-20%] w-64 h-64 rounded-full bg-tertiary-container/30 blur-[60px]"></div>
+</div>
+<div class="bg-surface-container-low rounded-2xl p-10 flex flex-col justify-between border border-outline-variant/20">
+<div>
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-6">
+<span class="material-symbols-outlined text-[28px]" data-icon="analytics">query_stats</span>
+</div>
+<h4 class="font-headline text-2xl text-on-surface tracking-tight">Location Consistency</h4>
+<p class="text-on-surface-variant font-medium text-sm mt-3 leading-relaxed">Station Alpha maintains 98.4% data fidelity over the current logging period, exceeding the regional baseline.</p>
+</div>
+<div class="mt-10">
+<div class="flex justify-between items-end mb-3">
+<span class="text-xs font-bold text-outline">Fidelity Score</span>
+<span class="text-lg font-headline font-extrabold text-primary">98.4%</span>
+</div>
+<div class="h-2.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 98.4%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="mt-16 flex justify-center pb-12">
+<button class="bg-white border border-outline-variant/40 px-10 py-4 rounded-xl text-sm font-bold text-on-surface hover:bg-surface-container-lowest hover:border-primary/30 transition-all shadow-sm">
+                Load Archive Observations (2023)
+            </button>
+</div>
+</div>
+</main>
+</body></html>

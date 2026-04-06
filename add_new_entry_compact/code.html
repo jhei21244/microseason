@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error-container": "#742410",
+                    "on-primary-fixed-variant": "#4f604e",
+                    "on-error": "#fff7f6",
+                    "secondary-fixed-dim": "#d1d7c6",
+                    "on-secondary-container": "#4e5447",
+                    "on-secondary-fixed-variant": "#585d50",
+                    "primary": "#526351",
+                    "tertiary": "#5b6152",
+                    "secondary-container": "#dfe5d4",
+                    "secondary-dim": "#4f5548",
+                    "on-surface-variant": "#5a615c",
+                    "primary-fixed-dim": "#c7dac4",
+                    "outline-variant": "#adb3ae",
+                    "error": "#9e422c",
+                    "primary-container": "#d5e8d1",
+                    "surface-dim": "#d4dcd5",
+                    "on-tertiary-fixed-variant": "#626859",
+                    "error-container": "#fe8b70",
+                    "background": "#faf9f6",
+                    "surface-tint": "#526351",
+                    "surface-container": "#ecefea",
+                    "on-tertiary": "#f6fbe7",
+                    "surface-container-highest": "#dee4de",
+                    "on-secondary-fixed": "#3b4135",
+                    "inverse-primary": "#e3f6df",
+                    "surface": "#faf9f6",
+                    "on-tertiary-fixed": "#464c3d",
+                    "on-background": "#2e3430",
+                    "surface-container-low": "#f3f4f0",
+                    "on-primary-container": "#455645",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed": "#dfe5d4",
+                    "on-primary": "#eafde6",
+                    "on-surface": "#2e3430",
+                    "on-secondary": "#f6fbea",
+                    "inverse-surface": "#0d0f0d",
+                    "surface-container-high": "#e5e9e4",
+                    "tertiary-fixed": "#f0f6e2",
+                    "primary-fixed": "#d5e8d1",
+                    "on-tertiary-container": "#585e4f",
+                    "tertiary-fixed-dim": "#e2e8d4",
+                    "primary-dim": "#465746",
+                    "tertiary-dim": "#4f5546",
+                    "surface-bright": "#faf9f6",
+                    "secondary": "#5b6154",
+                    "inverse-on-surface": "#9c9d9b",
+                    "outline": "#767c77"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 1.25rem;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #adb3ae;
+            border-radius: 10px;
+        }
+        body {
+            background-color: #faf9f6;
+            color: #2e3430;
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar (Shared Component) -->
+<nav class="fixed top-0 w-full z-50 bg-stone-50 dark:bg-stone-950 flex justify-between items-center h-12 px-4 w-full">
+<div class="flex items-center gap-6">
+<span class="text-lg font-bold text-[#7A8C78] dark:text-[#8FA18D] font-['Plus_Jakarta_Sans'] tracking-tight">PhenoTrack</span>
+<div class="hidden md:flex gap-4">
+<a class="text-stone-500 dark:text-stone-400 font-['Plus_Jakarta_Sans'] tracking-tight hover:bg-stone-200/50 dark:hover:bg-stone-800/50 transition-colors px-2 py-1" href="#">History</a>
+<a class="text-stone-500 dark:text-stone-400 font-['Plus_Jakarta_Sans'] tracking-tight hover:bg-stone-200/50 dark:hover:bg-stone-800/50 transition-colors px-2 py-1" href="#">Export</a>
+<a class="text-stone-500 dark:text-stone-400 font-['Plus_Jakarta_Sans'] tracking-tight hover:bg-stone-200/50 dark:hover:bg-stone-800/50 transition-colors px-2 py-1" href="#">Settings</a>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-stone-400 text-sm">search</span>
+<input class="bg-stone-100 dark:bg-stone-900 border-none text-xs rounded-sm pl-8 pr-4 py-1.5 w-48 focus:ring-1 focus:ring-[#7A8C78] transition-all" placeholder="Search data..." type="text"/>
+</div>
+<span class="material-symbols-outlined text-[#7A8C78] cursor-pointer active:opacity-80 transition-opacity">account_circle</span>
+</div>
+</nav>
+<!-- SideNavBar (Shared Component) -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-stone-100 dark:bg-stone-900 flex flex-col h-full py-4 gap-1 pt-16 z-40 hidden md:flex">
+<div class="px-4 mb-6">
+<h2 class="text-md font-extrabold text-[#526351] dark:text-[#d5e8d1] font-['Plus_Jakarta_Sans']">Precision Curator</h2>
+<p class="text-[0.65rem] uppercase tracking-widest text-stone-500 mt-1">V2.4.1 Analysis</p>
+</div>
+<nav class="flex-1 space-y-1 px-2">
+<a class="flex items-center gap-3 px-3 py-2 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200 dark:hover:bg-stone-800 hover:translate-x-1 transition-transform duration-150 font-['Inter'] text-[0.75rem] leading-none uppercase tracking-wider" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200 dark:hover:bg-stone-800 hover:translate-x-1 transition-transform duration-150 font-['Inter'] text-[0.75rem] leading-none uppercase tracking-wider" href="#">
+<span class="material-symbols-outlined">visibility</span>
+<span>Observations</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-white dark:bg-stone-800 text-[#526351] dark:text-[#d5e8d1] font-bold rounded-sm shadow-sm font-['Inter'] text-[0.75rem] leading-none uppercase tracking-wider" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+<span>New Entry</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200 dark:hover:bg-stone-800 hover:translate-x-1 transition-transform duration-150 font-['Inter'] text-[0.75rem] leading-none uppercase tracking-wider" href="#">
+<span class="material-symbols-outlined">compare_arrows</span>
+<span>Comparisons</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200 dark:hover:bg-stone-800 hover:translate-x-1 transition-transform duration-150 font-['Inter'] text-[0.75rem] leading-none uppercase tracking-wider" href="#">
+<span class="material-symbols-outlined">map</span>
+<span>Map View</span>
+</a>
+</nav>
+<div class="px-4 mt-auto">
+<button class="w-full bg-[#526351] text-white py-2 text-[0.75rem] font-bold rounded-sm active:opacity-90 transition-opacity">
+                Quick Scan
+            </button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-12 min-h-screen bg-surface">
+<div class="max-w-6xl mx-auto p-4 md:p-8">
+<!-- Header Section: High-End Asymmetry -->
+<header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<span class="text-[0.6875rem] font-label uppercase tracking-[0.05em] text-on-surface-variant mb-1 block">Data Intake Module</span>
+<h1 class="text-[3.5rem] font-headline font-extrabold leading-[0.95] tracking-tight text-on-background">New Observation</h1>
+<p class="text-[0.75rem] font-body text-on-surface-variant mt-2 max-w-md">Submit precise phenotype data for validation and comparative sequence analysis. Use granular metrics for high-efficiency cataloging.</p>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant font-label text-[0.6875rem] uppercase">
+<span class="bg-surface-container-high px-2 py-1 rounded-sm">Protocol: PR-921</span>
+<span class="bg-surface-container-high px-2 py-1 rounded-sm">Secure: TLS 1.3</span>
+</div>
+</header>
+<!-- Grid Layout: Compact Form & Contextual Metadata -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- Main Form: Tonal Depth & High Density -->
+<section class="lg:col-span-8 bg-surface-container-low rounded-lg p-1">
+<form class="bg-surface-container-lowest p-6 space-y-8">
+<!-- Section 1: Spatial Temporal Context -->
+<div class="space-y-4">
+<div class="flex items-center justify-between border-b border-outline-variant/15 pb-2">
+<h3 class="text-sm font-headline font-bold uppercase tracking-wider text-primary">01 // Spatial Temporal</h3>
+<span class="material-symbols-outlined text-outline text-sm">location_on</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+<div class="flex flex-col gap-1">
+<label class="text-[0.6875rem] font-label uppercase text-on-surface-variant">Timestamp</label>
+<input class="bg-surface-container-low border-none rounded-sm text-[0.75rem] py-1.5 px-3 focus:ring-1 focus:ring-primary transition-all" type="datetime-local"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="text-[0.6875rem] font-label uppercase text-on-surface-variant">Coordinates</label>
+<input class="bg-surface-container-low border-none rounded-sm text-[0.75rem] py-1.5 px-3 focus:ring-1 focus:ring-primary transition-all" placeholder="45.523° N, 122.676° W" type="text"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="text-[0.6875rem] font-label uppercase text-on-surface-variant">Elevation (m)</label>
+<input class="bg-surface-container-low border-none rounded-sm text-[0.75rem] py-1.5 px-3 focus:ring-1 focus:ring-primary transition-all" placeholder="42.5" type="number"/>
+</div>
+</div>
+</div>
+<!-- Section 2: Core Metrics (The Precision Grid) -->
+<div class="space-y-4">
+<div class="flex items-center justify-between border-b border-outline-variant/15 pb-2">
+<h3 class="text-sm font-headline font-bold uppercase tracking-wider text-primary">02 // Phenotype Metrics</h3>
+<span class="material-symbols-outlined text-outline text-sm">science</span>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="bg-surface-container-low p-2 rounded-sm border border-transparent hover:border-outline-variant/30 transition-colors">
+<label class="text-[0.6875rem] font-label uppercase text-on-surface-variant mb-1 block">Density Index</label>
+<select class="w-full bg-transparent border-none p-0 text-[0.75rem] focus:ring-0 font-bold text-on-surface">
+<option>Low (0.2-0.4)</option>
+<option selected="">Med (0.5-0.7)</option>
+<option>High (0.8-1.0)</option>
+</select>
+</div>
+<div class="bg-surface-container-low p-2 rounded-sm border border-transparent hover:border-outline-variant/30 transition-colors">
+<label class="text-[0.6875rem] font-label uppercase text-on-surface-variant mb-1 block">Canopy Saturation</label>
+<div class="flex items-center gap-2">
+<input class="w-full bg-transparent border-none p-0 text-[0.75rem] focus:ring-0 font-bold text-on-surface" type="text" value="78.4"/>
+<span class="text-[0.6875rem] text-outline">%</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-2 rounded-sm border border-transparent hover:border-outline-variant/30 transition-colors">
+<label class="text-[0.6875rem] font-label uppercase text-on-surface-variant mb-1 block">Chlorophyll-A</label>
+<div class="flex items-center gap-2">
+<input class="w-full bg-transparent border-none p-0 text-[0.75rem] focus:ring-0 font-bold text-on-surface" type="text" value="12.2"/>
+<span class="text-[0.6875rem] text-outline">µg/L</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-2 rounded-sm border border-transparent hover:border-outline-variant/30 transition-colors">
+<label class="text-[0.6875rem] font-label uppercase text-on-surface-variant mb-1 block">Turbidity</label>
+<div class="flex items-center gap-2">
+<input class="w-full bg-transparent border-none p-0 text-[0.75rem] focus:ring-0 font-bold text-on-surface" type="text" value="4.1"/>
+<span class="text-[0.6875rem] text-outline">NTU</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 3: Visual Documentation -->
+<div class="space-y-4">
+<div class="flex items-center justify-between border-b border-outline-variant/15 pb-2">
+<h3 class="text-sm font-headline font-bold uppercase tracking-wider text-primary">03 // Visual Assets</h3>
+<span class="material-symbols-outlined text-outline text-sm">photo_camera</span>
+</div>
+<div class="flex gap-4 items-start">
+<div class="w-32 h-32 bg-surface-container-low flex flex-col items-center justify-center border-2 border-dashed border-outline-variant/30 rounded-md cursor-pointer hover:bg-surface-container-high transition-colors group">
+<span class="material-symbols-outlined text-outline group-hover:scale-110 transition-transform">add_a_photo</span>
+<span class="text-[0.625rem] font-label uppercase mt-2 text-on-surface-variant">Upload Raw</span>
+</div>
+<div class="flex-1 grid grid-cols-3 gap-2">
+<img class="w-full aspect-square object-cover rounded-sm grayscale hover:grayscale-0 transition-all cursor-zoom-in" data-alt="microscopic close-up of a green leaf structure with intricate cell patterns and vibrant emerald tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYZCyvYZimjm9T4VHOWC4vW1wrq1URzQyMMxN4yR8kohsKYglPJPTCwdGx-l6mf5lpWmRN91i8M_7CNfB-4lO-Xi-qPJcZrYXU3CEHT1mNnW-N7MGVNV3H4PSSci4gJuEhOKl7PFoh8l7-D3FbqKi9pwxpmo2z8H7wwUWowohf0Ut4rTVWSM2kiOfnr9aEks_HmqV5dmCnd9CoJ2EXoJk1DpDx7o5iEfvtuIvJBqfi_nKa80c4cduZIw0IhgkM4DrENM3UZ7uJw3WK"/>
+<img class="w-full aspect-square object-cover rounded-sm grayscale hover:grayscale-0 transition-all cursor-zoom-in" data-alt="aerial drone view of a dense forest canopy at sunrise with morning mist rising between the trees" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBebxFv9TGzXh2tW2UaZ9ha12BzJvFGjdpuWEwbqFyhumv4WZcy3q0U-rcEGRn4bjjpfzY0OGtwdtCw8ThgtX_dHRWDul6arR8gxS-m3_J9xGVzsovnMpMlQrSWj2c1UguKQKUBAvU_sFnz1Ygt5k98FMKmP1q6EgwvgLRzQQvLRyb58OtogMdxRESBaXXggLDxSHSmJZMhN4PyHo5ga-fO8qh1tGSIjUiC0O9YcdVvgRg54fJnd34XN5ORIMT_2XIapNNE_z2-kt7L"/>
+<div class="w-full aspect-square bg-surface-container-low flex items-center justify-center rounded-sm">
+<span class="text-[0.625rem] font-label uppercase text-outline">Empty slot</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 4: Narrative Context -->
+<div class="space-y-4">
+<div class="flex items-center justify-between border-b border-outline-variant/15 pb-2">
+<h3 class="text-sm font-headline font-bold uppercase tracking-wider text-primary">04 // Analyst Notes</h3>
+<span class="material-symbols-outlined text-outline text-sm">notes</span>
+</div>
+<textarea class="w-full bg-surface-container-low border-none rounded-sm text-[0.75rem] py-2 px-3 focus:ring-1 focus:ring-primary transition-all resize-none" placeholder="Append specific qualitative nuances or anomalies encountered during collection..." rows="3"></textarea>
+</div>
+<!-- Footer Actions -->
+<div class="pt-4 flex justify-end gap-3">
+<button class="px-6 py-2 text-[0.75rem] font-bold text-on-surface uppercase tracking-wider hover:bg-surface-container-high transition-colors rounded-sm" type="button">Discard</button>
+<button class="px-8 py-2 text-[0.75rem] font-bold bg-primary text-on-primary uppercase tracking-wider hover:brightness-110 transition-all rounded-sm shadow-sm" type="submit">Commit Observation</button>
+</div>
+</form>
+</section>
+<!-- Sidebar Content: Data Context & Metadata -->
+<aside class="lg:col-span-4 space-y-6">
+<!-- Stats Card -->
+<div class="bg-surface-container-lowest p-5 rounded-lg shadow-sm">
+<h4 class="text-[0.6875rem] font-label uppercase text-on-surface-variant mb-4 tracking-wider flex items-center gap-2">
+<span class="material-symbols-outlined text-[1rem]">analytics</span> Session Efficiency
+                        </h4>
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<div>
+<p class="text-[1.5rem] font-headline font-bold leading-none">98.2%</p>
+<p class="text-[0.625rem] font-label uppercase text-outline mt-1">Data Fidelity</p>
+</div>
+<div class="w-24 h-8 bg-primary-container/30 rounded-full relative overflow-hidden">
+<div class="absolute inset-0 bg-primary w-[98%]"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant/15">
+<div>
+<p class="text-[1rem] font-headline font-semibold">12.4s</p>
+<p class="text-[0.625rem] font-label uppercase text-outline">Mean Entry Time</p>
+</div>
+<div>
+<p class="text-[1rem] font-headline font-semibold">04</p>
+<p class="text-[0.625rem] font-label uppercase text-outline">Active Sensors</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Mini Map Component -->
+<div class="bg-surface-container-lowest p-1 rounded-lg shadow-sm overflow-hidden">
+<div class="relative h-48 w-full bg-surface-container-high">
+<img class="w-full h-full object-cover opacity-50 grayscale contrast-125" data-alt="topographic satellite map view of a mountainous region with green forest cover and detailed contour lines" data-location="Portland, Oregon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGMvH8oN9NsuuZa-FYQfLSDUgsNJlGhjruWKrCO64fdntUPG_ZtDsKG6kSVY0TajoI_eVl1NaGuZMDG-qwghmVXUpYgk8OH8Mt1B0m21WopZLHBIPJw9Iu6G1Zq_s_giyn9BoLLp1OR6kmNlGwj0XQyyLs64d8x95WFdpqRc2ionJ5iFD7mwcOfy8403XdzBNeBAxL9LnIAJutxHPWONfBnis3hAbPL_fpfKZAdvRQn-rB8tSNZpDypeAK-Fx8Qay_1OZQBmTYHl10"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-4 h-4 bg-primary rounded-full animate-pulse flex items-center justify-center">
+<div class="w-2 h-2 bg-white rounded-full"></div>
+</div>
+</div>
+<div class="absolute bottom-2 left-2 bg-white/80 backdrop-blur-sm px-2 py-1 rounded-sm">
+<span class="text-[0.625rem] font-label font-bold text-on-surface">LOC_ID: 97201</span>
+</div>
+</div>
+</div>
+<!-- Recent Validation Log (High Density Table) -->
+<div class="bg-surface-container-lowest p-5 rounded-lg shadow-sm">
+<h4 class="text-[0.6875rem] font-label uppercase text-on-surface-variant mb-4 tracking-wider">Historical Comparison</h4>
+<div class="space-y-3">
+<div class="flex items-center justify-between text-[0.75rem] py-1 border-b border-outline-variant/10">
+<span class="text-on-surface">T-048 Validated</span>
+<span class="font-bold text-primary">+0.4%</span>
+</div>
+<div class="flex items-center justify-between text-[0.75rem] py-1 border-b border-outline-variant/10">
+<span class="text-on-surface">T-047 Validated</span>
+<span class="font-bold text-error">-1.2%</span>
+</div>
+<div class="flex items-center justify-between text-[0.75rem] py-1 border-b border-outline-variant/10">
+<span class="text-on-surface">T-046 Divergent</span>
+<span class="font-bold text-outline">~0.0%</span>
+</div>
+</div>
+<button class="w-full mt-4 py-2 border border-outline-variant/30 text-[0.625rem] font-label uppercase tracking-widest text-on-surface-variant hover:bg-surface-container-high transition-colors">View full archive</button>
+</div>
+</aside>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-stone-50 border-t-0 flex justify-around items-center h-16 px-4 z-50 shadow-[0_-4px_10px_rgba(0,0,0,0.03)]">
+<a class="flex flex-col items-center gap-1 text-stone-500" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[0.6rem] font-label uppercase">Dash</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-[#526351] font-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+<span class="text-[0.6rem] font-label uppercase">New</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-stone-500" href="#">
+<span class="material-symbols-outlined">map</span>
+<span class="text-[0.6rem] font-label uppercase">Map</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-stone-500" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="text-[0.6rem] font-label uppercase">User</span>
+</a>
+</nav>
+</body></html>

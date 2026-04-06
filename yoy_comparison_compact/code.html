@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#742410",
+                        "on-primary-fixed-variant": "#4f604e",
+                        "on-error": "#fff7f6",
+                        "secondary-fixed-dim": "#d1d7c6",
+                        "on-secondary-container": "#4e5447",
+                        "on-secondary-fixed-variant": "#585d50",
+                        "primary": "#526351",
+                        "tertiary": "#5b6152",
+                        "secondary-container": "#dfe5d4",
+                        "secondary-dim": "#4f5548",
+                        "on-surface-variant": "#5a615c",
+                        "primary-fixed-dim": "#c7dac4",
+                        "outline-variant": "#adb3ae",
+                        "error": "#9e422c",
+                        "primary-container": "#d5e8d1",
+                        "surface-dim": "#d4dcd5",
+                        "on-tertiary-fixed-variant": "#626859",
+                        "error-container": "#fe8b70",
+                        "background": "#faf9f6",
+                        "surface-tint": "#526351",
+                        "surface-container": "#ecefea",
+                        "on-tertiary": "#f6fbe7",
+                        "surface-container-highest": "#dee4de",
+                        "on-secondary-fixed": "#3b4135",
+                        "inverse-primary": "#e3f6df",
+                        "surface": "#faf9f6",
+                        "on-tertiary-fixed": "#464c3d",
+                        "on-background": "#2e3430",
+                        "surface-container-low": "#f3f4f0",
+                        "on-primary-container": "#455645",
+                        "surface-variant": "#dee4de",
+                        "tertiary-container": "#f0f6e2",
+                        "error-dim": "#5c1202",
+                        "on-primary-fixed": "#334333",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#dfe5d4",
+                        "on-primary": "#eafde6",
+                        "on-surface": "#2e3430",
+                        "on-secondary": "#f6fbea",
+                        "inverse-surface": "#0d0f0d",
+                        "surface-container-high": "#e5e9e4",
+                        "tertiary-fixed": "#f0f6e2",
+                        "primary-fixed": "#d5e8d1",
+                        "on-tertiary-container": "#585e4f",
+                        "tertiary-fixed-dim": "#e2e8d4",
+                        "primary-dim": "#465746",
+                        "tertiary-dim": "#4f5546",
+                        "surface-bright": "#faf9f6",
+                        "secondary": "#5b6154",
+                        "inverse-on-surface": "#9c9d9b",
+                        "outline": "#767c77"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            font-size: 1.25rem;
+        }
+        .data-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+        }
+        .glass-panel {
+            background: rgba(222, 228, 222, 0.7);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<!-- TopNavBar Shell -->
+<header class="fixed top-0 w-full z-50 bg-stone-50 flex justify-between items-center h-12 px-4 w-full font-['Plus_Jakarta_Sans'] tracking-tight">
+<div class="flex items-center gap-6">
+<span class="text-lg font-bold text-[#7A8C78]">PhenoTrack</span>
+<nav class="hidden md:flex items-center gap-4 h-full">
+<a class="text-stone-500 hover:bg-stone-200/50 transition-colors px-2 py-1" href="#">History</a>
+<a class="text-stone-500 hover:bg-stone-200/50 transition-colors px-2 py-1" href="#">Export</a>
+<a class="text-stone-500 hover:bg-stone-200/50 transition-colors px-2 py-1" href="#">Settings</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-stone-400 text-sm">search</span>
+<input class="bg-stone-100 border-none h-8 pl-8 pr-4 text-xs rounded-sm focus:ring-1 focus:ring-[#7A8C78] w-48" placeholder="Search phenotype..." type="text"/>
+</div>
+<button class="material-symbols-outlined text-stone-500 hover:bg-stone-200/50 p-1 rounded-sm">account_circle</button>
+</div>
+</header>
+<!-- SideNavBar Shell -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-stone-100 hidden md:flex flex-col py-4 gap-1 z-40">
+<div class="px-6 mb-8 mt-12">
+<h2 class="text-md font-extrabold text-[#526351] leading-tight">Precision Curator</h2>
+<p class="font-['Inter'] text-[0.65rem] leading-none uppercase tracking-wider text-stone-500 mt-1">V2.4.1 Analysis</p>
+</div>
+<nav class="flex-1 px-3 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-stone-600 hover:text-stone-900 hover:bg-stone-200 transition-transform duration-150 font-['Inter'] text-[0.75rem] uppercase tracking-wider" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-stone-600 hover:text-stone-900 hover:bg-stone-200 transition-transform duration-150 font-['Inter'] text-[0.75rem] uppercase tracking-wider" href="#">
+<span class="material-symbols-outlined">visibility</span> Observations
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-stone-600 hover:text-stone-900 hover:bg-stone-200 transition-transform duration-150 font-['Inter'] text-[0.75rem] uppercase tracking-wider" href="#">
+<span class="material-symbols-outlined">add_circle</span> New Entry
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 bg-white text-[#526351] font-bold rounded-sm shadow-sm font-['Inter'] text-[0.75rem] uppercase tracking-wider" href="#">
+<span class="material-symbols-outlined">compare_arrows</span> Comparisons
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-stone-600 hover:text-stone-900 hover:bg-stone-200 transition-transform duration-150 font-['Inter'] text-[0.75rem] uppercase tracking-wider" href="#">
+<span class="material-symbols-outlined">map</span> Map View
+            </a>
+</nav>
+<div class="px-4 mt-auto">
+<button class="w-full py-2 bg-[#526351] text-white text-[0.7rem] font-bold uppercase tracking-widest rounded-sm hover:opacity-90 transition-opacity">
+                Quick Scan
+            </button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-12 min-h-screen">
+<div class="p-6 max-w-7xl mx-auto">
+<!-- Page Header -->
+<header class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<span class="font-label text-[0.6875rem] uppercase tracking-[0.05em] text-on-surface-variant font-medium">Comparative Analysis</span>
+<h1 class="font-headline text-3xl font-extrabold tracking-tight text-on-surface mt-1">Year-Over-Year Distribution</h1>
+</div>
+<div class="flex items-center gap-2">
+<div class="bg-surface-container-low px-3 py-1.5 flex items-center gap-4">
+<span class="font-label text-[0.6875rem] text-on-surface-variant uppercase">Current Cohort:</span>
+<span class="font-body text-sm font-semibold">2023-2024 Phase II</span>
+<span class="material-symbols-outlined text-sm opacity-40">expand_more</span>
+</div>
+</div>
+</header>
+<!-- Statistical Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+<!-- Summary Card 1 -->
+<div class="bg-surface-container-lowest p-4 border-l-2 border-primary">
+<p class="font-label text-[0.6875rem] uppercase tracking-wider text-on-surface-variant mb-1">Mean Variance</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline text-2xl font-bold">14.2%</span>
+<span class="font-label text-[0.6875rem] text-primary flex items-center">
+<span class="material-symbols-outlined text-xs">trending_up</span> 2.1
+                        </span>
+</div>
+<div class="mt-3 h-1 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[65%]"></div>
+</div>
+</div>
+<!-- Summary Card 2 -->
+<div class="bg-surface-container-lowest p-4 border-l-2 border-outline-variant">
+<p class="font-label text-[0.6875rem] uppercase tracking-wider text-on-surface-variant mb-1">Standard Deviation</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline text-2xl font-bold">0.84</span>
+<span class="font-label text-[0.6875rem] text-error flex items-center">
+<span class="material-symbols-outlined text-xs">trending_down</span> 0.04
+                        </span>
+</div>
+<div class="mt-3 h-1 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="bg-tertiary h-full w-[42%]"></div>
+</div>
+</div>
+<!-- Summary Card 3 -->
+<div class="bg-surface-container-lowest p-4 border-l-2 border-primary">
+<p class="font-label text-[0.6875rem] uppercase tracking-wider text-on-surface-variant mb-1">Observation Count</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline text-2xl font-bold">12,408</span>
+<span class="font-label text-[0.6875rem] text-on-surface-variant">+840</span>
+</div>
+<div class="mt-3 h-1 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[88%]"></div>
+</div>
+</div>
+<!-- Summary Card 4 -->
+<div class="bg-surface-container-lowest p-4 border-l-2 border-outline-variant">
+<p class="font-label text-[0.6875rem] uppercase tracking-wider text-on-surface-variant mb-1">System Latency</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline text-2xl font-bold">24ms</span>
+<span class="font-label text-[0.6875rem] text-on-surface-variant">Stable</span>
+</div>
+<div class="mt-3 h-1 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[15%]"></div>
+</div>
+</div>
+</div>
+<!-- Main Comparison Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- Dense Scatter Plot Column -->
+<div class="lg:col-span-8 space-y-6">
+<section class="bg-surface-container-low p-6">
+<div class="flex justify-between items-center mb-8">
+<h3 class="font-headline text-sm font-bold uppercase tracking-widest text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">scatter_plot</span>
+                                Temporal Distribution Matrix
+                            </h3>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<span class="data-dot bg-primary"></span>
+<span class="font-label text-[0.6rem] uppercase">2024</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="data-dot bg-outline-variant"></span>
+<span class="font-label text-[0.6rem] uppercase text-on-surface-variant">2023</span>
+</div>
+</div>
+</div>
+<!-- Scatter Plot Simulation -->
+<div class="relative h-[320px] w-full border-l border-b border-outline-variant/30 px-2 py-4 flex items-end">
+<!-- Grid Lines -->
+<div class="absolute inset-0 grid grid-cols-12 grid-rows-6 pointer-events-none opacity-[0.05]">
+<div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div>
+<div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div>
+<div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div>
+<div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div><div class="border-r border-t border-on-surface"></div>
+</div>
+<!-- Scatter Points Placeholder -->
+<div class="flex-1 h-full relative">
+<!-- 2023 Background Noise -->
+<div class="absolute w-2 h-2 rounded-full bg-stone-300 opacity-40" style="left: 10%; bottom: 20%;"></div>
+<div class="absolute w-2 h-2 rounded-full bg-stone-300 opacity-40" style="left: 15%; bottom: 35%;"></div>
+<div class="absolute w-2 h-2 rounded-full bg-stone-300 opacity-40" style="left: 22%; bottom: 15%;"></div>
+<div class="absolute w-2 h-2 rounded-full bg-stone-300 opacity-40" style="left: 45%; bottom: 55%;"></div>
+<div class="absolute w-2 h-2 rounded-full bg-stone-300 opacity-40" style="left: 60%; bottom: 42%;"></div>
+<div class="absolute w-2 h-2 rounded-full bg-stone-300 opacity-40" style="left: 85%; bottom: 28%;"></div>
+<!-- 2024 Focal Points -->
+<div class="absolute w-3 h-3 rounded-full bg-primary/80 ring-2 ring-primary-container" style="left: 12%; bottom: 45%;"></div>
+<div class="absolute w-3 h-3 rounded-full bg-primary/80 ring-2 ring-primary-container" style="left: 18%; bottom: 58%;"></div>
+<div class="absolute w-3 h-3 rounded-full bg-primary/80 ring-2 ring-primary-container" style="left: 25%; bottom: 62%;"></div>
+<div class="absolute w-4 h-4 rounded-full bg-primary/60 ring-2 ring-primary-container" style="left: 50%; bottom: 78%;"></div>
+<div class="absolute w-3 h-3 rounded-full bg-primary/80 ring-2 ring-primary-container" style="left: 55%; bottom: 72%;"></div>
+<div class="absolute w-3 h-3 rounded-full bg-primary/80 ring-2 ring-primary-container" style="left: 78%; bottom: 55%;"></div>
+<div class="absolute w-3 h-3 rounded-full bg-primary/80 ring-2 ring-primary-container" style="left: 92%; bottom: 85%;"></div>
+</div>
+</div>
+<div class="mt-4 flex justify-between px-2">
+<span class="font-label text-[0.6rem] text-on-surface-variant">Q1 PHASE</span>
+<span class="font-label text-[0.6rem] text-on-surface-variant">Q2 PHASE</span>
+<span class="font-label text-[0.6rem] text-on-surface-variant">Q3 PHASE</span>
+<span class="font-label text-[0.6rem] text-on-surface-variant">Q4 PHASE</span>
+</div>
+</section>
+<!-- Precision Data Rows -->
+<section class="bg-surface-container-lowest overflow-hidden">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low border-b border-surface-container-high">
+<tr>
+<th class="px-4 py-3 font-label text-[0.6875rem] uppercase font-bold text-on-surface-variant">Metric Variable</th>
+<th class="px-4 py-3 font-label text-[0.6875rem] uppercase font-bold text-on-surface-variant text-right">Base (2023)</th>
+<th class="px-4 py-3 font-label text-[0.6875rem] uppercase font-bold text-on-surface-variant text-right">Target (2024)</th>
+<th class="px-4 py-3 font-label text-[0.6875rem] uppercase font-bold text-on-surface-variant text-right">Δ Shift</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<tr class="hover:bg-surface-container-low/50 transition-colors cursor-default">
+<td class="px-4 py-3 font-body text-[0.75rem] font-medium">Growth Rate (Alpha)</td>
+<td class="px-4 py-3 font-body text-[0.75rem] text-right text-on-surface-variant">1.42 mm/d</td>
+<td class="px-4 py-3 font-body text-[0.75rem] text-right font-bold">1.58 mm/d</td>
+<td class="px-4 py-3 font-body text-[0.75rem] text-right text-primary">+11.3%</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors cursor-default">
+<td class="px-4 py-3 font-body text-[0.75rem] font-medium">Luminosity Index</td>
+<td class="px-4 py-3 font-body text-[0.75rem] text-right text-on-surface-variant">0.82 Lx</td>
+<td class="px-4 py-3 font-body text-[0.75rem] text-right font-bold">0.81 Lx</td>
+<td class="px-4 py-3 font-body text-[0.75rem] text-right text-error">-1.2%</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors cursor-default">
+<td class="px-4 py-3 font-body text-[0.75rem] font-medium">C02 Absorption</td>
+<td class="px-4 py-3 font-body text-[0.75rem] text-right text-on-surface-variant">42.1 ppm</td>
+<td class="px-4 py-3 font-body text-[0.75rem] text-right font-bold">48.9 ppm</td>
+<td class="px-4 py-3 font-body text-[0.75rem] text-right text-primary">+16.1%</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors cursor-default">
+<td class="px-4 py-3 font-body text-[0.75rem] font-medium">Humidity Retention</td>
+<td class="px-4 py-3 font-body text-[0.75rem] text-right text-on-surface-variant">68.4%</td>
+<td class="px-4 py-3 font-body text-[0.75rem] text-right font-bold">67.9%</td>
+<td class="px-4 py-3 font-body text-[0.75rem] text-right text-on-surface-variant">-0.5%</td>
+</tr>
+</tbody>
+</table>
+</section>
+</div>
+<!-- Secondary Analysis Column -->
+<div class="lg:col-span-4 space-y-6">
+<!-- High-Resolution Image Card -->
+<div class="bg-surface-container-lowest group relative overflow-hidden">
+<img alt="Scientific data visualization" class="w-full h-48 object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" data-alt="Macro close-up of a vibrant green leaf showing complex vein patterns and dew drops under clinical microscopic laboratory lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBv80wp9VyTW32ML_5iV4qBOqOyzHSr50ScNNN9FQshOXv-43aQhHzxYZpC_2Bu1Met56ToBPwEi_d1PN3s1txWxWRE1xU0Drc2ofHa6wAtfxMex3YGx3oZ0p8EAKREqxzanLGQorJLMM4tP2rzaSH9s4cv0OGj5BaNQiP7IYo6OrqUpqu6eFH_9wEt2iOJnT-MRdTUOfFclbH_F5DqxQ4cC_9O7ap3Z-71nCwzxtN1OmmqFxNHUnHazDKLkKsGvgPbevkqjMJkNJIT"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent"></div>
+<div class="p-4 relative">
+<h4 class="font-headline text-xs font-bold uppercase tracking-widest text-primary mb-2">Reference Sample 401-B</h4>
+<p class="font-body text-[0.7rem] text-on-surface-variant leading-relaxed">
+                                Morphology shows significant vascular thickening compared to the previous annual cycle. Corresponds with increased C02 absorption recorded in Q3.
+                            </p>
+</div>
+</div>
+<!-- Comparison Radar/Heatmap -->
+<div class="bg-surface-container-high p-5">
+<div class="flex items-center justify-between mb-4">
+<h4 class="font-headline text-xs font-bold uppercase tracking-widest text-on-surface">Phase Hotspots</h4>
+<span class="material-symbols-outlined text-sm">settings_input_component</span>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center text-[0.65rem] font-bold uppercase text-on-surface-variant">
+<span>Phase A1 (Jan)</span>
+<span class="bg-primary/10 text-primary px-1">Critical</span>
+</div>
+<div class="w-full grid grid-cols-12 gap-0.5 h-6">
+<div class="bg-primary-container h-full"></div>
+<div class="bg-primary-container h-full"></div>
+<div class="bg-primary h-full"></div>
+<div class="bg-primary h-full"></div>
+<div class="bg-primary-fixed-dim h-full"></div>
+<div class="bg-primary-container h-full"></div>
+<div class="bg-primary-container h-full"></div>
+<div class="bg-primary-container h-full"></div>
+<div class="bg-outline-variant h-full opacity-20"></div>
+<div class="bg-outline-variant h-full opacity-20"></div>
+<div class="bg-outline-variant h-full opacity-20"></div>
+<div class="bg-outline-variant h-full opacity-20"></div>
+</div>
+<div class="flex justify-between items-center text-[0.65rem] font-bold uppercase text-on-surface-variant pt-2">
+<span>Phase B2 (Mar)</span>
+<span class="bg-secondary-container text-secondary px-1">Dormant</span>
+</div>
+<div class="w-full grid grid-cols-12 gap-0.5 h-6">
+<div class="bg-outline-variant h-full opacity-20"></div>
+<div class="bg-outline-variant h-full opacity-20"></div>
+<div class="bg-secondary h-full"></div>
+<div class="bg-secondary-dim h-full"></div>
+<div class="bg-secondary h-full"></div>
+<div class="bg-outline-variant h-full opacity-20"></div>
+<div class="bg-outline-variant h-full opacity-20"></div>
+<div class="bg-outline-variant h-full opacity-20"></div>
+<div class="bg-outline-variant h-full opacity-20"></div>
+<div class="bg-outline-variant h-full opacity-20"></div>
+<div class="bg-outline-variant h-full opacity-20"></div>
+<div class="bg-outline-variant h-full opacity-20"></div>
+</div>
+</div>
+</div>
+<!-- Precision Map Insight -->
+<div class="bg-surface-container-low p-4">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-primary text-sm">location_on</span>
+<span class="font-headline text-[0.7rem] font-bold uppercase tracking-tighter">Geospatial Delta</span>
+</div>
+<div class="aspect-video bg-stone-200 relative overflow-hidden">
+<img alt="Map distribution" class="w-full h-full object-cover grayscale" data-alt="Abstract satellite top-down view of an agricultural grid layout with contrasting green and ochre patches under bright noon sunlight" data-location="Northern Greenhouse Sector" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8-2HOXA0bL6eYJoP_Fh5wpT24gwKt7UIE2IT7_XVcYoHoys4kA2Znd_s7PLbRU5kKPGlmpMih1tHFx4SqTuEoeEDn95tfsp0YqAS-JuldFnkH9RY0mFD3DrRznF3MvD7SaA0eCOhzEUjBTzSu0wBsv-bzsHuZo3GsVx1h-YR5pS5iXBZkYETVxAdgXdKUSVhcuvcMW9IuWphGNLiLRJT13hgyq1pWH--CykWH5xSXYoq2L1XQVlrCPChNdqW12-_JeCpbdJ4lmicL"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-12 h-12 rounded-full border-2 border-primary/40 flex items-center justify-center">
+<div class="w-2 h-2 bg-primary rounded-full"></div>
+</div>
+</div>
+<div class="absolute bottom-2 left-2 glass-panel px-2 py-1">
+<span class="font-label text-[0.55rem] font-bold text-primary">SECTOR 04 - NORTH</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Action Bar -->
+<footer class="mt-12 pt-6 border-t border-surface-container-high flex items-center justify-between">
+<div class="flex gap-4">
+<button class="bg-surface-container-lowest text-on-surface-variant font-label text-[0.65rem] px-4 py-2 hover:bg-surface-variant transition-colors border border-outline-variant/20 uppercase tracking-widest font-bold">
+                        Download Raw (.CSV)
+                    </button>
+<button class="bg-surface-container-lowest text-on-surface-variant font-label text-[0.65rem] px-4 py-2 hover:bg-surface-variant transition-colors border border-outline-variant/20 uppercase tracking-widest font-bold">
+                        Compare to 2022
+                    </button>
+</div>
+<div class="text-right">
+<p class="font-label text-[0.65rem] text-on-surface-variant uppercase tracking-widest">Next Scheduled Update</p>
+<p class="font-body text-xs font-bold">24 OCT 2024 - 08:00 UTC</p>
+</div>
+</footer>
+</div>
+</main>
+<!-- Mobile Navigation Shell -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-high flex justify-around items-center h-16 px-4 z-50">
+<button class="flex flex-col items-center gap-1 text-stone-500">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] uppercase font-bold">Dash</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-[#526351]">
+<span class="material-symbols-outlined">compare_arrows</span>
+<span class="text-[10px] uppercase font-bold">Comp</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-stone-500">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="text-[10px] uppercase font-bold">New</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-stone-500">
+<span class="material-symbols-outlined">map</span>
+<span class="text-[10px] uppercase font-bold">Map</span>
+</button>
+</nav>
+</body></html>

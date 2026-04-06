@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;family=Work+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#2D4B31",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#E8F0E9",
+                        "on-primary-container": "#0B1D0E",
+                        "secondary": "#536353",
+                        "on-secondary": "#ffffff",
+                        "surface": "#F9FAFB",
+                        "on-surface": "#111827",
+                        "surface-container": "#F3F4F6",
+                        "surface-container-high": "#E5E7EB",
+                        "surface-container-low": "#FFFFFF",
+                        "outline": "#D1D5DB",
+                        "outline-variant": "#E5E7EB",
+                        "tertiary": "#4B6350",
+                        "error": "#BA1A1A"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.5rem",
+                        "lg": "0.75rem",
+                        "xl": "1rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"],
+                        "label": ["Work Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-serif { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-white border-r border-outline-variant flex flex-col p-6 z-50">
+<div class="mb-10">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+<div>
+<h2 class="font-headline font-extrabold text-primary text-lg leading-tight tracking-tight">Station Alpha</h2>
+<p class="font-label text-[10px] font-semibold uppercase tracking-[0.15em] text-secondary/60">Temperate Forest</p>
+</div>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-secondary font-label text-xs font-bold uppercase tracking-widest hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary font-label text-xs font-bold uppercase tracking-widest hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined text-xl">event_note</span>
+                Observations
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary font-label text-xs font-bold uppercase tracking-widest hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined text-xl">add_circle</span>
+                New Entry
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-primary font-bold rounded-lg font-label text-xs uppercase tracking-widest transition-all" href="#">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">analytics</span>
+                Comparisons
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary font-label text-xs font-bold uppercase tracking-widest hover:bg-surface-container transition-all" href="#">
+<span class="material-symbols-outlined text-xl">map</span>
+                Map View
+            </a>
+</nav>
+</div>
+<div class="mt-auto pt-6 border-t border-outline-variant">
+<button class="w-full bg-primary text-on-primary py-3 px-4 rounded-xl flex items-center justify-center gap-2 mb-6 hover:shadow-lg transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined text-sm">sync</span>
+<span class="font-label text-xs font-bold uppercase tracking-widest">Sync Field Data</span>
+</button>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-secondary/70 text-[11px] font-label font-bold uppercase tracking-widest hover:text-primary" href="#">
+<span class="material-symbols-outlined text-lg">help</span>
+                Support
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 text-secondary/70 text-[11px] font-label font-bold uppercase tracking-widest hover:text-primary" href="#">
+<span class="material-symbols-outlined text-lg">inventory_2</span>
+                Archive
+            </a>
+</nav>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-white/80 backdrop-blur-md flex justify-between items-center w-full px-10 py-4 sticky top-0 z-40 border-b border-outline-variant">
+<div class="flex items-center gap-10">
+<h1 class="text-xl font-headline font-bold text-primary tracking-tight">Phenological Intelligence</h1>
+<div class="hidden md:flex items-center bg-surface-container px-4 py-2 rounded-lg min-w-[320px] border border-outline-variant">
+<span class="material-symbols-outlined text-secondary/50 mr-2 text-xl">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full font-body placeholder:text-secondary/40" placeholder="Search field data..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<nav class="flex items-center gap-6">
+<a class="font-headline font-semibold text-sm text-secondary hover:text-primary transition-colors" href="#">Field Guide</a>
+<a class="font-headline font-bold text-sm text-primary border-b-2 border-primary pb-1" href="#">Data Exports</a>
+</nav>
+<div class="flex items-center gap-4 border-l border-outline-variant pl-6">
+<button class="text-secondary hover:text-primary transition-colors flex items-center">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-secondary hover:text-primary transition-colors flex items-center">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<img alt="Researcher Profile" class="w-9 h-9 rounded-full object-cover ring-2 ring-primary/10 ring-offset-2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCFgyxO-OnKfbJ49F2fhcCONG6uONf67cEMuKaTETkpiHW6Z-7duTY576vLP0i5RcnbHgHDRKmig8xk_GBS3HD77o_rCdLymfqB1eWqfiWY_80KnNB_ecjoKxUdkqJniEU3otIQ4-4HedcDluSSlPw8C2rNXZD6qE1up4_SnVs178TuFlV1flFn0wNIY1lKqJp5apmgYt_KrE3A88X94ChUzjcK69i6X2IGhRJ7aVB-Aig0j0qETzEaGXF-yXFhp0XIxBai85i-s2K"/>
+</div>
+</div>
+</header>
+<!-- Comparison Dashboard Content -->
+<div class="flex-1 p-10 max-w-[1400px] mx-auto w-full">
+<!-- Header Section -->
+<div class="flex justify-between items-end mb-12">
+<div class="max-w-2xl">
+<h2 class="text-4xl font-headline font-extrabold text-primary leading-tight mb-4 tracking-tight">Historical Shifts &amp; Yearly Rhythms</h2>
+<p class="text-secondary font-body text-lg leading-relaxed max-w-xl">
+                    Visualizing the multi-decadal advancement of seasonal biological events across the temperate forest biozone.
+                </p>
+</div>
+<div class="flex gap-3">
+<div class="bg-white border border-outline-variant px-5 py-2.5 rounded-xl shadow-sm flex flex-col min-w-[200px]">
+<span class="text-[10px] uppercase tracking-[0.2em] text-secondary/60 font-bold mb-1">Selected Event</span>
+<div class="flex items-center justify-between gap-2 text-primary font-bold text-sm">
+                        Sugar Maple Leaf-out
+                        <span class="material-symbols-outlined text-lg">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-8">
+<!-- Main Comparison Chart -->
+<div class="col-span-12 lg:col-span-8 bg-white rounded-2xl p-8 border border-outline-variant shadow-sm">
+<div class="flex justify-between items-start mb-10">
+<div>
+<h3 class="font-headline font-bold text-xl text-primary mb-1">Temporal Shift Analysis</h3>
+<p class="text-xs text-secondary/60 font-medium uppercase tracking-widest">X: Day of Year (60-152)  |  Y: Year (2014-2024)</p>
+</div>
+<div class="flex items-center gap-6 text-[10px] font-bold uppercase tracking-[0.15em] text-secondary">
+<span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-primary"></span> Observed</span>
+<span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-primary/20"></span> Mean Window</span>
+</div>
+</div>
+<div class="relative h-[420px] mt-6">
+<!-- Y-Axis (Years) -->
+<div class="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[11px] font-bold text-secondary/40 py-2 w-8">
+<span>2024</span><span>2023</span><span>2022</span><span>2021</span><span>2020</span>
+<span>2019</span><span>2018</span><span>2017</span><span>2016</span><span>2015</span><span>2014</span>
+</div>
+<!-- Graph Canvas -->
+<div class="ml-12 h-full border-l border-b border-outline-variant relative bg-surface-container/30">
+<!-- Background Grid Lines -->
+<div class="absolute inset-0 grid grid-cols-4 pointer-events-none">
+<div class="border-r border-outline-variant/50 h-full"></div>
+<div class="border-r border-outline-variant/50 h-full"></div>
+<div class="border-r border-outline-variant/50 h-full"></div>
+<div class="h-full"></div>
+</div>
+<!-- Trend Mean Area -->
+<div class="absolute inset-0 opacity-15 bg-gradient-to-tr from-transparent via-primary to-transparent" style="clip-path: polygon(30% 100%, 45% 100%, 35% 0%, 20% 0%);"></div>
+<!-- Data Points -->
+<div class="absolute inset-0 flex flex-col justify-between py-2">
+<!-- 2024 --> <div class="relative h-2"><span class="absolute left-[24%] w-3.5 h-3.5 rounded-full bg-primary shadow-md border-2 border-white"></span></div>
+<!-- 2023 --> <div class="relative h-2"><span class="absolute left-[26%] w-3.5 h-3.5 rounded-full bg-primary shadow-md border-2 border-white"></span></div>
+<!-- 2022 --> <div class="relative h-2"><span class="absolute left-[25%] w-3.5 h-3.5 rounded-full bg-primary shadow-md border-2 border-white"></span></div>
+<!-- 2021 --> <div class="relative h-2"><span class="absolute left-[28%] w-3.5 h-3.5 rounded-full bg-primary shadow-md border-2 border-white"></span></div>
+<!-- 2020 --> <div class="relative h-2"><span class="absolute left-[29%] w-3.5 h-3.5 rounded-full bg-primary shadow-md border-2 border-white"></span></div>
+<!-- 2019 --> <div class="relative h-2"><span class="absolute left-[31%] w-3.5 h-3.5 rounded-full bg-primary shadow-md border-2 border-white"></span></div>
+<!-- 2018 --> <div class="relative h-2"><span class="absolute left-[30%] w-3.5 h-3.5 rounded-full bg-primary shadow-md border-2 border-white"></span></div>
+<!-- 2017 --> <div class="relative h-2"><span class="absolute left-[33%] w-3.5 h-3.5 rounded-full bg-primary shadow-md border-2 border-white"></span></div>
+<!-- 2016 --> <div class="relative h-2"><span class="absolute left-[34%] w-3.5 h-3.5 rounded-full bg-primary shadow-md border-2 border-white"></span></div>
+<!-- 2015 --> <div class="relative h-2"><span class="absolute left-[36%] w-3.5 h-3.5 rounded-full bg-primary shadow-md border-2 border-white"></span></div>
+<!-- 2014 --> <div class="relative h-2"><span class="absolute left-[38%] w-3.5 h-3.5 rounded-full bg-primary shadow-md border-2 border-white"></span></div>
+</div>
+</div>
+<!-- X-Axis (Days) -->
+<div class="ml-12 mt-4 flex justify-between text-[11px] font-bold text-secondary/40">
+<span>Mar 1 (Day 60)</span>
+<span>Apr 1 (Day 91)</span>
+<span>May 1 (Day 121)</span>
+<span>Jun 1 (Day 152)</span>
+</div>
+</div>
+</div>
+<!-- Insight Sidebar -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-8">
+<!-- Summary Card -->
+<div class="bg-primary text-on-primary rounded-2xl p-8 flex flex-col relative overflow-hidden group shadow-xl">
+<div class="absolute -right-12 -bottom-12 opacity-10 group-hover:scale-110 transition-transform duration-1000">
+<span class="material-symbols-outlined text-[180px]" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-[0.25em] opacity-60 mb-6 font-label">Statistical Summary</span>
+<h4 class="font-headline font-bold text-2xl mb-4 leading-snug">Spring arrival is shifting <span class="text-white border-b-2 border-white/40 pb-1">2.1 days earlier</span> per decade.</h4>
+<p class="text-sm font-medium text-white/70 leading-relaxed mb-8">
+                        This trend correlates with a 0.8°C mean increase in early-season soil temperature across Station Alpha quadrants.
+                    </p>
+<div class="mt-auto flex items-center justify-between border-t border-white/10 pt-6">
+<div class="flex flex-col">
+<span class="text-[9px] uppercase font-bold tracking-widest opacity-50 font-label">Confidence Interval</span>
+<span class="font-extrabold text-xl font-headline">94.2%</span>
+</div>
+<div class="bg-white/10 p-2 rounded-lg">
+<span class="material-symbols-outlined text-white">insights</span>
+</div>
+</div>
+</div>
+<!-- Comparison Selection -->
+<div class="bg-surface-container-low border border-outline-variant rounded-2xl p-6 flex-1 shadow-sm">
+<h5 class="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary/60 mb-6 font-label">Compare Other Events</h5>
+<div class="space-y-3">
+<div class="p-4 rounded-xl bg-white shadow-sm flex items-center justify-between border border-primary/20 ring-1 ring-primary/5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">forest</span>
+<span class="text-sm font-bold text-primary">Sugar Maple Leaf-out</span>
+</div>
+<span class="material-symbols-outlined text-primary text-xl">check_circle</span>
+</div>
+<div class="p-4 rounded-xl bg-surface-container/50 border border-outline-variant/50 flex items-center justify-between hover:bg-white hover:border-outline-variant transition-all cursor-pointer group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary/50 group-hover:text-primary transition-colors">pest_control_rodent</span>
+<span class="text-sm font-semibold text-secondary group-hover:text-primary transition-colors">First Robin Sighting</span>
+</div>
+<span class="material-symbols-outlined text-secondary/30 opacity-0 group-hover:opacity-100 transition-opacity">add</span>
+</div>
+<div class="p-4 rounded-xl bg-surface-container/50 border border-outline-variant/50 flex items-center justify-between hover:bg-white hover:border-outline-variant transition-all cursor-pointer group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary/50 group-hover:text-primary transition-colors">grass</span>
+<span class="text-sm font-semibold text-secondary group-hover:text-primary transition-colors">Spring Beauty Bloom</span>
+</div>
+<span class="material-symbols-outlined text-secondary/30 opacity-0 group-hover:opacity-100 transition-opacity">add</span>
+</div>
+<div class="p-4 rounded-xl bg-surface-container/50 border border-outline-variant/50 flex items-center justify-between hover:bg-white hover:border-outline-variant transition-all cursor-pointer group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary/50 group-hover:text-primary transition-colors">psychology</span>
+<span class="text-sm font-semibold text-secondary group-hover:text-primary transition-colors">Migratory Warbler</span>
+</div>
+<span class="material-symbols-outlined text-secondary/30 opacity-0 group-hover:opacity-100 transition-opacity">add</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Metrics -->
+<div class="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="bg-primary-container/30 border border-primary/10 rounded-2xl p-8 relative overflow-hidden h-44 flex flex-col justify-end group">
+<img alt="Forest Canopy" class="absolute inset-0 w-full h-full object-cover opacity-10 mix-blend-overlay group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSFOQS_XQVXKbTNejOCK-TB5ahJnluH-FRy793Ua3SFPW__CbMTHAfC1dzuQOrnh_C5ERaBuP4bfto0iJhdXApPi5rm1XrCAJMEFmAZy5NBK89PUx9va9-NbY3oDi0CIAxPZ1U7SRx2_ONw8E9gp-pWYAnoVIeXJfka6yTP0OcFPuLejA714dyU30bn8iNZNlMVJhgX9W9215UJaQNx76xhiS4v7GBZmJzdZKmIW8b4CWGn6i-pnjnO3nD7L7HVz5rWEmO91EoXmEh"/>
+<div class="relative z-10">
+<span class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/60 font-label">Earliest Recorded</span>
+<p class="font-headline font-extrabold text-3xl text-primary mt-1">April 2nd <span class="text-sm font-medium opacity-50">(2021)</span></p>
+</div>
+</div>
+<div class="bg-surface-container-high/50 border border-outline-variant rounded-2xl p-8 relative overflow-hidden h-44 flex flex-col justify-end group">
+<img alt="Mountain Snow" class="absolute inset-0 w-full h-full object-cover opacity-10 mix-blend-overlay group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdfjfqVNn136IDVLy4PJm-ymiJk8H9SW-PMbL13hZu2XW2R8g9Vq77_mHuOfIONEcDDCtpxd29VpHrVfO0piwGqvYMwihozgBD2JnRgG71ku1cCNQ0uu60Ofxr9FSiObASZi-O1q1Re30-vl-ZrfyCytH3D2g-7mTcPYHWWqhsu-yagsC8Yeq8J-NyoJKF0iBXabaBCBfWZr-fqNtYcAhJnGr-E8gu8rjWOe59Hn0mE-6hZR0fdOmOkR5tfWcye4qDk5xtKBf9Budg"/>
+<div class="relative z-10">
+<span class="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary/60 font-label">Latest Recorded</span>
+<p class="font-headline font-extrabold text-3xl text-secondary mt-1">April 24th <span class="text-sm font-medium opacity-50">(2014)</span></p>
+</div>
+</div>
+<div class="bg-white border border-outline-variant rounded-2xl p-8 shadow-sm flex flex-col justify-between group">
+<div>
+<span class="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary/50 font-label">Biological Impact</span>
+<p class="text-sm text-secondary font-medium mt-3 leading-relaxed">Increased risk of "False Spring" frost damage to vulnerable maple buds as leaf-out occurs earlier.</p>
+</div>
+<div class="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mt-4 group-hover:gap-3 transition-all cursor-pointer">
+                        View Risk Matrix <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Interaction Layer -->
+<div class="fixed bottom-10 right-10 flex flex-col gap-4">
+<button class="bg-white text-primary border border-outline shadow-2xl w-14 h-14 rounded-full flex items-center justify-center hover:bg-surface transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+<button class="bg-primary text-on-primary shadow-2xl px-8 py-4 rounded-full flex items-center gap-3 hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-xl">download</span>
+<span class="font-bold text-[11px] uppercase tracking-[0.2em] font-label">Export Comparison</span>
+</button>
+</div>
+</main>
+</body></html>
