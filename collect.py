@@ -18,6 +18,8 @@ from microseason.collectors.astronomy import AstronomyCollector
 from microseason.collectors.uv import UVCollector
 from microseason.collectors.nature import NatureCollector
 from microseason.collectors.climatewatch import ClimateWatchCollector
+from microseason.collectors.melbourne_water import MelbourneWaterCollector
+from microseason.collectors.city_of_melbourne import CityOfMelbourneCollector
 
 
 def run_daily(db: Database):
@@ -30,6 +32,8 @@ def run_daily(db: Database):
         ("astronomy", lambda: AstronomyCollector(db).collect_today()),
         ("uv", lambda: UVCollector(db).collect_now()),
         ("nature", lambda: NatureCollector(db).collect_recent(days=7)),
+        ("melbourne_water", lambda: MelbourneWaterCollector(db).collect_recent()),
+        ("city_of_melbourne", lambda: CityOfMelbourneCollector(db).collect_all()),
     ]
 
     for name, fn in collectors:

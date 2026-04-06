@@ -379,6 +379,35 @@ body {
   .sidebar, .right-panel { display: none; }
 }
 
+/* ── Tags & Filters ── */
+.tag-btn {
+  padding: 4px 10px;
+  background: var(--surface-container);
+  border: none;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  color: var(--on-surface-dim);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.tag-btn:hover { background: var(--primary-fixed); color: var(--primary); }
+.tag-btn.selected { background: var(--primary-fixed); color: var(--primary); font-weight: 600; }
+
+.filter-btn {
+  padding: 6px 14px;
+  background: var(--surface-low);
+  border: none;
+  border-radius: 20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  color: var(--on-surface-dim);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.filter-btn:hover { background: var(--surface-container); }
+.filter-btn.active { background: var(--primary); color: white; }
+
 /* ── Page visibility ── */
 .page { display: none; }
 .page.active { display: block; }
@@ -444,7 +473,78 @@ body {
     <div class="page" id="page-observations">
       <p class="page-date">Observation Log</p>
       <h1 class="page-title">Field Notes</h1>
-      <p class="page-subtitle">Personal phenological observations. What you notice that no sensor can capture.</p>
+      <p class="page-subtitle">Capture the subtle rhythms of the landscape. Your data contributes to the long-term phenological record.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 320px;gap:24px;margin-top:24px;">
+        <!-- Observation form -->
+        <div class="card" style="padding:24px;">
+          <div class="section-title" style="margin-top:0;">New Observation</div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+            <div>
+              <label class="card-label" style="display:block;margin-bottom:4px;">Bio-Category</label>
+              <select id="obs-category" style="width:100%;padding:10px 12px;background:var(--surface-container);border:none;border-radius:8px;font-family:inherit;font-size:13px;color:var(--on-surface);outline:none;">
+                <option value="">General</option>
+                <option value="canopy">Canopy & Foliage</option>
+                <option value="bird">Bird Activity</option>
+                <option value="insect">Insect Activity</option>
+                <option value="flowering">Flowering & Fruiting</option>
+                <option value="fungi">Fungi</option>
+                <option value="atmosphere">Atmosphere & Light</option>
+                <option value="water">Water & Moisture</option>
+                <option value="sound">Sound & Acoustic</option>
+                <option value="scent">Scent</option>
+              </select>
+            </div>
+            <div>
+              <label class="card-label" style="display:block;margin-bottom:4px;">Date</label>
+              <input type="date" id="obs-date" style="width:100%;padding:10px 12px;background:var(--surface-container);border:none;border-radius:8px;font-family:inherit;font-size:13px;color:var(--on-surface);outline:none;" />
+            </div>
+          </div>
+
+          <label class="card-label" style="display:block;margin-bottom:4px;">Field Notes</label>
+          <textarea id="obs-note-form" class="obs-input" style="min-height:100px;margin-bottom:16px;" placeholder="Describe the specific state, texture, or environmental context..."></textarea>
+
+          <div style="display:flex;gap:12px;justify-content:flex-end;">
+            <button onclick="document.getElementById('obs-note-form').value=''" style="padding:10px 20px;background:none;border:none;font-family:inherit;font-size:13px;color:var(--on-surface-dim);cursor:pointer;">Discard</button>
+            <button onclick="submitObservationForm()" style="padding:10px 24px;background:var(--primary);color:white;border:none;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">Record Observation</button>
+          </div>
+        </div>
+
+        <!-- Station Insight sidebar -->
+        <div>
+          <div class="card" style="padding:16px;margin-bottom:12px;">
+            <div class="card-label">Station Insight</div>
+            <div style="font-size:13px;color:var(--on-surface-dim);margin-top:6px;line-height:1.6;" id="obs-insight">
+              Your observations build a personal phenological record. Over time, the system will show you how this year's timing compares to previous years.
+            </div>
+          </div>
+          <div class="card" style="padding:16px;">
+            <div class="card-label">Quick Tags</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;" id="quick-tags">
+              <button class="tag-btn" onclick="addTag('first sighting')">first sighting</button>
+              <button class="tag-btn" onclick="addTag('flowering')">flowering</button>
+              <button class="tag-btn" onclick="addTag('calling')">calling</button>
+              <button class="tag-btn" onclick="addTag('scent')">scent</button>
+              <button class="tag-btn" onclick="addTag('light change')">light change</button>
+              <button class="tag-btn" onclick="addTag('temperature shift')">temperature shift</button>
+              <button class="tag-btn" onclick="addTag('frost')">frost</button>
+              <button class="tag-btn" onclick="addTag('fungi')">fungi</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Observation log -->
+      <div class="section-title" style="margin-top:32px;">Recorded Observations</div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <button class="filter-btn active" onclick="filterObs(this,'all')">All</button>
+        <button class="filter-btn" onclick="filterObs(this,'canopy')">Canopy</button>
+        <button class="filter-btn" onclick="filterObs(this,'bird')">Birds</button>
+        <button class="filter-btn" onclick="filterObs(this,'flowering')">Flowering</button>
+        <button class="filter-btn" onclick="filterObs(this,'atmosphere')">Atmosphere</button>
+        <button class="filter-btn" onclick="filterObs(this,'scent')">Scent</button>
+      </div>
       <div id="obs-log-list"></div>
     </div>
 
@@ -680,12 +780,22 @@ function renderObservationsList(obs) {
 async function loadObservations() {
   const obs = await fetch('/api/observations').then(r => r.json());
   const el = document.getElementById('obs-log-list');
-  el.innerHTML = (obs || []).map(o => `
-    <div style="padding:12px 0;border-bottom:1px solid var(--surface-container);">
-      <div style="font-family:Inter,sans-serif;font-size:11px;color:var(--on-surface-faint);">${o.date}${o.tags ? ' — ' + o.tags : ''}</div>
-      <div style="font-size:14px;margin-top:4px;">${o.note}</div>
-    </div>
-  `).join('') || '<p style="color:var(--on-surface-faint);">No observations recorded yet. Use the panel on the right to add your first.</p>';
+  // Set default date on form
+  document.getElementById('obs-date').value = new Date().toISOString().slice(0, 10);
+
+  el.innerHTML = (obs || []).map(o => {
+    const tags = o.tags || '';
+    const categoryLabel = tags ? `<span class="season-badge phase-growth" style="font-size:9px;padding:2px 6px;">${tags}</span>` : '';
+    return `
+      <div class="obs-log-item card" style="margin-bottom:8px;padding:14px;" data-tags="${tags}">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          ${categoryLabel}
+          <span style="font-family:Inter,sans-serif;font-size:11px;color:var(--on-surface-faint);">${o.date}</span>
+        </div>
+        <div style="font-size:13px;line-height:1.5;">${o.note}</div>
+      </div>
+    `;
+  }).join('') || '<div class="card" style="padding:20px;color:var(--on-surface-faint);">No observations recorded yet. Use the form above to add your first.</div>';
 }
 
 async function submitObservation() {
@@ -700,6 +810,45 @@ async function submitObservation() {
   document.getElementById('obs-note').value = '';
   const obs = await fetch('/api/observations').then(r => r.json());
   renderObservationsList(obs);
+}
+
+async function submitObservationForm() {
+  const note = document.getElementById('obs-note-form').value.trim();
+  const category = document.getElementById('obs-category').value;
+  const dateInput = document.getElementById('obs-date').value;
+  if (!note) return;
+  const obsDate = dateInput || new Date().toISOString().slice(0, 10);
+  const tags = category || null;
+  await fetch('/api/observations', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ date: obsDate, note, tags }),
+  });
+  document.getElementById('obs-note-form').value = '';
+  loadObservations();
+  const obs = await fetch('/api/observations').then(r => r.json());
+  renderObservationsList(obs);
+}
+
+function addTag(tag) {
+  const textarea = document.getElementById('obs-note-form');
+  const current = textarea.value;
+  if (!current.includes(`#${tag}`)) {
+    textarea.value = current + (current ? ' ' : '') + `#${tag}`;
+  }
+}
+
+function filterObs(btn, category) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const items = document.querySelectorAll('.obs-log-item');
+  items.forEach(item => {
+    if (category === 'all' || item.dataset.tags === category || !category) {
+      item.style.display = '';
+    } else {
+      item.style.display = 'none';
+    }
+  });
 }
 
 async function syncData() {

@@ -32,3 +32,14 @@ GBIF_API = "https://api.gbif.org/v1/occurrence/search"
 CLIMATEWATCH_DATASET = "3fab912e-e927-4f1c-a97c-eb446cd609e0"
 GBIF_LAT_RANGE = (-38.0, -37.0)
 GBIF_LON_RANGE = (144.0, 146.0)
+
+# Melbourne Water
+MELB_WATER_API = "https://data-melbournewater.opendata.arcgis.com/api/v3/datasets"
+
+# City of Melbourne
+COM_API = "https://data.melbourne.vic.gov.au/api/explore/v2.1/catalog/datasets"
+COM_MICROCLIMATE_DATASET = "microclimate-sensor-readings"
+COM_SOIL_DATASET = "soil-sensor-readings"
+
+# SILO
+SILO_API = "https://www.longpaddock.qld.gov.au/cgi-bin/silo/DataDrillDataset.php"
