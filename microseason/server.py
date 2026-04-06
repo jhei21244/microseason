@@ -231,6 +231,71 @@ def create_app(db_path: str | None = None) -> FastAPI:
             "day_length": [dict(r) for r in astro],
         }
 
+    # ── Year-over-Year comparison ────────────────────────────
+
+    @app.get("/api/yoy/temperature")
+    async def yoy_temperature():
+        """Monthly temperature averages for YoY comparison."""
+        conn = db.connect()
+        rows = conn.execute(
+            """SELECT substr(date,1,7) as month,
+                      AVG(mean_temp) as avg_temp,
+                      MIN(min_temp) as coldest,
+                      MAX(max_temp) as hottest,
+                      SUM(precipitation) as total_rain,
+                      COUNT(*) as days
+               FROM daily_weather
+               GROUP BY month ORDER BY month"""
+        ).fetchall()
+        return [dict(r) for r in rows]
+
+    @app.get("/api/yoy/species")
+    async def yoy_species():
+        """Monthly species diversity for YoY comparison."""
+        conn = db.connect()
+        rows = conn.execute(
+            """SELECT substr(observed_on,1,7) as month,
+                      COUNT(*) as total_obs,
+                      COUNT(DISTINCT taxon_name) as unique_species,
+                      COUNT(DISTINCT CASE WHEN iconic_taxon='Aves' THEN taxon_name END) as bird_species,
+                      COUNT(DISTINCT CASE WHEN iconic_taxon='Plantae' THEN taxon_name END) as plant_species,
+                      COUNT(DISTINCT CASE WHEN iconic_taxon='Insecta' THEN taxon_name END) as insect_species,
+                      COUNT(DISTINCT CASE WHEN iconic_taxon='Fungi' THEN taxon_name END) as fungi_species
+               FROM species_observations
+               WHERE observed_on IS NOT NULL
+               GROUP BY month ORDER BY month"""
+        ).fetchall()
+        return [dict(r) for r in rows]
+
+    @app.get("/api/yoy/transitions")
+    async def yoy_transitions():
+        """All detected transitions with timing data."""
+        conn = db.connect()
+        rows = conn.execute(
+            """SELECT name, start_date, end_date, phase, confidence, trigger_signals,
+                      julianday(end_date) - julianday(start_date) as duration_days
+               FROM microseasons ORDER BY start_date"""
+        ).fetchall()
+        result = []
+        for r in rows:
+            d = dict(r)
+            if d.get("trigger_signals"):
+                try:
+                    d["trigger_signals"] = json.loads(d["trigger_signals"])
+                except (json.JSONDecodeError, TypeError):
+                    pass
+            result.append(d)
+        return result
+
+    @app.get("/api/yoy/day-length")
+    async def yoy_day_length():
+        """Day length curve across the year."""
+        conn = db.connect()
+        rows = conn.execute(
+            "SELECT date, day_length_seconds FROM astronomy ORDER BY date"
+        ).fetchall()
+        return [{"date": r[0], "minutes": round(r[1] / 60, 1) if r[1] else None} for r in rows]
+
     # ── Stats ──────────────────────────────────────────────
 
     @app.get("/api/stats")

@@ -394,6 +394,7 @@ body {
     <button class="nav-item active" data-page="dashboard"><span class="nav-icon">◉</span> Dashboard</button>
     <button class="nav-item" data-page="observations"><span class="nav-icon">◎</span> Observations</button>
     <button class="nav-item" data-page="core-sample"><span class="nav-icon">◍</span> Core Sample</button>
+    <button class="nav-item" data-page="comparison"><span class="nav-icon">◫</span> Year Comparison</button>
 
     <div class="sidebar-footer">
       <button class="sync-btn" onclick="syncData()">Sync Field Data</button>
@@ -459,6 +460,34 @@ body {
         </div>
       </div>
     </div>
+
+    <!-- Year Comparison page -->
+    <div class="page" id="page-comparison">
+      <p class="page-date">Historical Shifts & Yearly Rhythms</p>
+      <h1 class="page-title">Year Comparison</h1>
+      <p class="page-subtitle">How this year's ecological signals compare to the long-term pattern. Where transitions arrived early or late.</p>
+
+      <div class="section-title">Temperature Curve</div>
+      <div class="core-section" style="padding:20px;">
+        <canvas id="temp-chart" width="800" height="280"></canvas>
+      </div>
+
+      <div class="section-title">Day Length Curve</div>
+      <div class="core-section" style="padding:20px;">
+        <canvas id="daylen-chart" width="800" height="200"></canvas>
+      </div>
+
+      <div class="section-title">Detected Transitions</div>
+      <div id="transitions-list"></div>
+
+      <div class="section-title">Monthly Species Diversity</div>
+      <div class="core-section" style="padding:20px;">
+        <canvas id="species-chart" width="800" height="280"></canvas>
+      </div>
+
+      <div class="section-title">Monthly Breakdown</div>
+      <div class="card-grid" id="monthly-cards"></div>
+    </div>
   </main>
 
   <!-- Right panel -->
@@ -509,6 +538,7 @@ document.querySelectorAll('.nav-item').forEach(btn => {
     document.getElementById('page-' + btn.dataset.page).classList.add('active');
     if (btn.dataset.page === 'core-sample') drawCoreSample();
     if (btn.dataset.page === 'observations') loadObservations();
+    if (btn.dataset.page === 'comparison') loadComparison();
   });
 });
 
@@ -866,6 +896,266 @@ async function drawCoreSample() {
     ctx.font = '11px Inter, sans-serif';
     ctx.fillText('day ' + doy + ' of 365', CX, CY + 14);
   }
+}
+
+// ── Year Comparison ──
+
+async function loadComparison() {
+  try {
+    const [temps, species, transitions, daylen] = await Promise.all([
+      fetch('/api/yoy/temperature').then(r => r.json()),
+      fetch('/api/yoy/species').then(r => r.json()),
+      fetch('/api/yoy/transitions').then(r => r.json()),
+      fetch('/api/yoy/day-length').then(r => r.json()),
+    ]);
+    drawTempChart(temps);
+    drawDayLenChart(daylen);
+    drawSpeciesChart(species);
+    renderTransitions(transitions);
+    renderMonthlyCards(temps);
+  } catch (err) { console.error('Comparison load failed:', err); }
+}
+
+function drawLineChart(canvasId, data, xKey, yKey, color, yLabel, opts = {}) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const pad = { l: 50, r: 20, t: 20, b: 30 };
+  const cw = W - pad.l - pad.r, ch = H - pad.t - pad.b;
+
+  ctx.clearRect(0, 0, W, H);
+
+  const vals = data.map(d => d[yKey]).filter(v => v != null);
+  if (!vals.length) return;
+  const minY = opts.minY ?? Math.min(...vals);
+  const maxY = opts.maxY ?? Math.max(...vals);
+  const rangeY = maxY - minY || 1;
+
+  // Y axis labels
+  ctx.fillStyle = 'var(--on-surface-faint)';
+  ctx.font = '10px Inter, sans-serif';
+  ctx.textAlign = 'right';
+  for (let i = 0; i <= 4; i++) {
+    const v = minY + (rangeY / 4) * i;
+    const y = pad.t + ch - (i / 4) * ch;
+    ctx.fillText(v.toFixed(1), pad.l - 8, y + 3);
+    ctx.beginPath();
+    ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y);
+    ctx.strokeStyle = 'rgba(0,0,0,0.06)'; ctx.lineWidth = 0.5; ctx.stroke();
+  }
+
+  // Y label
+  ctx.save();
+  ctx.translate(12, pad.t + ch / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'var(--on-surface-faint)';
+  ctx.font = '10px Inter, sans-serif';
+  ctx.fillText(yLabel, 0, 0);
+  ctx.restore();
+
+  // Draw line
+  ctx.beginPath();
+  data.forEach((d, i) => {
+    if (d[yKey] == null) return;
+    const x = pad.l + (i / (data.length - 1)) * cw;
+    const y = pad.t + ch - ((d[yKey] - minY) / rangeY) * ch;
+    if (i === 0 || data[i-1][yKey] == null) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Fill under
+  if (opts.fill) {
+    ctx.lineTo(pad.l + cw, pad.t + ch);
+    ctx.lineTo(pad.l, pad.t + ch);
+    ctx.closePath();
+    ctx.fillStyle = opts.fill;
+    ctx.fill();
+  }
+
+  // X labels
+  ctx.fillStyle = 'var(--on-surface-faint)';
+  ctx.font = '10px Inter, sans-serif';
+  ctx.textAlign = 'center';
+  const step = Math.max(1, Math.floor(data.length / 12));
+  for (let i = 0; i < data.length; i += step) {
+    const x = pad.l + (i / (data.length - 1)) * cw;
+    const label = data[i][xKey] || '';
+    ctx.fillText(label.slice(5, 7) || label.slice(0, 7), x, H - 8);
+  }
+}
+
+function drawTempChart(data) {
+  // Draw avg temp as main line, with min/max as shaded area
+  const canvas = document.getElementById('temp-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const pad = { l: 50, r: 20, t: 20, b: 30 };
+  const cw = W - pad.l - pad.r, ch = H - pad.t - pad.b;
+
+  ctx.clearRect(0, 0, W, H);
+
+  const allTemps = data.flatMap(d => [d.coldest, d.hottest]).filter(v => v != null);
+  const minY = Math.min(...allTemps);
+  const maxY = Math.max(...allTemps);
+  const rangeY = maxY - minY || 1;
+
+  // Grid
+  ctx.fillStyle = '#8a918c';
+  ctx.font = '10px Inter, sans-serif';
+  ctx.textAlign = 'right';
+  for (let i = 0; i <= 4; i++) {
+    const v = minY + (rangeY / 4) * i;
+    const y = pad.t + ch - (i / 4) * ch;
+    ctx.fillText(v.toFixed(0) + '°', pad.l - 8, y + 3);
+    ctx.beginPath();
+    ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y);
+    ctx.strokeStyle = 'rgba(0,0,0,0.05)'; ctx.lineWidth = 0.5; ctx.stroke();
+  }
+
+  // Min-max range fill
+  ctx.beginPath();
+  data.forEach((d, i) => {
+    const x = pad.l + (i / (data.length - 1)) * cw;
+    const y = pad.t + ch - ((d.hottest - minY) / rangeY) * ch;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  for (let i = data.length - 1; i >= 0; i--) {
+    const x = pad.l + (i / (data.length - 1)) * cw;
+    const y = pad.t + ch - ((data[i].coldest - minY) / rangeY) * ch;
+    ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(45, 75, 49, 0.1)';
+  ctx.fill();
+
+  // Avg temp line
+  ctx.beginPath();
+  data.forEach((d, i) => {
+    const x = pad.l + (i / (data.length - 1)) * cw;
+    const y = pad.t + ch - ((d.avg_temp - minY) / rangeY) * ch;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = '#2D4B31';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  // X labels
+  ctx.fillStyle = '#8a918c';
+  ctx.textAlign = 'center';
+  data.forEach((d, i) => {
+    const x = pad.l + (i / (data.length - 1)) * cw;
+    ctx.fillText(d.month.slice(5), x, H - 8);
+  });
+}
+
+function drawDayLenChart(data) {
+  drawLineChart('daylen-chart', data, 'date', 'minutes', '#85B7EB', 'Day length (min)', {
+    fill: 'rgba(133, 183, 235, 0.1)',
+  });
+}
+
+function drawSpeciesChart(data) {
+  const canvas = document.getElementById('species-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const pad = { l: 50, r: 20, t: 20, b: 30 };
+  const cw = W - pad.l - pad.r, ch = H - pad.t - pad.b;
+
+  ctx.clearRect(0, 0, W, H);
+
+  const maxObs = Math.max(...data.map(d => d.total_obs));
+
+  // Stacked bars: birds, plants, insects, fungi, other
+  const colors = {
+    bird: '#97C459', plant: '#5DCAA5', insect: '#EF9F27', fungi: '#AFA9EC', other: '#ddd',
+  };
+
+  const barW = Math.max(8, (cw / data.length) - 4);
+
+  data.forEach((d, i) => {
+    const x = pad.l + (i / data.length) * cw + 2;
+    const total = d.total_obs || 1;
+    const segments = [
+      { val: d.bird_species || 0, color: colors.bird },
+      { val: d.plant_species || 0, color: colors.plant },
+      { val: d.insect_species || 0, color: colors.insect },
+      { val: d.fungi_species || 0, color: colors.fungi },
+    ];
+    const segTotal = segments.reduce((s, seg) => s + seg.val, 0) || 1;
+
+    let yOff = 0;
+    const barH = (d.unique_species / (Math.max(...data.map(dd => dd.unique_species)) || 1)) * ch;
+    segments.forEach(seg => {
+      const segH = (seg.val / segTotal) * barH;
+      ctx.fillStyle = seg.color;
+      ctx.fillRect(x, pad.t + ch - yOff - segH, barW, segH);
+      yOff += segH;
+    });
+
+    // Month label
+    ctx.fillStyle = '#8a918c';
+    ctx.font = '10px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(d.month.slice(5), x + barW / 2, H - 8);
+  });
+
+  // Legend
+  const legendY = pad.t + 4;
+  let lx = pad.l;
+  [['Birds', colors.bird], ['Plants', colors.plant], ['Insects', colors.insect], ['Fungi', colors.fungi]].forEach(([label, color]) => {
+    ctx.fillStyle = color;
+    ctx.fillRect(lx, legendY, 10, 10);
+    ctx.fillStyle = '#8a918c';
+    ctx.font = '10px Inter, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(label, lx + 14, legendY + 9);
+    lx += 70;
+  });
+}
+
+function renderTransitions(transitions) {
+  const el = document.getElementById('transitions-list');
+  if (!transitions.length) {
+    el.innerHTML = '<div class="card" style="padding:20px;color:var(--on-surface-faint);">No transitions detected yet.</div>';
+    return;
+  }
+  el.innerHTML = transitions.map(t => {
+    const phase = t.phase || 'transition';
+    const signals = Array.isArray(t.trigger_signals) ? t.trigger_signals.join(', ') : (t.trigger_signals || '');
+    const dur = t.duration_days ? Math.round(t.duration_days) + ' days' : '';
+    return `
+      <div class="card" style="margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span class="season-badge phase-${phase}">${phase}</span>
+          <span style="font-weight:600;font-size:14px;">${t.name}</span>
+        </div>
+        <div style="font-size:12px;color:var(--on-surface-dim);">
+          ${t.start_date} → ${t.end_date} ${dur ? '(' + dur + ')' : ''}
+        </div>
+        <div style="font-family:Inter,sans-serif;font-size:10px;color:var(--on-surface-faint);margin-top:4px;">
+          Signals: ${signals} | Confidence: ${(t.confidence * 100).toFixed(0)}%
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderMonthlyCards(temps) {
+  const el = document.getElementById('monthly-cards');
+  el.innerHTML = temps.map(d => `
+    <div class="card">
+      <div class="card-label">${d.month}</div>
+      <div class="card-value">${d.avg_temp?.toFixed(1) ?? '--'}<span class="card-unit">°C</span></div>
+      <div class="card-detail">${d.coldest?.toFixed(0) ?? '--'}° – ${d.hottest?.toFixed(0) ?? '--'}° | ${d.total_rain?.toFixed(0) ?? 0}mm rain</div>
+    </div>
+  `).join('');
 }
 
 // ── Init ──
