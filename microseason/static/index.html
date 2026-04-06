@@ -40,7 +40,7 @@ body {
 
 /* ── Sidebar ── */
 .sidebar {
-  background: var(--surface-low);
+  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-container) 100%);
   padding: 24px 16px;
   display: flex;
   flex-direction: column;
@@ -48,10 +48,11 @@ body {
 }
 
 .logo {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--primary);
+  font-size: 18px;
+  font-weight: 700;
+  color: #c8ecc8;
   margin-bottom: 4px;
+  letter-spacing: -0.02em;
 }
 
 .logo-sub {
@@ -59,7 +60,7 @@ body {
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--on-surface-faint);
+  color: rgba(200, 236, 200, 0.5);
   margin-bottom: 24px;
 }
 
@@ -71,7 +72,7 @@ body {
   border-radius: 8px;
   font-size: 13px;
   font-weight: 500;
-  color: var(--on-surface-dim);
+  color: rgba(200, 236, 200, 0.7);
   cursor: pointer;
   transition: all 0.15s;
   border: none;
@@ -80,10 +81,10 @@ body {
   text-align: left;
 }
 
-.nav-item:hover { background: var(--surface-container); }
+.nav-item:hover { background: rgba(255,255,255,0.08); }
 .nav-item.active {
-  background: var(--primary-fixed);
-  color: var(--primary);
+  background: rgba(255,255,255,0.12);
+  color: #c8ecc8;
   font-weight: 600;
 }
 
@@ -97,30 +98,31 @@ body {
 .sync-btn {
   width: 100%;
   padding: 10px;
-  background: var(--primary);
-  color: white;
-  border: none;
+  background: rgba(255,255,255,0.12);
+  color: #c8ecc8;
+  border: 1px solid rgba(200,236,200,0.2);
   border-radius: 8px;
   font-family: inherit;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: all 0.15s;
 }
-.sync-btn:hover { opacity: 0.85; }
+.sync-btn:hover { background: rgba(255,255,255,0.18); }
 
 .db-stats {
   margin-top: 12px;
   font-family: 'Inter', sans-serif;
   font-size: 10px;
-  color: var(--on-surface-faint);
+  color: rgba(200, 236, 200, 0.4);
   line-height: 1.8;
 }
 
 /* ── Main content ── */
 .main {
-  padding: 32px 40px;
+  padding: 32px 48px;
   overflow-y: auto;
+  background: var(--surface);
 }
 
 .page-title {
@@ -156,7 +158,7 @@ body {
 }
 
 .card {
-  background: var(--surface-low);
+  background: #ffffff;
   border-radius: 12px;
   padding: 16px;
 }
@@ -210,7 +212,7 @@ body {
 }
 
 .species-card {
-  background: var(--surface-low);
+  background: #ffffff;
   border-radius: 10px;
   padding: 12px;
 }
@@ -235,8 +237,8 @@ body {
 
 /* ── Core sample ── */
 .core-section {
-  margin-top: 32px;
-  background: var(--surface-low);
+  margin-top: 16px;
+  background: #ffffff;
   border-radius: 16px;
   padding: 24px;
 }
