@@ -12,6 +12,7 @@ from pydantic import BaseModel
 from .database import Database
 from .detector import TransitionDetector
 from .auto_observations import seed_auto_observations
+from .narrator import get_todays_narrative
 
 STATIC_DIR = Path(__file__).parent / "static"
 
@@ -125,6 +126,16 @@ def create_app(db_path: str | None = None) -> FastAPI:
             "phenology_markers": [{"name": r[0], "taxon": r[1], "iconic_taxon": r[2], "count": r[3]} for r in phenology_markers],
             "top_species": [{"name": r[0], "taxon": r[1], "iconic_taxon": r[2], "count": r[3]} for r in top_species],
         }
+
+    # ── Narrative ──────────────────────────────────────────
+
+    @app.get("/api/narrative")
+    async def daily_narrative():
+        """Today's LLM-generated ecological narrative. Cached per day."""
+        narrative = get_todays_narrative(db)
+        if narrative:
+            return narrative
+        return {"headline": "Observing...", "body": "Collecting signals.", "forecast": ""}
 
     # ── Weather ────────────────────────────────────────────
 

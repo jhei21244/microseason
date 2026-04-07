@@ -293,16 +293,29 @@ document.querySelectorAll('[data-page]').forEach(btn => {
 
 async function loadDashboard(){
   try{
-    const[now,stats]=await Promise.all([fetch('/api/now').then(r=>r.json()),fetch('/api/stats').then(r=>r.json())]);
-    renderDashboard(now);renderStats(stats);loadTransitionQuestion();
+    const[now,stats,narrative]=await Promise.all([
+      fetch('/api/now').then(r=>r.json()),
+      fetch('/api/stats').then(r=>r.json()),
+      fetch('/api/narrative').then(r=>r.json()),
+    ]);
+    renderDashboard(now,narrative);renderStats(stats);loadTransitionQuestion();
   }catch(e){console.error(e);}
 }
 
-function renderDashboard(d){
+function renderDashboard(d,narrative){
   document.getElementById('current-date').textContent=new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const s=d.active_microseasons?.[0];
-  document.getElementById('season-name').textContent=s?s.name:'Observing...';
-  document.getElementById('season-desc').textContent=s?.description||'Collecting signals. Transitions will appear as patterns emerge.';
+
+  // Narrative-driven headline
+  if(narrative && narrative.headline && narrative.headline!=='Observing...'){
+    document.getElementById('season-name').textContent=narrative.headline;
+    let desc=narrative.body||'';
+    if(narrative.forecast)desc+=` ${narrative.forecast}`;
+    document.getElementById('season-desc').textContent=desc;
+  }else{
+    const s=d.active_microseasons?.[0];
+    document.getElementById('season-name').textContent=s?s.name:'Observing...';
+    document.getElementById('season-desc').textContent=s?.description||'Collecting signals. Transitions will appear as patterns emerge.';
+  }
   const sig=d.signals||{};const tr=sig.temp_7d_trend;
   if(tr!=null){
     document.getElementById('pheno-metric').innerHTML=`${Math.abs(tr).toFixed(1)}<span class="text-2xl ml-1 font-bold">°C</span>`;
