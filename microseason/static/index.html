@@ -73,8 +73,8 @@ tailwind.config = {
   <div class="flex items-center gap-8">
     <span class="text-xl font-extrabold text-primary tracking-tight">Phenological Intelligence</span>
     <nav class="hidden lg:flex gap-6">
-      <a class="text-primary border-b-2 border-primary pb-1 font-bold text-sm" href="#">Field Guide</a>
-      <a class="text-on-surface-variant/70 hover:text-primary transition-colors font-bold text-sm" href="#">Data Exports</a>
+      <a class="text-primary border-b-2 border-primary pb-1 font-bold text-sm cursor-pointer" onclick="document.querySelector('[data-page=comparisons]').click()">Field Guide</a>
+      <a class="text-on-surface-variant/70 hover:text-primary transition-colors font-bold text-sm cursor-pointer" onclick="window.open('/api/stats','_blank')">Data Exports</a>
     </nav>
   </div>
   <div class="flex items-center gap-4">
@@ -311,13 +311,41 @@ async function loadObservations(){
   document.getElementById('season-summary-detail').textContent=`Rain: ${sig.rain_7d_total??'--'}mm | UV: ${sig.uv_7d_avg??'--'} | Species: ${sig.species_diversity_7d??'--'}`;
   document.getElementById('diversity-count').textContent=sig.species_diversity_7d??'--';
 }
-function filterObs(btn,cat){btn.parentElement.querySelectorAll('button').forEach(b=>{b.classList.remove('bg-primary','text-white');b.classList.add('bg-surface-container','text-on-surface-variant');});btn.classList.remove('bg-surface-container','text-on-surface-variant');btn.classList.add('bg-primary','text-white');document.querySelectorAll('.obs-log-item').forEach(i=>{i.style.display=(cat==='all'||i.dataset.tags===cat)?'':'none';});}
+function filterObs(btn,cat){
+  btn.parentElement.querySelectorAll('button').forEach(b=>{
+    b.className='px-4 py-2 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold hover:bg-surface-container-high';
+  });
+  btn.className='px-4 py-2 rounded-full bg-primary text-white text-[11px] font-bold';
+  document.querySelectorAll('.obs-log-item').forEach(i=>{
+    i.style.display=(cat==='all'||i.dataset.tags===cat)?'':'none';
+  });
+}
 
-function initNewEntry(){document.getElementById('obs-date').value=new Date().toISOString().slice(0,10);updateDOY();document.getElementById('obs-date').addEventListener('change',updateDOY);}
+function initNewEntry(){document.getElementById('obs-date').value=new Date().toISOString().slice(0,10);updateDOY();document.getElementById('obs-date').onchange=updateDOY;}
 function updateDOY(){const d=new Date(document.getElementById('obs-date').value);document.getElementById('obs-doy').textContent=`DOY ${Math.floor((d-new Date(d.getFullYear(),0,0))/86400000)}`;}
-async function submitObservationForm(){const n=document.getElementById('obs-note-form').value.trim();if(!n)return;await fetch('/api/observations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({date:document.getElementById('obs-date').value||new Date().toISOString().slice(0,10),note:n,tags:document.getElementById('obs-category').value||null})});document.getElementById('obs-note-form').value='';document.querySelector('[data-page=observations]').click();}
-function addTag(t){const a=document.getElementById('obs-note-form');if(!a.value.includes('#'+t))a.value+=((a.value?' ':'')+('#'+t));}
-async function syncData(){try{await fetch('/api/microseasons/detect?lookback=90');await loadDashboard();}catch(e){}}
+async function submitObservationForm(){
+  const n=document.getElementById('obs-note-form').value.trim();
+  if(!n){alert('Please enter a field note.');return;}
+  const cat=document.getElementById('obs-category').value;
+  const obsDate=document.getElementById('obs-date').value||new Date().toISOString().slice(0,10);
+  const btn=document.querySelector('[onclick="submitObservationForm()"]');
+  if(btn){btn.textContent='Saving...';btn.disabled=true;}
+  try{
+    const resp=await fetch('/api/observations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({date:obsDate,note:n,tags:cat||null})});
+    if(!resp.ok)throw new Error('Save failed');
+    document.getElementById('obs-note-form').value='';
+    document.getElementById('obs-category').value='';
+    document.querySelector('[data-page=observations]').click();
+  }catch(e){alert('Failed to save observation: '+e.message);}
+  finally{if(btn){btn.textContent='Record Observation';btn.disabled=false;}}
+}
+function addTag(t){const a=document.getElementById('obs-note-form');const tag='#'+t;if(!a.value.includes(tag)){a.value=a.value?(a.value+' '+tag):tag;}}
+async function syncData(){
+  const btn=document.querySelector('[onclick="syncData()"]');
+  if(btn){btn.textContent='Syncing...';btn.disabled=true;}
+  try{await fetch('/api/microseasons/detect?lookback=90');await loadDashboard();}catch(e){console.error('Sync failed:',e);}
+  finally{if(btn){btn.textContent='Sync Field Data';btn.disabled=false;}}
+}
 
 // Core Sample
 const palette={dormancy:{l:'#FAEEDA',m:'#EF9F27'},awakening:{l:'#EAF3DE',m:'#97C459'},flowering:{l:'#FBEAF0',m:'#ED93B1'},growth:{l:'#E1F5EE',m:'#5DCAA5'},fruiting:{l:'#FAECE7',m:'#F0997B'},drying:{l:'#FAEEDA',m:'#FAC775'},cooling:{l:'#E6F1FB',m:'#85B7EB'},rain:{l:'#EEEDFE',m:'#AFA9EC'},transition:{l:'#f0f0ec',m:'#aaa'}};
