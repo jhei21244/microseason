@@ -87,6 +87,28 @@ def create_app(db_path: str | None = None) -> FastAPI:
                GROUP BY iconic_taxon ORDER BY count DESC""",
         ).fetchall()
 
+        # Phenological markers — species typically active this month from ClimateWatch
+        current_month = date.today().month
+        month_str = f"{current_month:02d}"
+        phenology_markers = conn.execute(
+            """SELECT common_name, taxon_name, iconic_taxon, COUNT(*) as obs_count,
+                      MIN(observed_on) as earliest, MAX(observed_on) as latest
+               FROM species_observations
+               WHERE source = 'gbif' AND common_name IS NOT NULL
+                     AND substr(observed_on, 6, 2) = ?
+               GROUP BY taxon_name
+               ORDER BY obs_count DESC LIMIT 12""",
+            (month_str,),
+        ).fetchall()
+
+        # Top species this week (most observed)
+        top_species = conn.execute(
+            """SELECT common_name, taxon_name, iconic_taxon, COUNT(*) as count
+               FROM species_observations
+               WHERE observed_on >= date('now', '-7 days') AND common_name IS NOT NULL
+               GROUP BY taxon_name ORDER BY count DESC LIMIT 10"""
+        ).fetchall()
+
         return {
             "date": today,
             "weather": dict(weather) if weather else None,
@@ -95,6 +117,8 @@ def create_app(db_path: str | None = None) -> FastAPI:
             "signals": signals,
             "active_microseasons": [dict(s) for s in seasons],
             "species_pulse": [{"taxon": r[0], "observations": r[1], "species": r[2]} for r in species_pulse],
+            "phenology_markers": [{"name": r[0], "taxon": r[1], "iconic_taxon": r[2], "count": r[3]} for r in phenology_markers],
+            "top_species": [{"name": r[0], "taxon": r[1], "iconic_taxon": r[2], "count": r[3]} for r in top_species],
         }
 
     # ── Weather ────────────────────────────────────────────
