@@ -11,6 +11,7 @@ from pydantic import BaseModel
 
 from .database import Database
 from .detector import TransitionDetector
+from .auto_observations import seed_auto_observations
 
 STATIC_DIR = Path(__file__).parent / "static"
 
@@ -30,6 +31,10 @@ def create_app(db_path: str | None = None) -> FastAPI:
     @app.on_event("startup")
     async def startup():
         db.connect()
+        # Seed auto-generated observations if the log is empty
+        count = seed_auto_observations(db)
+        if count:
+            print(f"  Seeded {count} auto-generated observations")
 
     @app.on_event("shutdown")
     async def shutdown():
@@ -169,6 +174,63 @@ def create_app(db_path: str | None = None) -> FastAPI:
             (f"-{days}", limit),
         ).fetchall()
         return [dict(r) for r in rows]
+
+    # ── Transition Questions (conversational surfacing) ─────
+
+    @app.get("/api/transition-question")
+    async def transition_question():
+        """Surface the most recent detected transition as a natural language question."""
+        conn = db.connect()
+
+        # Get latest transition
+        row = conn.execute(
+            "SELECT * FROM microseasons ORDER BY created_at DESC LIMIT 1"
+        ).fetchone()
+        if not row:
+            return {"question": None}
+
+        ms = dict(row)
+        signals_raw = ms.get("trigger_signals", "[]")
+        try:
+            signals = json.loads(signals_raw) if isinstance(signals_raw, str) else signals_raw
+        except (json.JSONDecodeError, TypeError):
+            signals = []
+
+        # Build a natural language question from the signals
+        sig = db.connect().execute(
+            "SELECT * FROM signal_daily ORDER BY date DESC LIMIT 1"
+        ).fetchone()
+
+        parts = []
+        if sig:
+            sig = dict(sig)
+            if sig.get("temp_7d_trend") and abs(sig["temp_7d_trend"]) > 0.5:
+                dir_word = "warmed" if sig["temp_7d_trend"] > 0 else "cooled"
+                parts.append(f"Temperature {dir_word} {abs(sig['temp_7d_trend']):.1f}° this week")
+            if sig.get("rain_7d_total") and sig["rain_7d_total"] > 5:
+                parts.append(f"Rainfall totalled {sig['rain_7d_total']:.0f}mm over 7 days")
+            if sig.get("day_length_change") and abs(sig["day_length_change"]) > 300:
+                min_change = abs(sig["day_length_change"]) // 60
+                dir_word = "longer" if sig["day_length_change"] > 0 else "shorter"
+                parts.append(f"Days are {min_change} minutes {dir_word} than last week")
+            if sig.get("species_diversity_7d") and sig["species_diversity_7d"] > 100:
+                parts.append(f"{sig['species_diversity_7d']} species observed this week")
+
+        if not parts:
+            parts = [ms.get("name", "A shift")]
+
+        question = ". ".join(parts) + f". Is the {ms.get('phase', 'transition')} here?"
+
+        return {
+            "question": question,
+            "transition": {
+                "name": ms.get("name"),
+                "phase": ms.get("phase"),
+                "start_date": ms.get("start_date"),
+                "end_date": ms.get("end_date"),
+                "signals": signals,
+            },
+        }
 
     # ── Microseasons ───────────────────────────────────────
 
