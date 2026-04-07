@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS daily_weather (
     wind_speed REAL, wind_direction REAL,
     pressure REAL, uv_index_max REAL,
     soil_temp_0cm REAL, soil_moisture_0_1cm REAL,
-    cloud_cover REAL,
+    cloud_cover REAL, evapotranspiration REAL,
     created_at REAL
 );
 
@@ -199,11 +199,11 @@ class Database:
 
     # ── Personal observations ──────────────────────────────
 
-    def add_observation(self, date: str, note: str, tags: str | None = None):
+    def add_observation(self, date: str, note: str, tags: str | None = None, source: str = "user"):
         conn = self.connect()
         conn.execute(
-            "INSERT INTO personal_observations (date, note, tags, created_at) VALUES (?,?,?,?)",
-            (date, note, tags, time.time()),
+            "INSERT INTO personal_observations (date, note, tags, source, created_at) VALUES (?,?,?,?,?)",
+            (date, note, tags, source, time.time()),
         )
         conn.commit()
 

@@ -12,6 +12,7 @@ DAILY_VARS = [
     "windspeed_10m_max", "winddirection_10m_dominant",
     "pressure_msl_mean", "uv_index_max",
     "shortwave_radiation_sum", "cloud_cover_mean",
+    "et0_fao_evapotranspiration",
 ]
 
 HOURLY_VARS = ["soil_temperature_0cm", "soil_moisture_0_to_1cm"]
@@ -55,8 +56,10 @@ class WeatherCollector:
             soil_temp_0cm=sum(soil_temps) / len(soil_temps) if soil_temps else None,
             soil_moisture_0_1cm=sum(soil_moist) / len(soil_moist) if soil_moist else None,
             cloud_cover=d.get("cloud_cover_mean", [None])[0],
+            evapotranspiration=d.get("et0_fao_evapotranspiration", [None])[0],
         )
-        print(f"  weather: {today} — {d['temperature_2m_min'][0]}°/{d['temperature_2m_max'][0]}°")
+        et0 = d.get("et0_fao_evapotranspiration", [None])[0]
+        print(f"  weather: {today} — {d['temperature_2m_min'][0]}°/{d['temperature_2m_max'][0]}° ET0={et0}mm")
         return 1
 
     def backfill(self, days: int = 365) -> int:
@@ -109,6 +112,7 @@ class WeatherCollector:
                     soil_temp_0cm=sum(soil_t) / len(soil_t) if soil_t else None,
                     soil_moisture_0_1cm=sum(soil_m) / len(soil_m) if soil_m else None,
                     cloud_cover=d.get("cloud_cover_mean", [None] * len(dates))[i],
+                    evapotranspiration=d.get("et0_fao_evapotranspiration", [None] * len(dates))[i],
                 )
                 total += 1
 

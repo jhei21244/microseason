@@ -152,6 +152,7 @@ tailwind.config = {
         <div class="flex justify-between"><span class="text-on-surface-variant">Humidity</span><span class="font-extrabold" id="humidity-value">--%</span></div>
         <div class="flex justify-between"><span class="text-on-surface-variant">Pressure</span><span class="font-extrabold" id="pressure-value">--</span></div>
         <div class="flex justify-between"><span class="text-on-surface-variant">Wind</span><span class="font-extrabold" id="wind-value">--</span></div>
+        <div class="flex justify-between"><span class="text-on-surface-variant">Evapotranspiration</span><span class="font-extrabold" id="et0-value">--</span></div>
       </div>
     </div>
     <div class="md:col-span-2 lg:col-span-2 bg-surface-container rounded-2xl p-6">
@@ -321,6 +322,7 @@ function renderDashboard(d){
   if(w.humidity!=null)document.getElementById('humidity-value').textContent=Math.round(w.humidity)+'%';
   if(w.pressure!=null)document.getElementById('pressure-value').textContent=Math.round(w.pressure)+' hPa';
   if(w.wind_speed!=null)document.getElementById('wind-value').textContent=w.wind_speed.toFixed(0)+' km/h';
+  if(w.evapotranspiration!=null)document.getElementById('et0-value').textContent=w.evapotranspiration.toFixed(1)+' mm';
   const a=d.astronomy||{};
   if(a.day_length_seconds){const h=Math.floor(a.day_length_seconds/3600),m=Math.floor((a.day_length_seconds%3600)/60);document.getElementById('daylen-value').textContent=`${h}h ${m}m`;const dlc=sig.day_length_change;if(dlc!=null)document.getElementById('daylen-detail').textContent=`${dlc>0?'+':''}${Math.round(dlc/60)}min vs last week`;}
   const tl={Aves:'Birds',Plantae:'Plants',Insecta:'Insects',Fungi:'Fungi',Mammalia:'Mammals',Magnoliopsida:'Flowering Plants'};
@@ -347,7 +349,14 @@ function renderStats(s){const c=s.row_counts||{};document.getElementById('db-sta
 async function loadObservations(){
   const[obs,now]=await Promise.all([fetch('/api/observations').then(r=>r.json()),fetch('/api/now').then(r=>r.json())]);
   const sig=now.signals||{};document.getElementById('obs-phase-label').textContent=now.active_microseasons?.[0]?.phase||'Sensing';
-  document.getElementById('obs-log-list').innerHTML=(obs||[]).map(o=>`<div class="obs-log-item flex items-center gap-4 px-4 py-3 bg-surface-container-lowest rounded-xl hover:bg-surface-container-low transition-colors" data-tags="${o.tags||''}"><div class="w-2 h-2 rounded-full bg-primary flex-shrink-0"></div><div class="flex-grow"><p class="text-sm font-semibold">${o.note}</p></div>${o.tags?`<span class="px-2 py-1 rounded-md bg-primary-container text-on-primary-container text-[9px] font-bold uppercase">${o.tags}</span>`:''}<span class="text-[11px] text-on-surface-variant/60">${o.date}</span></div>`).join('')||'<p class="text-on-surface-variant/60 text-sm italic">No observations yet.</p>';
+  document.getElementById('obs-log-list').innerHTML=(obs||[]).map(o=>{
+    const isAuto=o.source==='auto';
+    const dot=isAuto?'w-2 h-2 rounded-full bg-outline/30 flex-shrink-0':'w-2 h-2 rounded-full bg-primary flex-shrink-0';
+    const style=isAuto?'opacity-60':'';
+    const badge=isAuto?'<span class="px-2 py-0.5 rounded-md bg-surface-container-high text-on-surface-variant/50 text-[8px] font-bold uppercase tracking-wider">System</span>':'';
+    const tagBadge=o.tags?`<span class="px-2 py-1 rounded-md bg-primary-container text-on-primary-container text-[9px] font-bold uppercase">${o.tags}</span>`:'';
+    return `<div class="obs-log-item flex items-center gap-4 px-4 py-3 bg-surface-container-lowest rounded-xl hover:bg-surface-container-low transition-colors ${style}" data-tags="${o.tags||''}"><div class="${dot}"></div><div class="flex-grow"><p class="text-sm ${isAuto?'font-medium':'font-semibold'}">${o.note}</p></div>${badge}${tagBadge}<span class="text-[11px] text-on-surface-variant/60">${o.date}</span></div>`;
+  }).join('')||'<p class="text-on-surface-variant/60 text-sm italic">No observations yet.</p>';
   document.getElementById('season-summary-text').textContent=sig.temp_7d_trend>0?`${sig.temp_7d_trend.toFixed(1)}° warmer than last week`:sig.temp_7d_trend<0?`${Math.abs(sig.temp_7d_trend).toFixed(1)}° cooler than last week`:'Stable temperature';
   document.getElementById('season-summary-detail').textContent=`Rain: ${sig.rain_7d_total??'--'}mm | UV: ${sig.uv_7d_avg??'--'} | Species: ${sig.species_diversity_7d??'--'}`;
   document.getElementById('diversity-count').textContent=sig.species_diversity_7d??'--';

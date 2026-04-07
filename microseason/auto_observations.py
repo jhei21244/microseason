@@ -173,6 +173,6 @@ def seed_auto_observations(db: Database) -> int:
     observations = generate_observations(db)
 
     for obs in observations:
-        db.add_observation(obs["date"], obs["note"], obs["tags"])
+        db.add_observation(obs["date"], obs["note"], obs["tags"], source="auto")
 
     return len(observations)
