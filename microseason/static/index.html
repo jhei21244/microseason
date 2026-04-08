@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Microseason — Phenological Intelligence</title>
+<meta name="description" content="Felt Seasons tracks the living world around Melbourne — season by season, signal by signal. Real-time ecological data, phenological observations, and nature's own calendar."/>
+<title>Felt Seasons — Phenological Intelligence</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -51,7 +52,7 @@ tailwind.config = {
 <!-- Sidebar -->
 <aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-container-low p-6 z-50">
   <div class="mb-10 px-2">
-    <h1 class="text-primary text-xl font-extrabold tracking-tight">Microseason</h1>
+    <h1 class="text-primary text-xl font-extrabold tracking-tight">Felt Seasons</h1>
     <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mt-1">Melbourne, Australia</p>
   </div>
   <nav class="flex-grow space-y-1">
@@ -71,7 +72,7 @@ tailwind.config = {
 <main class="md:ml-64 min-h-screen">
 <header class="flex justify-between items-center w-full px-8 py-4 sticky top-0 bg-background/80 backdrop-blur-md z-40">
   <div class="flex items-center gap-8">
-    <span class="text-xl font-extrabold text-primary tracking-tight">Phenological Intelligence</span>
+    <span class="text-xl font-extrabold text-primary tracking-tight">Felt Seasons</span>
     <nav class="hidden lg:flex gap-6">
       <a class="text-primary border-b-2 border-primary pb-1 font-bold text-sm cursor-pointer" onclick="document.querySelector('[data-page=comparisons]').click()">Field Guide</a>
       <a class="text-on-surface-variant/70 hover:text-primary transition-colors font-bold text-sm cursor-pointer" onclick="window.open('/api/stats','_blank')">Data Exports</a>
@@ -84,6 +85,19 @@ tailwind.config = {
 </header>
 
 <div class="p-8 max-w-7xl mx-auto">
+
+<!-- INTRO BANNER -->
+<div id="intro-banner" class="mb-8 bg-primary rounded-2xl p-8 text-white relative overflow-hidden" style="display:none">
+  <span class="material-symbols-outlined absolute -right-4 -bottom-4 text-9xl opacity-10">forest</span>
+  <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-6">
+    <div class="flex-grow">
+      <p class="text-[10px] font-bold uppercase tracking-widest opacity-70 mb-2">Welcome to Felt Seasons</p>
+      <h2 class="text-2xl font-extrabold mb-2">A living record of Melbourne's ecological calendar</h2>
+      <p class="text-sm opacity-80 leading-relaxed max-w-xl">Track the subtle rhythms of the natural world — temperature shifts, species activity, day length changes — and feel the season before the calendar says so.</p>
+    </div>
+    <button onclick="dismissBanner()" class="flex-shrink-0 px-6 py-3 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-bold transition-all">Explore the data →</button>
+  </div>
+</div>
 
 <!-- DASHBOARD -->
 <div class="page active" id="page-dashboard">
@@ -102,14 +116,16 @@ tailwind.config = {
   </section>
 
   <!-- Transition Question -->
-  <div id="transition-question" class="hidden mb-6 bg-primary/5 rounded-2xl p-6">
+  <div id="transition-question" class="hidden mb-6 bg-primary rounded-2xl p-6 text-white">
     <div class="flex items-start gap-4">
-      <span class="material-symbols-outlined text-primary text-3xl mt-1" style="font-variation-settings:'FILL' 1;">help</span>
+      <span class="material-symbols-outlined text-white text-3xl mt-1 opacity-80" style="font-variation-settings:'FILL' 1;">eco</span>
       <div class="flex-grow">
-        <p class="text-base font-semibold text-on-surface leading-relaxed" id="transition-q-text"></p>
+        <p class="text-[10px] font-bold uppercase tracking-widest opacity-70 mb-2">Seasonal Shift Detected</p>
+        <p class="text-base font-semibold leading-relaxed" id="transition-q-text"></p>
+        <p class="text-xs opacity-70 mt-2">Based on temperature, rainfall, day length and species activity — does this match what you're experiencing outside?</p>
         <div class="flex gap-3 mt-4">
-          <button onclick="confirmTransition(true)" class="px-5 py-2 bg-primary text-white rounded-lg text-sm font-bold hover:shadow-md transition-all">Yes, I feel it</button>
-          <button onclick="confirmTransition(false)" class="px-5 py-2 bg-surface-container text-on-surface-variant rounded-lg text-sm font-bold hover:bg-surface-container-high transition-all">Not yet</button>
+          <button onclick="confirmTransition(true)" class="px-5 py-2 bg-white text-primary rounded-lg text-sm font-bold hover:shadow-md transition-all">Yes, I feel it</button>
+          <button onclick="confirmTransition(false)" class="px-5 py-2 bg-white/20 text-white rounded-lg text-sm font-bold hover:bg-white/30 transition-all">Not yet</button>
         </div>
       </div>
     </div>
@@ -142,17 +158,23 @@ tailwind.config = {
         <div class="flex justify-between items-center"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-tertiary-container flex items-center justify-center"><span class="material-symbols-outlined text-[20px]" style="color:#38656a">water_drop</span></div><span class="font-bold text-sm">Moisture</span></div><span class="text-xl font-extrabold" id="soil-moisture">--%</span></div>
         <div class="flex justify-between items-center"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center"><span class="material-symbols-outlined text-on-primary-container text-[20px]">thermometer_gain</span></div><span class="font-bold text-sm">Temperature</span></div><span class="text-xl font-extrabold" id="soil-temp">--°C</span></div>
       </div>
-      <div class="mt-6 pt-4"><p class="text-[11px] text-primary font-bold italic" id="soil-insight"></p></div>
+      <div class="mt-6 pt-4 space-y-2">
+        <p class="text-[11px] text-primary font-bold italic" id="soil-insight"></p>
+        <p class="text-[11px] text-on-surface-variant/60 font-medium" id="conditions-insight"></p>
+      </div>
     </div>
     <div class="md:col-span-2 lg:col-span-2 bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
       <h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-4">Conditions</h4>
       <div class="space-y-3 text-sm">
         <div class="flex justify-between"><span class="text-on-surface-variant">UV Index</span><span class="font-extrabold" id="uv-value">--</span></div>
-        <div class="flex justify-between"><span class="text-on-surface-variant">Cloud</span><span class="font-extrabold" id="cloud-value">--%</span></div>
+        <div class="flex justify-between"><span class="text-on-surface-variant">Cloud cover</span><span class="font-extrabold" id="cloud-value">--%</span></div>
         <div class="flex justify-between"><span class="text-on-surface-variant">Humidity</span><span class="font-extrabold" id="humidity-value">--%</span></div>
-        <div class="flex justify-between"><span class="text-on-surface-variant">Pressure</span><span class="font-extrabold" id="pressure-value">--</span></div>
-        <div class="flex justify-between"><span class="text-on-surface-variant">Wind</span><span class="font-extrabold" id="wind-value">--</span></div>
-        <div class="flex justify-between"><span class="text-on-surface-variant">Evapotranspiration</span><span class="font-extrabold" id="et0-value">--</span></div>
+        <div id="conditions-extra" class="space-y-3 hidden">
+          <div class="flex justify-between"><span class="text-on-surface-variant">Pressure</span><span class="font-extrabold" id="pressure-value">--</span></div>
+          <div class="flex justify-between"><span class="text-on-surface-variant">Wind</span><span class="font-extrabold" id="wind-value">--</span></div>
+          <div class="flex justify-between"><span class="text-on-surface-variant text-[11px]">Evapotranspiration</span><span class="font-extrabold" id="et0-value">--</span></div>
+        </div>
+        <button onclick="document.getElementById('conditions-extra').classList.toggle('hidden');this.textContent=this.textContent.includes('more')?'Show less ↑':'Show more ↓'" class="text-[10px] font-bold text-primary/60 hover:text-primary mt-1">Show more ↓</button>
       </div>
     </div>
     <div class="md:col-span-2 lg:col-span-2 bg-surface-container rounded-2xl p-6">
@@ -162,14 +184,14 @@ tailwind.config = {
     </div>
     <div class="md:col-span-6 lg:col-span-6 mt-4">
       <div class="flex items-center justify-between mb-6">
-        <h3 class="text-xl font-extrabold tracking-tight">Biotic Activity Log</h3>
+        <h3 class="text-xl font-extrabold tracking-tight">Wildlife Activity</h3>
         <a class="text-xs font-bold text-primary uppercase tracking-widest hover:underline cursor-pointer" onclick="document.querySelector('[data-page=observations]').click()">View Full Archive</a>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="species-grid"></div>
     </div>
     <!-- Phenological Markers -->
     <div class="md:col-span-3 lg:col-span-3 mt-4">
-      <h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-4">Phenological Markers — Active This Month</h3>
+      <h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-4">What's Active This Month</h3>
       <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
         <div id="phenology-markers" class="flex flex-wrap gap-2"></div>
       </div>
@@ -177,7 +199,7 @@ tailwind.config = {
 
     <!-- Top Species This Week -->
     <div class="md:col-span-3 lg:col-span-3 mt-4">
-      <h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-4">Most Observed This Week</h3>
+      <h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-4">Most Spotted This Week</h3>
       <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
         <div id="top-species" class="space-y-2"></div>
       </div>
@@ -185,7 +207,7 @@ tailwind.config = {
 
     <!-- Signal Field -->
     <div class="md:col-span-6 lg:col-span-6 mt-2">
-      <h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-4">Signal Field</h3>
+      <h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-4">Ecological Signals</h3>
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3" id="signal-cards"></div>
     </div>
   </div>
@@ -193,22 +215,62 @@ tailwind.config = {
 
 <!-- OBSERVATIONS -->
 <div class="page" id="page-observations">
-  <section class="mb-8 flex justify-between items-start">
-    <div><h2 class="text-4xl font-extrabold tracking-tight">Observation Log</h2><p class="text-on-surface-variant/80 max-w-xl mt-3 text-base font-medium leading-relaxed">Detailed biological event tracking, synchronized with the current phenological cycle.</p></div>
-    <div class="bg-primary rounded-xl px-4 py-2 text-white"><p class="text-[9px] font-bold uppercase tracking-widest opacity-70">Current Phase</p><p class="text-sm font-extrabold" id="obs-phase-label">--</p></div>
+  <section class="mb-8 flex justify-between items-start gap-6">
+    <div>
+      <h2 class="text-4xl font-extrabold tracking-tight">Observation Log</h2>
+      <p class="text-on-surface-variant/80 max-w-xl mt-3 text-base font-medium leading-relaxed">Your field notes, recorded alongside the season's ecological rhythm.</p>
+    </div>
+    <div class="flex-shrink-0 bg-surface-container-low border border-outline/20 rounded-2xl px-5 py-4 text-right min-w-[160px]">
+      <p class="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant/50 mb-1">Current Cycle</p>
+      <div class="flex items-center gap-2 justify-end">
+        <span class="material-symbols-outlined text-primary text-[18px]" style="font-variation-settings:'FILL' 1;">event</span>
+        <p class="text-sm font-extrabold text-primary leading-tight" id="obs-phase-label">--</p>
+      </div>
+      <p class="text-[11px] text-on-surface-variant/50 font-medium mt-1" id="obs-doy-label"></p>
+    </div>
   </section>
-  <div class="flex gap-2 mb-6 flex-wrap">
-    <button class="px-4 py-2 rounded-full bg-primary text-white text-[11px] font-bold" onclick="filterObs(this,'all')">All</button>
-    <button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold hover:bg-surface-container-high" onclick="filterObs(this,'canopy')">Canopy</button>
-    <button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold hover:bg-surface-container-high" onclick="filterObs(this,'bird')">Birds</button>
-    <button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold hover:bg-surface-container-high" onclick="filterObs(this,'flowering')">Flowering</button>
-    <button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold hover:bg-surface-container-high" onclick="filterObs(this,'atmosphere')">Atmosphere</button>
-    <button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold hover:bg-surface-container-high" onclick="filterObs(this,'fungi')">Fungi</button>
+
+  <!-- Filters + Sort -->
+  <div class="flex items-center justify-between mb-6 gap-4 flex-wrap">
+    <div class="flex gap-2 flex-wrap">
+      <button class="px-4 py-2 rounded-full bg-primary text-white text-[11px] font-bold" onclick="filterObs(this,'all')">All Categories</button>
+      <button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold hover:bg-surface-container-high" onclick="filterObs(this,'canopy')">🌿 Canopy</button>
+      <button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold hover:bg-surface-container-high" onclick="filterObs(this,'bird')">🐦 Birds</button>
+      <button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold hover:bg-surface-container-high" onclick="filterObs(this,'flowering')">🌸 Flowering</button>
+      <button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold hover:bg-surface-container-high" onclick="filterObs(this,'atmosphere')">🌤 Atmosphere</button>
+      <button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold hover:bg-surface-container-high" onclick="filterObs(this,'fungi')">🍄 Fungi</button>
+      <button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold hover:bg-surface-container-high" onclick="filterObs(this,'insect')">🦋 Insects</button>
+    </div>
+    <select onchange="sortObs(this.value)" class="px-4 py-2 bg-surface-container rounded-full text-[11px] font-bold text-on-surface-variant border-none focus:ring-2 focus:ring-primary/30 cursor-pointer">
+      <option value="newest">Most Recent</option>
+      <option value="oldest">Oldest First</option>
+      <option value="category">By Category</option>
+    </select>
   </div>
-  <div id="obs-log-list" class="space-y-1"></div>
+
+  <!-- Table header -->
+  <div class="hidden md:grid grid-cols-[1fr_130px_110px_70px_120px] gap-4 px-4 pb-2 border-b border-outline/10">
+    <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-on-surface-variant/40">Biological Event</span>
+    <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-on-surface-variant/40">Category</span>
+    <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-on-surface-variant/40">Date</span>
+    <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-on-surface-variant/40">DOY</span>
+    <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-on-surface-variant/40">Variance</span>
+  </div>
+
+  <div id="obs-log-list" class="divide-y divide-outline/10"></div>
+
+  <!-- Season Summary cards -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-10">
-    <div class="bg-surface-container-low rounded-2xl p-8"><p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60 mb-3">Season Summary</p><h3 class="text-2xl font-extrabold leading-tight" id="season-summary-text">Loading...</h3><p class="text-sm text-on-surface-variant/70 mt-4 leading-relaxed" id="season-summary-detail"></p></div>
-    <div class="bg-surface-container-low rounded-2xl p-8"><p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60 mb-3">Species Diversity</p><div class="text-5xl font-extrabold text-primary tracking-tighter" id="diversity-count">--</div><p class="text-sm text-on-surface-variant/70 mt-2">unique species this week</p></div>
+    <div class="bg-primary rounded-2xl p-8 text-white">
+      <p class="text-[10px] font-bold uppercase tracking-widest opacity-70 mb-3">Season Summary</p>
+      <h3 class="text-2xl font-extrabold leading-tight" id="season-summary-text">Loading...</h3>
+      <p class="text-sm opacity-80 mt-4 leading-relaxed" id="season-summary-detail"></p>
+    </div>
+    <div class="bg-surface-container-low rounded-2xl p-8">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60 mb-3">Species Diversity</p>
+      <div class="text-5xl font-extrabold text-primary tracking-tighter" id="diversity-count">--</div>
+      <p class="text-sm text-on-surface-variant/70 mt-2">unique species this week</p>
+    </div>
   </div>
 </div>
 
@@ -269,9 +331,65 @@ tailwind.config = {
 
 <!-- CORE SAMPLE -->
 <div class="page" id="page-core-sample">
-  <h2 class="text-4xl font-extrabold tracking-tight mb-2">Core Sample</h2>
-  <p class="text-on-surface-variant/80 max-w-xl text-base font-medium leading-relaxed mb-8">A cross-section of the year. Colour maps to ecological phase.</p>
-  <div class="bg-surface-container-lowest rounded-2xl p-8 shadow-sm inline-block relative"><canvas id="core-canvas" width="600" height="600"></canvas><div id="core-tooltip" class="absolute hidden bg-white/90 backdrop-blur-md rounded-lg px-3 py-2 text-xs pointer-events-none max-w-[220px] z-10 shadow-lg"></div></div>
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+    <div class="max-w-2xl">
+      <h2 class="text-4xl font-extrabold tracking-tight mb-3">Core Sample</h2>
+      <p class="text-on-surface-variant/80 text-base font-medium leading-relaxed mb-3">Like a tree ring or geological core — each layer is a season compressed into a cross-section. The outer ring shows ecological phase. The inner rings map temperature across the year. The dashed line is today.</p>
+      <div class="flex items-start gap-2 mt-1">
+        <span class="flex-shrink-0 mt-1.5 relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-40"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-primary/70"></span></span>
+        <p class="text-sm text-primary/80 font-medium" id="core-context-text">Loading current phase...</p>
+      </div>
+    </div>
+    <button onclick="exportCoreSample()" class="flex-shrink-0 flex items-center gap-2 px-5 py-3 bg-primary text-white rounded-xl text-sm font-bold hover:shadow-md transition-all active:scale-[0.98]">
+      <span class="material-symbols-outlined text-[18px]">download</span>
+      Save as Image
+    </button>
+  </div>
+
+  <div class="flex flex-col lg:flex-row gap-8 items-start">
+    <!-- Chart -->
+    <div class="relative flex-shrink-0 p-2">
+      <canvas id="core-canvas" width="600" height="600"></canvas>
+      <div id="core-tooltip" class="absolute bg-white/90 backdrop-blur-md rounded-lg px-3 py-2 text-xs pointer-events-none max-w-[220px] z-10 shadow-lg" style="display:none"></div>
+      <p class="text-center text-[10px] text-on-surface-variant/40 font-medium mt-4">Hover over any section to explore</p>
+    </div>
+
+    <!-- Legend + summary -->
+    <div class="flex-grow space-y-6 min-w-0">
+      <!-- Phase legend -->
+      <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
+        <h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-4">Ecological Phases</h4>
+        <div class="space-y-1.5" id="core-legend">
+          <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm flex-shrink-0" style="background:#EF9F27"></div><span class="text-xs"><strong class="font-semibold">Dormancy</strong> <span class="text-on-surface-variant/50">— minimal activity</span></span></div>
+          <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm flex-shrink-0" style="background:#97C459"></div><span class="text-xs"><strong class="font-semibold">Awakening</strong> <span class="text-on-surface-variant/50">— early growth signals</span></span></div>
+          <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm flex-shrink-0" style="background:#ED93B1"></div><span class="text-xs"><strong class="font-semibold">Flowering</strong> <span class="text-on-surface-variant/50">— peak bloom</span></span></div>
+          <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm flex-shrink-0" style="background:#5DCAA5"></div><span class="text-xs"><strong class="font-semibold">Growth</strong> <span class="text-on-surface-variant/50">— active expansion</span></span></div>
+          <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm flex-shrink-0" style="background:#F0997B"></div><span class="text-xs"><strong class="font-semibold">Fruiting</strong> <span class="text-on-surface-variant/50">— seed & fruit production</span></span></div>
+          <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm flex-shrink-0" style="background:#FAC775"></div><span class="text-xs"><strong class="font-semibold">Drying</strong> <span class="text-on-surface-variant/50">— moisture withdrawal</span></span></div>
+          <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm flex-shrink-0" style="background:#85B7EB"></div><span class="text-xs"><strong class="font-semibold">Cooling</strong> <span class="text-on-surface-variant/50">— thermal descent</span></span></div>
+          <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm flex-shrink-0" style="background:#AFA9EC"></div><span class="text-xs"><strong class="font-semibold">Rain</strong> <span class="text-on-surface-variant/50">— precipitation events</span></span></div>
+        </div>
+      </div>
+
+      <!-- Inner ring explanation -->
+      <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
+        <h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/60 mb-3">Reading the Rings</h4>
+        <div class="space-y-3 text-xs text-on-surface-variant/70 leading-relaxed">
+          <div class="flex gap-3 items-start"><span class="w-3 h-3 rounded-full border-2 border-primary/50 flex-shrink-0 mt-0.5"></span><span><strong class="text-on-surface">Outer ring</strong> — ecological phase, derived from multi-signal detection</span></div>
+          <div class="flex gap-3 items-start"><span class="w-3 h-3 rounded-full bg-blue-300 flex-shrink-0 mt-0.5"></span><span><strong class="text-on-surface">Inner ring</strong> — daily temperature (blue = cool, green = mild, amber = warm)</span></div>
+          <div class="flex gap-3 items-start"><div class="flex-shrink-0 mt-1.5 w-3 overflow-hidden" style="height:2px;background:repeating-linear-gradient(90deg,rgba(0,0,0,0.4) 0,rgba(0,0,0,0.4) 3px,transparent 3px,transparent 5px)"></div><span><strong class="text-on-surface">Radial marks</strong> — detected seasonal transitions</span></div>
+          <div class="flex gap-3 items-start"><span class="w-3 h-3 rounded-full bg-[#993C1D] flex-shrink-0 mt-0.5"></span><span><strong class="text-on-surface">Red dot</strong> — today's position in the year</span></div>
+        </div>
+      </div>
+
+      <!-- Current phase summary -->
+      <div class="bg-primary rounded-2xl p-6 text-white" id="core-phase-card" style="display:none">
+        <p class="text-[10px] font-bold uppercase tracking-widest opacity-70 mb-2">Active Phase</p>
+        <h3 class="text-xl font-extrabold mb-2" id="core-phase-name">—</h3>
+        <p class="text-sm opacity-80" id="core-phase-detail">—</p>
+      </div>
+    </div>
+  </div>
 </div>
 
 </div>
@@ -284,7 +402,7 @@ document.querySelectorAll('[data-page]').forEach(btn => {
     btn.classList.add('nav-active'); btn.classList.remove('text-on-surface-variant','nav-hover');
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('page-'+btn.dataset.page).classList.add('active');
-    if(btn.dataset.page==='core-sample')drawCoreSample();
+    if(btn.dataset.page==='core-sample'){drawCoreSample();loadCoreContext();}
     if(btn.dataset.page==='comparisons')loadComparison();
     if(btn.dataset.page==='observations')loadObservations();
     if(btn.dataset.page==='new-entry')initNewEntry();
@@ -330,6 +448,7 @@ function renderDashboard(d,narrative){
   if(w.soil_moisture_0_1cm!=null)document.getElementById('soil-moisture').textContent=`${(w.soil_moisture_0_1cm*100).toFixed(0)}%`;
   if(w.soil_temp_0cm!=null)document.getElementById('soil-temp').textContent=`${w.soil_temp_0cm.toFixed(1)}°C`;
   const st=w.soil_temp_0cm;document.getElementById('soil-insight').textContent=st>18?'Warm soil — active microbial activity.':st>12?'Moderate — good root growth conditions.':st>6?'Cool soil — reduced activity.':'Cold — dormant conditions.';
+  const ci=[];if(w.uv_index_max>6&&(w.cloud_cover||100)<30)ci.push('High UV, clear sky — good for insect observation.');if(w.humidity>75&&st>10)ci.push('Humid and mild — conditions favour fungi emergence.');if(sig.rain_7d_total>20)ci.push('Recent rain — watch for fungi and amphibian activity.');if(sig.temp_7d_trend<-1.5)ci.push('Cooling trend — migrant arrivals likely.');if(sig.day_length_change&&sig.day_length_change<-300)ci.push('Days shortening — autumn signals building.');document.getElementById('conditions-insight').textContent=ci[0]||'';
   if(w.uv_index_max!=null)document.getElementById('uv-value').textContent=w.uv_index_max.toFixed(1);
   if(w.cloud_cover!=null)document.getElementById('cloud-value').textContent=Math.round(w.cloud_cover)+'%';
   if(w.humidity!=null)document.getElementById('humidity-value').textContent=Math.round(w.humidity)+'%';
@@ -359,29 +478,68 @@ function renderDashboard(d,narrative){
 }
 function renderStats(s){const c=s.row_counts||{};document.getElementById('db-stats').innerHTML=[`${c.daily_weather||0} days weather`,`${(c.species_observations||0).toLocaleString()} species obs`,`${c.microseasons||0} transitions`].join('<br>');}
 
+let _obsData=[];let _obsNow={};
+function inatToObs(s){
+  const taxMap={Aves:'bird',Plantae:'canopy',Magnoliopsida:'flowering',Liliopsida:'flowering',Fungi:'fungi',Insecta:'insect',Arachnida:'insect',Lepidoptera:'insect',Mammalia:null,Reptilia:null,Amphibia:null};
+  const name=s.common_name||s.taxon_name;
+  return {note:name,tags:taxMap[s.iconic_taxon]??null,date:s.observed_on,source:'inat',taxon:s.taxon_name,iconic_taxon:s.iconic_taxon,observer:s.observer,photo:s.photo_url};
+}
 async function loadObservations(){
-  const[obs,now]=await Promise.all([fetch('/api/observations').then(r=>r.json()),fetch('/api/now').then(r=>r.json())]);
-  const sig=now.signals||{};document.getElementById('obs-phase-label').textContent=now.active_microseasons?.[0]?.phase||'Sensing';
-  document.getElementById('obs-log-list').innerHTML=(obs||[]).map(o=>{
-    const isAuto=o.source==='auto';
-    const dot=isAuto?'w-2 h-2 rounded-full bg-outline/30 flex-shrink-0':'w-2 h-2 rounded-full bg-primary flex-shrink-0';
-    const style=isAuto?'opacity-60':'';
-    const badge=isAuto?'<span class="px-2 py-0.5 rounded-md bg-surface-container-high text-on-surface-variant/50 text-[8px] font-bold uppercase tracking-wider">System</span>':'';
-    const tagBadge=o.tags?`<span class="px-2 py-1 rounded-md bg-primary-container text-on-primary-container text-[9px] font-bold uppercase">${o.tags}</span>`:'';
-    return `<div class="obs-log-item flex items-center gap-4 px-4 py-3 bg-surface-container-lowest rounded-xl hover:bg-surface-container-low transition-colors ${style}" data-tags="${o.tags||''}"><div class="${dot}"></div><div class="flex-grow"><p class="text-sm ${isAuto?'font-medium':'font-semibold'}">${o.note}</p></div>${badge}${tagBadge}<span class="text-[11px] text-on-surface-variant/60">${o.date}</span></div>`;
-  }).join('')||'<p class="text-on-surface-variant/60 text-sm italic">No observations yet.</p>';
+  const[obs,species,now]=await Promise.all([fetch('/api/observations').then(r=>r.json()),fetch('/api/species/recent?days=30').then(r=>r.json()),fetch('/api/now').then(r=>r.json())]);
+  const inatObs=(species||[]).filter(s=>s.common_name||s.taxon_name).map(inatToObs);
+  _obsData=[...(obs||[]),...inatObs];_obsNow=now;
+  const sig=now.signals||{};
+  const ms=now.active_microseasons?.[0];
+  document.getElementById('obs-phase-label').textContent=ms?.name||ms?.phase||'Sensing';
+  const today=new Date(),doy=Math.floor((today-new Date(today.getFullYear(),0,0))/86400000);
+  document.getElementById('obs-doy-label').textContent=`Day ${doy} of 365`;
+  renderObsList(_obsData,'newest');
   document.getElementById('season-summary-text').textContent=sig.temp_7d_trend>0?`${sig.temp_7d_trend.toFixed(1)}° warmer than last week`:sig.temp_7d_trend<0?`${Math.abs(sig.temp_7d_trend).toFixed(1)}° cooler than last week`:'Stable temperature';
-  document.getElementById('season-summary-detail').textContent=`Rain: ${sig.rain_7d_total??'--'}mm | UV: ${sig.uv_7d_avg??'--'} | Species: ${sig.species_diversity_7d??'--'}`;
+  document.getElementById('season-summary-detail').textContent=`Rain: ${sig.rain_7d_total??'--'}mm · UV avg: ${sig.uv_7d_avg??'--'} · ${sig.species_diversity_7d??'--'} species observed`;
   document.getElementById('diversity-count').textContent=sig.species_diversity_7d??'--';
 }
+
+function renderObsList(obs,sortBy='newest'){
+  const catCfg={canopy:{label:'CANOPY',bg:'bg-emerald-100',text:'text-emerald-800',icon:'🌿'},bird:{label:'BIRDS',bg:'bg-amber-100',text:'text-amber-800',icon:'🐦'},flowering:{label:'FLOWERING',bg:'bg-pink-100',text:'text-pink-800',icon:'🌸'},fungi:{label:'FUNGI',bg:'bg-purple-100',text:'text-purple-800',icon:'🍄'},atmosphere:{label:'ATMOSPHERE',bg:'bg-sky-100',text:'text-sky-800',icon:'🌤'},water:{label:'WATER',bg:'bg-teal-100',text:'text-teal-800',icon:'💧'},insect:{label:'INSECT',bg:'bg-orange-100',text:'text-orange-800',icon:'🦋'},sound:{label:'SOUND',bg:'bg-indigo-100',text:'text-indigo-800',icon:'🎵'},scent:{label:'SCENT',bg:'bg-rose-100',text:'text-rose-800',icon:'🌺'}};
+  const defaultCat={label:'GENERAL',bg:'bg-surface-container-high',text:'text-on-surface-variant/60',icon:'•'};
+  const autoCat={label:'SYSTEM',bg:'bg-surface-container-high',text:'text-on-surface-variant/40',icon:''};
+
+  let sorted=[...obs];
+  if(sortBy==='oldest')sorted.sort((a,b)=>a.date.localeCompare(b.date));
+  else if(sortBy==='category')sorted.sort((a,b)=>(a.tags||'').localeCompare(b.tags||''));
+  else sorted.sort((a,b)=>b.date.localeCompare(a.date));
+
+  document.getElementById('obs-log-list').innerHTML=sorted.map(o=>{
+    const isAuto=o.source==='auto'||o.source==='system';
+    const cat=isAuto?autoCat:(catCfg[o.tags]||defaultCat);
+    const d=new Date(o.date);
+    const doy=d.getFullYear()>2000?Math.floor((d-new Date(d.getFullYear(),0,0))/86400000):'--';
+    const variance=isAuto?'<span class="text-[10px] text-on-surface-variant/30 font-medium">—</span>':'<span class="text-[10px] text-on-surface-variant/30 font-medium italic">tracking</span>';
+    const isInat=o.source==='inat';
+    const subtext=isInat&&o.taxon&&o.taxon!==o.note?`<span class="text-[11px] text-on-surface-variant/40 italic block">${o.taxon}${o.observer?' · '+o.observer:''}</span>`:'';
+    const photoThumb=isInat&&o.photo?`<img src="${o.photo}" class="w-8 h-8 rounded-md object-cover flex-shrink-0 mr-2" onerror="this.style.display='none'" loading="lazy">`:'<div class="w-8 flex-shrink-0"></div>';
+    return `<div class="obs-log-item grid grid-cols-1 md:grid-cols-[1fr_130px_110px_70px_120px] gap-2 md:gap-4 items-center px-4 py-4 hover:bg-surface-container-low transition-colors ${isAuto?'opacity-60':''}" data-tags="${o.tags||''}">
+      <div class="flex items-center gap-0">${photoThumb}<div><p class="text-sm ${isAuto?'font-medium text-on-surface-variant/60':'font-semibold'}">${o.note}</p>${subtext}</div></div>
+      <div><span class="px-2 py-1 rounded-md ${cat.bg} ${cat.text} text-[9px] font-bold uppercase tracking-wide">${cat.icon?cat.icon+' ':''}${cat.label}</span></div>
+      <span class="text-[12px] text-on-surface-variant/70 font-medium">${o.date}</span>
+      <span class="text-[12px] text-on-surface-variant/50 font-mono">${doy}</span>
+      <div>${variance}</div>
+    </div>`;
+  }).join('')||'<p class="text-on-surface-variant/60 text-sm italic px-4 py-8">No observations yet. Start by recording what you notice today.</p>';
+}
+
 function filterObs(btn,cat){
   btn.parentElement.querySelectorAll('button').forEach(b=>{
     b.className='px-4 py-2 rounded-full bg-surface-container text-on-surface-variant text-[11px] font-bold hover:bg-surface-container-high';
   });
   btn.className='px-4 py-2 rounded-full bg-primary text-white text-[11px] font-bold';
-  document.querySelectorAll('.obs-log-item').forEach(i=>{
-    i.style.display=(cat==='all'||i.dataset.tags===cat)?'':'none';
-  });
+  const filtered=cat==='all'?_obsData:_obsData.filter(o=>o.tags===cat);
+  renderObsList(filtered,document.querySelector('#page-observations select')?.value||'newest');
+}
+
+function sortObs(val){
+  const activeCat=document.querySelector('#page-observations [data-tags]');
+  renderObsList(_obsData,val);
 }
 
 function initNewEntry(){document.getElementById('obs-date').value=new Date().toISOString().slice(0,10);updateDOY();document.getElementById('obs-date').onchange=updateDOY;}
@@ -447,6 +605,27 @@ async function drawCoreSample(){
   if(cd?.microseasons){for(const ms of cd.microseasons){if(!ms.start_date)continue;const d=new Date(ms.start_date),md=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000),a=((md-1)/365)*Math.PI*2-Math.PI/2;ctx.beginPath();ctx.moveTo(CX+Math.cos(a)*innerR,CY+Math.sin(a)*innerR);ctx.lineTo(CX+Math.cos(a)*outerR,CY+Math.sin(a)*outerR);ctx.strokeStyle='rgba(0,0,0,0.3)';ctx.lineWidth=1.5;ctx.stroke();}}
   const na=((doy-1)/365)*Math.PI*2-Math.PI/2;ctx.beginPath();ctx.moveTo(CX+Math.cos(na)*(innerR-8),CY+Math.sin(na)*(innerR-8));ctx.lineTo(CX+Math.cos(na)*(outerR+4),CY+Math.sin(na)*(outerR+4));ctx.strokeStyle='rgba(0,0,0,0.5)';ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);ctx.beginPath();ctx.arc(CX+Math.cos(na)*(outerR+4),CY+Math.sin(na)*(outerR+4),3,0,Math.PI*2);ctx.fillStyle='#993C1D';ctx.fill();
   const cur=defaultSeasons.find(ms=>doy>=ms.start&&doy<=ms.end);if(cur){ctx.fillStyle='rgba(0,0,0,0.7)';ctx.font="500 14px 'Plus Jakarta Sans',sans-serif";ctx.textAlign='center';ctx.fillText(cur.name,CX,CY-4);ctx.fillStyle='rgba(0,0,0,0.3)';ctx.font="11px 'Inter',sans-serif";ctx.fillText('day '+doy+' of 365',CX,CY+14);}
+
+  // Hover tooltip
+  const tooltip=document.getElementById('core-tooltip');
+  canvas.onmousemove=function(e){
+    const rect=canvas.getBoundingClientRect(),scaleX=W/rect.width,scaleY=W/rect.height;
+    const mx=(e.clientX-rect.left)*scaleX-CX,my=(e.clientY-rect.top)*scaleY-CY;
+    const dist=Math.sqrt(mx*mx+my*my);
+    if(dist>=innerR&&dist<=outerR){
+      let angle=Math.atan2(my,mx)+Math.PI/2;if(angle<0)angle+=Math.PI*2;
+      const dayOfYear=Math.round((angle/(Math.PI*2))*365)+1;
+      const ms=defaultSeasons.find(s=>dayOfYear>=s.start&&dayOfYear<=s.end)||cd?.microseasons?.find(s=>{const sd=new Date(s.start_date),ed=new Date(s.end_date),d=new Date(sd.getFullYear(),0,0);const sd2=Math.floor((sd-d)/86400000),ed2=Math.floor((ed-d)/86400000);return dayOfYear>=sd2&&dayOfYear<=ed2;});
+      if(ms){
+        const date=new Date(2026,0,dayOfYear);const mo=date.toLocaleString('default',{month:'short',day:'numeric'});
+        tooltip.innerHTML=`<strong>${ms.name||ms.phase}</strong><br><span class="opacity-60">${mo} · day ${dayOfYear}</span>`;
+        tooltip.style.display='block';tooltip.style.left=(e.clientX-canvas.getBoundingClientRect().left+12)+'px';tooltip.style.top=(e.clientY-canvas.getBoundingClientRect().top-10)+'px';
+        canvas.style.cursor='crosshair';return;
+      }
+    }
+    tooltip.style.display='none';canvas.style.cursor='default';
+  };
+  canvas.onmouseleave=function(){tooltip.style.display='none';};
 }
 
 // Comparisons
@@ -468,6 +647,43 @@ const seen=new Set();const unique=tr.filter(t=>{const key=t.name;if(seen.has(key
 el.innerHTML=unique.slice(0,9).map(t=>`<div class="bg-surface-container-lowest rounded-xl p-4 shadow-sm"><div class="flex items-center gap-2 mb-1"><span class="px-2 py-0.5 rounded-md ${pc[t.phase]||pc.transition} text-[9px] font-bold uppercase">${t.phase}</span><span class="text-[11px] text-on-surface-variant/60">${t.start_date}</span></div><p class="text-sm font-semibold">${t.name}</p></div>`).join('')||'<p class="text-sm text-on-surface-variant/60">None yet.</p>';}
 function renderMonth(t){document.getElementById('monthly-cards').innerHTML=t.map(d=>`<div class="bg-surface-container-lowest rounded-xl p-4 shadow-sm"><p class="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant/60 mb-1">${d.month}</p><p class="text-xl font-extrabold">${d.avg_temp?.toFixed(1)??'--'}°</p><p class="text-[11px] text-on-surface-variant/60">${d.coldest?.toFixed(0)??'--'}°–${d.hottest?.toFixed(0)??'--'}° | ${d.total_rain?.toFixed(0)??0}mm</p></div>`).join('');}
 function renderPheno(data){const el=document.getElementById('phenology-calendar');if(!data?.length){el.innerHTML='<p class="text-sm text-on-surface-variant/60">No records.</p>';return;}const mo={},mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];const ic={Aves:'🐦',Plantae:'🌿',Insecta:'🦋',Fungi:'🍄',Mammalia:'🦘',Reptilia:'🦎',Amphibia:'🐸',Magnoliopsida:'🌸'};for(const s of data.slice(0,200)){if(!s.first_seen)continue;const m=parseInt(s.first_seen.slice(5,7))-1;if(!mo[m])mo[m]=[];mo[m].push(s);}let h='';for(let m=0;m<12;m++){if(!mo[m]?.length)continue;h+=`<div class="mb-4"><p class="font-bold text-sm text-primary mb-2">${mn[m]}</p><div class="flex flex-wrap gap-1.5">`;for(const s of mo[m].slice(0,15))h+=`<span class="px-2 py-1 bg-surface-container rounded-md text-[11px] font-medium" title="${s.taxon_name}">${ic[s.iconic_taxon]||'•'} ${s.common_name||s.taxon_name}</span>`;if(mo[m].length>15)h+=`<span class="text-[11px] text-on-surface-variant/60">+${mo[m].length-15}</span>`;h+='</div></div>';}el.innerHTML=h;}
+
+// Intro banner — show once for new visitors
+function dismissBanner(){document.getElementById('intro-banner').style.display='none';localStorage.setItem('fs_visited','1');}
+if(!localStorage.getItem('fs_visited')){document.getElementById('intro-banner').style.display='block';}
+
+function exportCoreSample(){
+  const canvas=document.getElementById('core-canvas');
+  if(!canvas)return;
+  const link=document.createElement('a');
+  link.download='felt-seasons-core-sample.png';
+  link.href=canvas.toDataURL('image/png');
+  link.click();
+}
+
+async function loadCoreContext(){
+  try{
+    const now=await fetch('/api/now').then(r=>r.json());
+    const ms=now.active_microseasons?.[0];
+    const sig=now.signals||{};
+    const today=new Date(),doy=Math.floor((today-new Date(today.getFullYear(),0,0))/86400000);
+    const ctx=document.getElementById('core-context-text');
+    if(ctx){
+      const phase=ms?.phase||'transition';
+      const trend=sig.temp_7d_trend;
+      const trendStr=trend>0?`warming ${trend.toFixed(1)}°C`:trend<0?`cooling ${Math.abs(trend).toFixed(1)}°C`:'stable temperature';
+      ctx.textContent=`Currently in ${ms?.name||'seasonal transition'} — day ${doy} of 365. ${trendStr} this week${sig.rain_7d_total>5?`, ${sig.rain_7d_total.toFixed(0)}mm recent rainfall`:''}. ${sig.species_diversity_7d||0} species observed in the last 7 days.`;
+    }
+    const card=document.getElementById('core-phase-card');
+    const pname=document.getElementById('core-phase-name');
+    const pdetail=document.getElementById('core-phase-detail');
+    if(card&&ms){
+      pname.textContent=ms.name||ms.phase;
+      pdetail.textContent=ms.description||`Started ${ms.start_date}. Confidence: ${ms.confidence?Math.round(ms.confidence*100)+'%':'high'}.`;
+      card.style.display='block';
+    }
+  }catch(e){}
+}
 
 loadDashboard();
 </script>
